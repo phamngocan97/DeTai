@@ -39,6 +39,7 @@ const int WHITE = 15;
 */
 using namespace std;
 
+typedef long long ll;
 enum {
 	ENTER =13,
 	BACKSPACE =8,
@@ -65,7 +66,7 @@ void InitRec(Login &log, int tamX, int tamY);
 void DrawLogin(Login &login, Login &id, Login &pass);
 bool IsClickId(Login id, int x, int y);
 bool IsClickPass(Login pass, int x, int y);
-void DangNhap(Login id, Login pass);
+void DangNhap(Login login,Login id, Login pass);
 bool TestId(string id, string pass);
 int main() {
 	int bg = 0, bm = 0;
@@ -76,7 +77,7 @@ int main() {
 	Login login, id, pass;
 
 	DrawLogin(login, id, pass);
-	DangNhap(id, pass);
+	DangNhap(login,id, pass);
 
 	cleardevice();
 	circle(getmaxx() / 2, getmaxy() / 2, 50);
@@ -127,10 +128,14 @@ bool IsClickPass(Login pass, int x, int y) {
 	return false;
 }
 
-void DangNhap(Login id,Login pass) {
+void DangNhap(Login login,Login id,Login pass) {
 	bool signIn = false;
 	string tk = "", mk = "";
 	int vtriIdx, vtriIdy, vtriPassx, vtriPassy;
+	int disId, disPass;
+	disId = 15;
+	disPass = 5;
+
 	vtriIdx = id.left + 1;
 	vtriIdy = id.top + 5;
 	vtriPassx = pass.left + 1;
@@ -159,19 +164,24 @@ void DangNhap(Login id,Login pass) {
 				if (!outId) {
 					c = getch();
 					if (c == ENTER) {
-						if (TestId(tk, mk)) signIn = true;
-						break;
+						if (TestId(tk, mk)) {
+							signIn = true;
+							break;
+						}
+						else {
+							outtextxy(login.bottom + 20, login.left + 50, "Sai ID/PassWord");
+						}
 					}
-					else if (tk.size()>0&&c == BACKSPACE) {
+					else if ((ll)tk.size()>0&&c == BACKSPACE) {
 						tk.pop_back();
-						vtriIdx -= 10;
+						vtriIdx -= disId;
 						outtextxy(vtriIdx, vtriIdy, "    ");
 					}
 					else {
 						if (c == BACKSPACE) continue;
 						tk = tk + c;
 						outtextxy(vtriIdx, vtriIdy, &tk[tk.size() - 1]);
-						vtriIdx += 10;
+						vtriIdx += disId;
 					}
 				}
 			}
@@ -194,19 +204,24 @@ void DangNhap(Login id,Login pass) {
 				if (!outPass) {
 					c = getch();
 					if (c == ENTER) {
-						if (TestId(tk, mk)) signIn = true;
-						break;
+						if (TestId(tk, mk)) {
+							signIn = true;
+							break;
+						}
+						else {
+							outtextxy(login.left + 20, login.bottom + 50, "Sai ID/PassWord");
+						}
 					}
 
-					else if (mk.size()>0 && c == BACKSPACE) {
+					else if ((ll)mk.size()>0 && c == BACKSPACE) {
 						mk.pop_back();
-						vtriIdx -= 10;
-						outtextxy(vtriIdx, vtriIdy, "    ");
+						vtriPassx -= disPass;
+						outtextxy(vtriPassx, vtriPassy, " ");
 					}
 					else {
 						if (c == BACKSPACE) continue;
 						outtextxy(vtriPassx, vtriPassy, "*");
-						vtriPassx += 5;
+						vtriPassx += disPass;
 						mk += c;
 					}
 				}
