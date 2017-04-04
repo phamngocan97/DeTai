@@ -1,4 +1,4 @@
-﻿
+
 #include<bits/stdc++.h>
 #include<winbgim.h>
 /*
@@ -38,6 +38,13 @@ const int WHITE = 15;
 };
 */
 using namespace std;
+
+enum {
+	ENTER =13,
+	BACKSPACE =8,
+	TAB = 9,
+};
+
 class Login {
 public:
 	Login() {}
@@ -58,6 +65,7 @@ void InitRec(Login &log, int tamX, int tamY);
 void DrawLogin(Login &login, Login &id, Login &pass);
 bool IsClickId(Login id, int x, int y);
 bool IsClickPass(Login pass, int x, int y);
+void DangNhap(Login id, Login pass);
 bool TestId(string id, string pass);
 int main() {
 	int bg = 0, bm = 0;
@@ -68,12 +76,12 @@ int main() {
 	Login login, id, pass;
 
 	DrawLogin(login, id, pass);
+	DangNhap(id, pass);
 
-
-	
-	fflush(stdin);
+	cleardevice();
+	circle(getmaxx() / 2, getmaxy() / 2, 50);
 	while (!kbhit()) {
-		cleardevice();
+		
 	}
 	closegraph();
 
@@ -150,13 +158,21 @@ void DangNhap(Login id,Login pass) {
 				outtextxy(vtriIdx, vtriIdy, " ");
 				if (!outId) {
 					c = getch();
-					if (c == '\n') {
+					if (c == ENTER) {
 						if (TestId(tk, mk)) signIn = true;
 						break;
 					}
-					tk = tk + c;
-					outtextxy(vtriIdx, vtriIdy, &tk[tk.size() - 1]);
-					vtriIdx += 10;
+					else if (tk.size()>0&&c == BACKSPACE) {
+						tk.pop_back();
+						vtriIdx -= 10;
+						outtextxy(vtriIdx, vtriIdy, "    ");
+					}
+					else {
+						if (c == BACKSPACE) continue;
+						tk = tk + c;
+						outtextxy(vtriIdx, vtriIdy, &tk[tk.size() - 1]);
+						vtriIdx += 10;
+					}
 				}
 			}
 			if (IsClickPass(pass, mousex(), mousey())) {
@@ -177,13 +193,22 @@ void DangNhap(Login id,Login pass) {
 				outtextxy(vtriPassx, vtriPassy, " ");
 				if (!outPass) {
 					c = getch();
-					if (c == '\n') {
+					if (c == ENTER) {
 						if (TestId(tk, mk)) signIn = true;
 						break;
 					}
-					outtextxy(vtriPassx, vtriPassy, "*");
-					vtriPassx += 5;
-					mk += c;
+
+					else if (mk.size()>0 && c == BACKSPACE) {
+						mk.pop_back();
+						vtriIdx -= 10;
+						outtextxy(vtriIdx, vtriIdy, "    ");
+					}
+					else {
+						if (c == BACKSPACE) continue;
+						outtextxy(vtriPassx, vtriPassy, "*");
+						vtriPassx += 5;
+						mk += c;
+					}
 				}
 			}
 		}
