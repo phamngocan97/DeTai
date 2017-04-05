@@ -1,6 +1,6 @@
 
 #include<bits/stdc++.h>
-#include<winbgim.h>
+#include"winbgim.h"
 /*
 const int BLACK = 0;
 const int BLUE = 1;
@@ -20,29 +20,29 @@ const int YELLOW = 14;
 const int WHITE = 15;
 */
 /*
-	enum fill_styles
+enum fill_styles
 {
-   EMPTY_FILL,
-   SOLID_FILL,
-   LINE_FILL,
-   LTSLASH_FILL,
-   SLASH_FILL,
-   BKSLASH_FILL,
-   LTBKSLASH_FILL,
-   HATCH_FILL,
-   XHATCH_FILL,
-   INTERLEAVE_FILL,
-   WIDE_DOT_FILL,
-   CLOSE_DOT_FILL,
-   USER_FILL
+EMPTY_FILL,
+SOLID_FILL,
+LINE_FILL,
+LTSLASH_FILL,
+SLASH_FILL,
+BKSLASH_FILL,
+LTBKSLASH_FILL,
+HATCH_FILL,
+XHATCH_FILL,
+INTERLEAVE_FILL,
+WIDE_DOT_FILL,
+CLOSE_DOT_FILL,
+USER_FILL
 };
 */
 using namespace std;
 
 typedef long long ll;
 enum {
-	ENTER =13,
-	BACKSPACE =8,
+	ENTER = 13,
+	BACKSPACE = 8,
 	TAB = 9,
 };
 
@@ -57,6 +57,10 @@ public:
 	int dai, rong;
 	int left, right, top, bottom;
 };
+class QuesAndAns {
+	string cauhoi, traloi[4];
+	int dapan;
+};
 
 int linex[] = { -1,0,1,1,1,0,-1 - 1 };
 int liney[] = { -1,-1,-1,0,1,1,1,0 };
@@ -66,28 +70,30 @@ void InitRec(Login &log, int tamX, int tamY);
 void DrawLogin(Login &login, Login &id, Login &pass);
 bool IsClickId(Login id, int x, int y);
 bool IsClickPass(Login pass, int x, int y);
-void DangNhap(Login login,Login id, Login pass);
+void DangNhap(Login login, Login id, Login pass);
 bool TestId(string id, string pass);
 int main() {
 	int bg = 0, bm = 0;
-	initgraph(&bg, &bm, " ");
+	//initgraph(&bg, &bm, " ");
 	initwindow(1200, 550);
 	//------------------------------------------------------------//
 
 	Login login, id, pass;
 
 	DrawLogin(login, id, pass);
-	DangNhap(login,id, pass);
+	DangNhap(login, id, pass);
 
 	cleardevice();
 	circle(getmaxx() / 2, getmaxy() / 2, 50);
 	while (!kbhit()) {
-		
+
 	}
-	closegraph();
+	//closegraph();
 
 	return 0;
 }
+
+
 void DrawLogin(Login &login, Login &id, Login &pass) {
 	int disRong, disIdPass;
 	disRong = 30;
@@ -112,8 +118,8 @@ void DrawLogin(Login &login, Login &id, Login &pass) {
 	outtextxy(login.left + 90, login.top - 40, "Dang Nhap");
 
 	settextstyle(3, HORIZ_DIR, 1);
-	outtextxy(login.left + 20, id.top + 15, "Tai Khoan");
-	outtextxy(login.left + 20, pass.top + 15, "Mat Khau");
+	outtextxy(login.left + 10, id.top + 15, "Tai Khoan");
+	outtextxy(login.left + 10, pass.top + 15, "Mat Khau");
 }
 bool IsClickId(Login id, int x, int y) {
 	if (x <= id.right&&x >= id.left) {
@@ -128,7 +134,7 @@ bool IsClickPass(Login pass, int x, int y) {
 	return false;
 }
 
-void DangNhap(Login login,Login id,Login pass) {
+void DangNhap(Login login, Login id, Login pass) {
 	bool signIn = false;
 	string tk = "", mk = "";
 	int vtriIdx, vtriIdy, vtriPassx, vtriPassy;
@@ -142,6 +148,7 @@ void DangNhap(Login login,Login id,Login pass) {
 	vtriPassy = pass.top + 5;
 
 	while (!signIn) {
+		delay(0.00001);
 		if (ismouseclick(WM_LBUTTONDOWN)) {
 
 			if (IsClickId(id, mousex(), mousey())) {
@@ -172,8 +179,9 @@ void DangNhap(Login login,Login id,Login pass) {
 							outtextxy(login.bottom + 20, login.left + 50, "Sai ID/PassWord");
 						}
 					}
-					else if ((ll)tk.size()>0&&c == BACKSPACE) {
-						tk.pop_back();
+					else if ((ll)tk.size()>0 && c == BACKSPACE) {
+						//tk.pop_back();
+						tk.erase(tk.size() - 1);
 						vtriIdx -= disId;
 						outtextxy(vtriIdx, vtriIdy, "    ");
 					}
@@ -214,7 +222,8 @@ void DangNhap(Login login,Login id,Login pass) {
 					}
 
 					else if ((ll)mk.size()>0 && c == BACKSPACE) {
-						mk.pop_back();
+						//mk.pop_back();
+						mk.erase(mk.size() - 1);
 						vtriPassx -= disPass;
 						outtextxy(vtriPassx, vtriPassy, " ");
 					}
@@ -247,6 +256,34 @@ void InitRec(Login &log, int tamX, int tamY) {
 
 }
 
+void InitQuestion() {
+	fstream file;
+	file.open("Ques.inp", ios::in | ios::binary);
+
+	int numQues, realQues;
+	realQues = 20;
+	file.read((char*)&numQues, sizeof(int));
+
+	string *ques = new string[numQues];
+	string *ansSentence = new string[numQues];
+	int *ans = new int[numQues];
+
+	file.read((char*)&ques, sizeof(string));
+	file.read((char*)&ansSentence, sizeof(string));
+	file.read((char*)&ans, sizeof(int));
+
+	srand(time(0));
+	for (int i = 1; i <= realQues; i++) {
+		int k = rand() % (numQues - i);
+		swap(ques[k], ques[numQues - i]);
+		swap(ansSentence[k], ansSentence[numQues - i]);
+		swap(ans[k], ans[numQues - i]);
+	}
+
+	for (int i = numQues - realQues; i < numQues; i++) {
+
+	}
+}
 void BFS(int x, int y, int x1, int y1, int R) {
 	int *prevy = new int[getmaxy() + 1];
 	int *prevx = new int[getmaxx() + 1];
