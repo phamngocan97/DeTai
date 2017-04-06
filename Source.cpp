@@ -58,20 +58,24 @@ public:
 	int left, right, top, bottom;
 };
 class QuesAndAns {
-	string cauhoi, traloi[4];
+public:
+	string cauhoi, traloi;
 	int dapan;
 };
 
 int linex[] = { -1,0,1,1,1,0,-1 - 1 };
 int liney[] = { -1,-1,-1,0,1,1,1,0 };
 
+void Swap(string&, string&);
 void BFS(int x, int y, int x1, int y1, int R);
 void InitRec(Login &log, int tamX, int tamY);
 void DrawLogin(Login &login, Login &id, Login &pass);
 bool IsClickId(Login id, int x, int y);
 bool IsClickPass(Login pass, int x, int y);
 void DangNhap(Login login, Login id, Login pass);
-bool TestId(string id, string pass);
+int TestId(string id, string pass);
+void InitQuestion();
+void DrawTracNghiem(QuesAndAns Infor);
 int main() {
 	int bg = 0, bm = 0;
 	//initgraph(&bg, &bm, " ");
@@ -85,6 +89,7 @@ int main() {
 
 	cleardevice();
 	circle(getmaxx() / 2, getmaxy() / 2, 50);
+	InitQuestion();
 	while (!kbhit()) {
 
 	}
@@ -239,11 +244,11 @@ void DangNhap(Login login, Login id, Login pass) {
 	}
 
 }
-bool TestId(string id, string pass) {
-	if (id == "GVGV"&& pass == "123") {
-		return true;
+int TestId(string id, string pass) {
+	if (id == "GV"&& pass == "GV") {
+		return 1;
 	}
-	return false;
+	return 0;
 }
 
 void InitRec(Login &log, int tamX, int tamY) {
@@ -264,26 +269,69 @@ void InitQuestion() {
 	realQues = 20;
 	file.read((char*)&numQues, sizeof(int));
 
+	QuesAndAns Infor[20];
 	string *ques = new string[numQues];
 	string *ansSentence = new string[numQues];
 	int *ans = new int[numQues];
 
-	file.read((char*)&ques, sizeof(string));
-	file.read((char*)&ansSentence, sizeof(string));
-	file.read((char*)&ans, sizeof(int));
-
+	for (int i = 0; i < numQues; i++) {
+		file.read((char*)&ques[i], sizeof(string));
+	}
+	for (int i = 0; i < numQues; i++) {
+		file.read((char*)&ansSentence[i], sizeof(string));
+	}
+	for (int i = 0; i < numQues; i++) {
+		file.read((char*)&ans[i], sizeof(int));
+	}
+	//file.read(reinterpret_cast<char*>(&s), sizeof(s));
 	srand(time(0));
 	for (int i = 1; i <= realQues; i++) {
 		int k = rand() % (numQues - i);
-		swap(ques[k], ques[numQues - i]);
-		swap(ansSentence[k], ansSentence[numQues - i]);
+		Swap(ques[k], ques[numQues - i]);
+		Swap(ansSentence[k], ansSentence[numQues - i]);
 		swap(ans[k], ans[numQues - i]);
+
+		Infor[i - 1].cauhoi = ques[numQues - i];
+
+		Infor[i - 1].traloi.resize(4);
+		Infor[i - 1].traloi = ansSentence[numQues - i];
+
+		Infor[i - 1].cauhoi = ques[numQues - i];
 	}
 
-	for (int i = numQues - realQues; i < numQues; i++) {
-
+	for (int i = 1; i <= realQues; i++) {
+		cleardevice();
+		DrawTracNghiem(Infor[i - 1]);
+		while (!kbhit()) delay(0.001);
 	}
 }
+void DrawTracNghiem(QuesAndAns Infor) {
+	const int disToTop = 100;
+	Login cauhoi,traloi[4];
+	const int tamX = getmaxx() / 2;
+	const int cDai = getmaxx() / 4;
+	int crongQues = (int)Infor.cauhoi.length() * 5 / cDai + 10;
+	int tamY = disToTop + crongQues / 2;
+	cauhoi.dai = cDai;
+	cauhoi.rong = crongQues;
+	
+	InitRec(cauhoi, tamX, tamY);
+
+	for (int i = 1; i <= 4; i++) {
+		traloi[i-1].dai = cDai;
+		traloi[i-1].rong = (int)Infor.traloi.length() * 5 / cDai + 10;
+
+		if (i == 1) {
+			tamY = cauhoi.bottom + 30 + traloi[i - 1].rong / 2;
+		}
+		else {
+			tamY = traloi[i - 2].bottom + 30 + traloi[i - 1].rong / 2;
+		}
+		InitRec(traloi[i - 1], tamX, tamY);
+	}
+
+}
+
 void BFS(int x, int y, int x1, int y1, int R) {
 	int *prevy = new int[getmaxy() + 1];
 	int *prevx = new int[getmaxx() + 1];
@@ -341,4 +389,9 @@ void BFS(int x, int y, int x1, int y1, int R) {
 		sty.pop();
 		Sleep(2000);
 	}
+}
+void Swap(string &s1, string &s2) {
+	string s = s1;
+	s1 = s2;
+	s2 = s;
 }
