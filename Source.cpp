@@ -75,12 +75,14 @@ void BFS(int x, int y, int x1, int y1, int R);
 void InitRec(Login &log, int tamX, int tamY);
 void DrawLogin(Login &login, Login &id, Login &pass);
 bool IsClickRec(Login log, int x, int y);
+bool IsClickCircle(CircleClick click, int x, int y);
 void DangNhap(Login login, Login id, Login pass);
 int TestId(string id, string pass);
 void InitQuestion();
-void DrawTracNghiem(QuesAndAns Infor);
+void DrawTracNghiem(QuesAndAns Infor,CircleClick *click);
 void Write(string s, int x, int y, int dai);
 int main() {
+
 	int bg = 0, bm = 0;
 	//initgraph(&bg, &bm, " ");
 	initwindow(1200, 550);
@@ -133,6 +135,12 @@ void DrawLogin(Login &login, Login &id, Login &pass) {
 bool IsClickRec(Login log, int x, int y) {
 	if (x <= log.right&&x >= log.left) {
 		if (y <= log.bottom&&y >= log.top) return true;
+	}
+	return false;
+}
+bool IsClickCircle(CircleClick click, int x, int y) {
+	if (((x - click.x)*(x - click.x) + (y - click.y)*(y - click.y)) <= click.bk*click.bk) {
+		return true;
 	}
 	return false;
 }
@@ -268,11 +276,14 @@ void InitQuestion() {
 	realQues = 20;
 	file.read((char*)&numQues, sizeof(int));
 
+	CircleClick **click=new CircleClick*[numQues];
 	QuesAndAns Infor[20];
 	string *ques = new string[numQues];
 	string **ansSentence = new string*[numQues];
+
 	for (int i = 0; i < numQues; i++) {
 		ansSentence[i] = new string[4];
+		click[i] = new CircleClick[4];
 	}
 	int *ans = new int[numQues];
 
@@ -295,15 +306,15 @@ void InitQuestion() {
 		int k = rand() % (numQues - i);
 		Swap(ques[k], ques[numQues - i]);
 		//Swap(ansSentence[k], ansSentence[numQues - i]);
-		for (int k = 0; k < 4; k++) {
-			Swap(ansSentence[i][k], ansSentence[numQues - i][k]);
+		for (int kk = 0; kk < 4; kk++) {
+			Swap(ansSentence[k][kk], ansSentence[numQues - i][kk]);
 		}
 		swap(ans[k], ans[numQues - i]);
 
 		Infor[i - 1].cauhoi = ques[numQues - i];
 
-		for (int k = 0; k < 4; k++) {
-			Infor[i - 1].traloi[k] = ansSentence[numQues - i][k];
+		for (int kk = 0; kk < 4; kk++) {
+			Infor[i - 1].traloi[kk] = ansSentence[numQues - i][kk];
 		}
 
 		Infor[i - 1].cauhoi = ques[numQues - i];
@@ -314,11 +325,14 @@ void InitQuestion() {
 	next.dai = previous.dai = 70;
 	next.rong = previous.rong = 30;
 	bool isClick;
+	int *choose = new int[realQues];
+	memset(choose, 0, realQues);
+
 	clearmouseclick(WM_LBUTTONDOWN);
 	for (int i = 1; i <= realQues;) {
 		isClick = false;
 		cleardevice();
-		DrawTracNghiem(Infor[i - 1]);
+		DrawTracNghiem(Infor[i - 1],click[i-1]);
 
 		if (i < realQues) {
 			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
@@ -332,7 +346,7 @@ void InitQuestion() {
 		while (!isClick) {
 			delay(0.00001);
 			if (ismouseclick(WM_LBUTTONDOWN)) {
-				outtextxy(mousex(), mousey(), "x");
+				//outtextxy(mousex(), mousey(), "x");
 				if (i<realQues&&IsClickRec(next, mousex(), mousey())) {
 					isClick = true;
 					i++;
@@ -341,15 +355,26 @@ void InitQuestion() {
 					isClick = true;
 					i--;
 				}
+				for (int j = 0; j < 4; j++) {
+					if (IsClickCircle(click[i - 1][j], mousex(), mousey())) {
+						if (choose[i] != 0) {
+							circle(click[i - 1][choose[i] - 1].x, click[i - 1][choose[i] - 1].y, click[i - 1][choose[i] - 1].bk);
+							choose[i] = 0;
+						}
+						choose[i] = j+1;
+						outtextxy(click[i-1][j].x, click[i-1][j].y, "~");
+						break;
+					}
+				}
 			}
 		}
 		clearmouseclick(WM_LBUTTONDOWN);
 	}
 }
-void DrawTracNghiem(QuesAndAns Infor) {
+void DrawTracNghiem(QuesAndAns Infor,CircleClick *click) {
 	const int disToTop = 100;
 	Login cauhoi,traloi[4];
-	CircleClick click[4];
+	//CircleClick click[4];
 	const int tamX = getmaxx() / 2;
 	const int cDai = getmaxx() / 2-100;
 	int crongQues = (int)Infor.cauhoi.length() * 5 / cDai;
@@ -387,6 +412,7 @@ void Write(string s,int x, int y, int dai) {
 	vtriY = y;
 	outtextxy(x, y, &s[0]); 
 	return;
+	/*
 	for (int i = 0; i < (int)s.length(); i++) {
 		if (s[i] == '\0') return;
 		if (vtriX + 5 >= dai) {
@@ -396,6 +422,7 @@ void Write(string s,int x, int y, int dai) {
 		outtextxy(vtriX, vtriY, &s.at(i)+'L');
 		vtriX += 30;
 	}
+	*/
 }
 void BFS(int x, int y, int x1, int y1, int R) {
 	int *prevy = new int[getmaxy() + 1];
