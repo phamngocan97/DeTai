@@ -59,7 +59,9 @@ public:
 };
 class QuesAndAns {
 public:
-	string cauhoi, traloi[4];
+	//string cauhoi, traloi[4];
+	char cauhoi[1000];
+	char traloi[4][1000];
 	int dapan;
 };
 class CircleClick {
@@ -70,7 +72,7 @@ public:
 int linex[] = { -1,0,1,1,1,0,-1 - 1 };
 int liney[] = { -1,-1,-1,0,1,1,1,0 };
 
-void Swap(string&, string&);
+void Swap(char *s1, char *s2);
 void BFS(int x, int y, int x1, int y1, int R);
 void InitRec(Login &log, int tamX, int tamY);
 void DrawLogin(Login &login, Login &id, Login &pass);
@@ -79,8 +81,8 @@ bool IsClickCircle(CircleClick click, int x, int y);
 void DangNhap(Login login, Login id, Login pass);
 int TestId(string id, string pass);
 void InitQuestion();
-void DrawTracNghiem(QuesAndAns Infor,CircleClick *click);
-void Write(string s, int x, int y, int dai);
+void DrawTracNghiem(QuesAndAns Infor, CircleClick *click);
+void Write(char *s, int x, int y, int dai);
 int main() {
 
 	int bg = 0, bm = 0;
@@ -257,7 +259,6 @@ int TestId(string id, string pass) {
 	}
 	return 0;
 }
-
 void InitRec(Login &log, int tamX, int tamY) {
 
 	log.left = tamX - log.dai / 2;
@@ -276,25 +277,37 @@ void InitQuestion() {
 	realQues = 20;
 	file.read((char*)&numQues, sizeof(int));
 
-	CircleClick **click=new CircleClick*[numQues];
+	CircleClick **click = new CircleClick*[numQues];
 	QuesAndAns Infor[20];
-	string *ques = new string[numQues];
-	string **ansSentence = new string*[numQues];
+	//string *ques = new string[numQues];
+	char **ques = new char*[numQues];
+	for (int i = 0; i < numQues; i++) {
+		ques[i] = new char[1000];
+	}
+	//string **ansSentence = new string*[numQues];
+	char ***ansSentence = new char**[numQues];
+	for (int i = 0; i < numQues; i++) {
+		ansSentence[i] = new char*[4];
+		for (int j = 0; j < 4; j++) {
+			ansSentence[i][j] = new char[1000];
+		}
+	}
 
 	for (int i = 0; i < numQues; i++) {
-		ansSentence[i] = new string[4];
 		click[i] = new CircleClick[4];
 	}
 	int *ans = new int[numQues];
 
 	for (int i = 0; i < numQues; i++) {
-		ques[i].resize(1000);
-		file.read((char*)&ques[i], sizeof(string));
+		int k;
+		file.read((char*)&k, sizeof(int));
+		file.read(ques[i], k + 1);
 	}
 	for (int i = 0; i < numQues; i++) {
 		for (int j = 0; j < 4; j++) {
-			ansSentence[i][j].resize(1000);
-			file.read((char*)&ansSentence[i][j], sizeof(string));
+			int k;
+			file.read((char*)&k, sizeof(int));
+			file.read(ansSentence[i][j], k + 1);
 		}
 	}
 	for (int i = 0; i < numQues; i++) {
@@ -311,18 +324,19 @@ void InitQuestion() {
 		}
 		swap(ans[k], ans[numQues - i]);
 
-		Infor[i - 1].cauhoi = ques[numQues - i];
+		//Infor[i - 1].cauhoi = ques[numQues - i];
+		strcpy(Infor[i - 1].cauhoi, ques[numQues - i]);
 
 		for (int kk = 0; kk < 4; kk++) {
-			Infor[i - 1].traloi[kk] = ansSentence[numQues - i][kk];
+			//Infor[i - 1].traloi[kk] = ansSentence[numQues - i][kk];
+			strcpy(Infor[i - 1].traloi[kk], ansSentence[numQues - i][kk]);
 		}
 
-		Infor[i - 1].cauhoi = ques[numQues - i];
 		Infor[i - 1].dapan = ans[numQues - i];
 	}
 
-	Login next,previous;
-	next.dai = previous.dai = 70;
+	Login next, previous;
+	next.dai = previous.dai = 90;
 	next.rong = previous.rong = 30;
 	bool isClick;
 	int *choose = new int[realQues];
@@ -332,14 +346,14 @@ void InitQuestion() {
 	for (int i = 1; i <= realQues;) {
 		isClick = false;
 		cleardevice();
-		DrawTracNghiem(Infor[i - 1],click[i-1]);
+		DrawTracNghiem(Infor[i - 1], click[i - 1]);
 
 		if (i < realQues) {
 			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
 			outtextxy(next.left + 20, next.top + 5, "NEXT");
 		}
-		if (i > 1) {			
-			InitRec(previous, next.left - 30 - previous.rong / 2, getmaxy() - previous.rong - 50);
+		if (i > 1) {
+			InitRec(previous, next.left - 50 - previous.rong / 2, getmaxy() - previous.rong - 50);
 			outtextxy(previous.left + 20, previous.top + 5, "PREV");
 		}
 
@@ -351,7 +365,7 @@ void InitQuestion() {
 					isClick = true;
 					i++;
 				}
-				else if (i>1&&IsClickRec(previous, mousex(), mousey())) {
+				else if (i>1 && IsClickRec(previous, mousex(), mousey())) {
 					isClick = true;
 					i--;
 				}
@@ -361,8 +375,8 @@ void InitQuestion() {
 							circle(click[i - 1][choose[i] - 1].x, click[i - 1][choose[i] - 1].y, click[i - 1][choose[i] - 1].bk);
 							choose[i] = 0;
 						}
-						choose[i] = j+1;
-						outtextxy(click[i-1][j].x, click[i-1][j].y, "~");
+						choose[i] = j + 1;
+						outtextxy(click[i - 1][j].x, click[i - 1][j].y, "~");
 						break;
 					}
 				}
@@ -371,24 +385,24 @@ void InitQuestion() {
 		clearmouseclick(WM_LBUTTONDOWN);
 	}
 }
-void DrawTracNghiem(QuesAndAns Infor,CircleClick *click) {
+void DrawTracNghiem(QuesAndAns Infor, CircleClick *click) {
 	const int disToTop = 100;
-	Login cauhoi,traloi[4];
+	Login cauhoi, traloi[4];
 	//CircleClick click[4];
 	const int tamX = getmaxx() / 2;
-	const int cDai = getmaxx() / 2-100;
-	int crongQues = (int)Infor.cauhoi.length() * 5 / cDai;
+	const int cDai = getmaxx() / 2 - 100;
+	int crongQues = (int)(strlen(Infor.cauhoi)) * 5 / cDai;
 	crongQues += 3;
 	crongQues *= 15;
 	int tamY = disToTop + crongQues / 2;
 	cauhoi.dai = cDai;
 	cauhoi.rong = crongQues;
-	
+
 	InitRec(cauhoi, tamX, tamY);
 	Write(Infor.cauhoi, cauhoi.left + 5, cauhoi.top + 5, cDai);
 	for (int i = 1; i <= 4; i++) {
-		traloi[i-1].dai = cDai;
-		traloi[i-1].rong = (int)Infor.traloi[i-1].length() * 5 / cDai ;
+		traloi[i - 1].dai = cDai;
+		traloi[i - 1].rong = (strlen(Infor.traloi[i - 1])) * 5 / cDai;
 		traloi[i - 1].rong += 3;
 		traloi[i - 1].rong *= 10;
 		if (i == 1) {
@@ -398,7 +412,8 @@ void DrawTracNghiem(QuesAndAns Infor,CircleClick *click) {
 			tamY = traloi[i - 2].bottom + 30 + traloi[i - 1].rong / 2;
 		}
 		InitRec(traloi[i - 1], tamX, tamY);
-		Write(Infor.traloi[i - 1], traloi[i - 1].left + 5, traloi[i - 1].top + 5,cDai);
+
+		Write(Infor.traloi[i - 1], traloi[i - 1].left + 5, traloi[i - 1].top + 5, cDai);
 		click[i - 1].bk = 10;
 		click[i - 1].y = tamY;
 		click[i - 1].x = cauhoi.left - 30;
@@ -406,21 +421,21 @@ void DrawTracNghiem(QuesAndAns Infor,CircleClick *click) {
 	}
 
 }
-void Write(string s,int x, int y, int dai) {
+void Write(char *s, int x, int y, int dai) {
 	int vtriX, vtriY;
 	vtriX = x;
 	vtriY = y;
-	outtextxy(x, y, &s[0]); 
+	outtextxy(x, y, &s[0]);
 	return;
 	/*
 	for (int i = 0; i < (int)s.length(); i++) {
-		if (s[i] == '\0') return;
-		if (vtriX + 5 >= dai) {
-			vtriX = x;
-			vtriY += 10;
-		}
-		outtextxy(vtriX, vtriY, &s.at(i)+'L');
-		vtriX += 30;
+	if (s[i] == '\0') return;
+	if (vtriX + 5 >= dai) {
+	vtriX = x;
+	vtriY += 10;
+	}
+	outtextxy(vtriX, vtriY, &s.at(i)+'L');
+	vtriX += 30;
 	}
 	*/
 }
@@ -482,8 +497,9 @@ void BFS(int x, int y, int x1, int y1, int R) {
 		Sleep(2000);
 	}
 }
-void Swap(string &s1, string &s2) {
-	string s = s1;
-	s1 = s2;
-	s2 = s;
+void Swap(char *s1, char *s2) {
+	char t[1000];
+	strcpy(t, s1);
+	strcpy(s1, s2);
+	strcpy(s2, t);
 }
