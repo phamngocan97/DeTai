@@ -1,42 +1,25 @@
 
 #include<bits/stdc++.h>
 #include"winbgim.h"
-/*
-const int BLACK = 0;
-const int BLUE = 1;
-const int GREEN = 2;
-const int CYAN = 3;
-const int RED = 4;
-const int MAGENTA = 5;
-const int BROWN = 6;
-const int LIGHTGRAY = 7;
-const int DARKGRAY = 8;
-const int LIGHTBLUE = 9;
-const int LIGHTGREEN = 10;
-const int LIGHTCYAN = 11;
-const int LIGHTRED = 12;
-const int LIGHTMAGENTA = 13;
-const int YELLOW = 14;
-const int WHITE = 15;
-*/
-/*
-enum fill_styles
-{
-EMPTY_FILL,
-SOLID_FILL,
-LINE_FILL,
-LTSLASH_FILL,
-SLASH_FILL,
-BKSLASH_FILL,
-LTBKSLASH_FILL,
-HATCH_FILL,
-XHATCH_FILL,
-INTERLEAVE_FILL,
-WIDE_DOT_FILL,
-CLOSE_DOT_FILL,
-USER_FILL
+
+enum{
+	BLACK = 0,
+  BLUE = 1,
+  GREEN = 2,
+  CYAN = 3,
+  RED = 4,
+  MAGENTA = 5,
+  BROWN = 6,
+  LIGHTGRAY = 7,
+  DARKGRAY = 8,
+ LIGHTBLUE = 9,
+ LIGHTGREEN = 10,
+ LIGHTCYAN = 11,
+ LIGHTRED = 12,
+ LIGHTMAGENTA = 13,
+ YELLOW = 14,
+ WHITE = 15
 };
-*/
 using namespace std;
 
 typedef long long ll;
@@ -75,13 +58,14 @@ int liney[] = { -1,-1,-1,0,1,1,1,0 };
 void Swap(char *s1, char *s2);
 void BFS(int x, int y, int x1, int y1, int R);
 void InitRec(Login &log, int tamX, int tamY);
+void InitCircle(CircleClick click, int mau);
 void DrawLogin(Login &login, Login &id, Login &pass);
 bool IsClickRec(Login log, int x, int y);
 bool IsClickCircle(CircleClick click, int x, int y);
 void DangNhap(Login login, Login id, Login pass);
 int TestId(string id, string pass);
 void InitQuestion();
-void DrawTracNghiem(QuesAndAns Infor, CircleClick *click);
+void DrawTracNghiem(QuesAndAns Infor, CircleClick *click,int type);
 void Write(char *s, int x, int y, int dai);
 int main() {
 
@@ -268,7 +252,29 @@ void InitRec(Login &log, int tamX, int tamY) {
 	rectangle(log.left, log.top, log.right, log.bottom);
 
 }
+void InitCircle(CircleClick click, int mau) {
+	int k = getcolor();
+	
+	if (mau == -1) {
+		setcolor(BLACK);
+		circle(click.x, click.y, click.bk);
+		setfillstyle(12, BLACK);
+		floodfill(click.x, click.y, BLACK);
 
+		setcolor(WHITE);
+		circle(click.x, click.y, click.bk);
+
+	}
+	else {
+		//	setcolor(WHITE);
+		circle(click.x, click.y, click.bk);
+		setfillstyle(12, WHITE);
+		floodfill(click.x, click.y, WHITE);
+	}
+
+	setcolor(k);
+	setfillstyle(0, k);	
+}
 void InitQuestion() {
 	fstream file;
 	file.open("Ques.inp", ios::in | ios::binary);
@@ -340,13 +346,20 @@ void InitQuestion() {
 	next.rong = previous.rong = 30;
 	bool isClick;
 	int *choose = new int[realQues];
-	memset(choose, 0, realQues);
+	for(int i=0;i<realQues;i++){
+		choose[i]=-1;
+	}
 
 	clearmouseclick(WM_LBUTTONDOWN);
-	for (int i = 1; i <= realQues;) {
+	int i=1;
+	while(1) {
 		isClick = false;
 		cleardevice();
-		DrawTracNghiem(Infor[i - 1], click[i - 1]);
+		
+		char cc[1000];
+		itoa(choose[i-1],cc,10);
+		outtextxy(0,0,&cc[0]);
+		DrawTracNghiem(Infor[i - 1], click[i - 1],choose[i-1]);
 
 		if (i < realQues) {
 			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
@@ -360,24 +373,25 @@ void InitQuestion() {
 		while (!isClick) {
 			delay(0.00001);
 			if (ismouseclick(WM_LBUTTONDOWN)) {
+				int moux = mousex(), mouy = mousey();
+				clearmouseclick(WM_LBUTTONDOWN);
 				//outtextxy(mousex(), mousey(), "x");
-				if (i<realQues&&IsClickRec(next, mousex(), mousey())) {
+				if (i<realQues&&IsClickRec(next, moux, mouy)) {
 					isClick = true;
 					i++;
 				}
-				else if (i>1 && IsClickRec(previous, mousex(), mousey())) {
+				else if (i>1 && IsClickRec(previous, moux, mouy)) {
 					isClick = true;
 					i--;
 				}
 				for (int j = 0; j < 4; j++) {
-					if (IsClickCircle(click[i - 1][j], mousex(), mousey())) {
-						if (choose[i] != 0) {
-							circle(click[i - 1][choose[i] - 1].x, click[i - 1][choose[i] - 1].y, click[i - 1][choose[i] - 1].bk);
-							choose[i] = 0;
-						}
-						choose[i] = j + 1;
-						outtextxy(click[i - 1][j].x, click[i - 1][j].y, "~");
-						break;
+					if (IsClickCircle(click[i - 1][j], moux, mouy)) {
+							InitCircle(click[i - 1][j], 1);
+							choose[i-1] = j+1;
+					}
+					else {
+						InitCircle(click[i - 1][j], -1);
+						//choose[i] = 0;
 					}
 				}
 			}
@@ -385,7 +399,7 @@ void InitQuestion() {
 		clearmouseclick(WM_LBUTTONDOWN);
 	}
 }
-void DrawTracNghiem(QuesAndAns Infor, CircleClick *click) {
+void DrawTracNghiem(QuesAndAns Infor, CircleClick *click,int type) {
 	const int disToTop = 100;
 	Login cauhoi, traloi[4];
 	//CircleClick click[4];
@@ -417,7 +431,17 @@ void DrawTracNghiem(QuesAndAns Infor, CircleClick *click) {
 		click[i - 1].bk = 10;
 		click[i - 1].y = tamY;
 		click[i - 1].x = cauhoi.left - 30;
-		circle(click[i - 1].x, click[i - 1].y, click[i - 1].bk);
+		
+		//circle(click[i - 1].x, click[i - 1].y, click[i - 1].bk);
+		
+	}
+	for (int i = 1; i <= 4; i++) {
+		if (type != i){
+		 InitCircle(click[i - 1], -1);
+		}
+		else{
+		 InitCircle(click[i - 1], 1);
+		}
 	}
 
 }
