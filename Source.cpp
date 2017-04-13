@@ -363,9 +363,18 @@ void InitQuestion() {
 	for(int i=0;i<realQues;i++){
 		char c[100];
 		itoa(i+1,c,10);
-		strcat(c,".  ");
+		strcat(c,"./  ");
 		strcat(c,Infor[i].cauhoi);
 		strcpy(Infor[i].cauhoi,c);
+		for(int j=0;j<4;j++){
+			for(int k=strlen(Infor[i].traloi[j])+3;k>=3;k--){
+				Infor[i].traloi[j][k]=Infor[i].traloi[j][k-3];
+			}
+			Infor[i].traloi[j][0]=j+'A';
+			Infor[i].traloi[j][1]='.';
+			Infor[i].traloi[j][2]=' ';
+			
+		}
 	}
 	Login next, previous ,soCau,clock;
 	next.dai = previous.dai = 90;
