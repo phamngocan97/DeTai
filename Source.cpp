@@ -59,6 +59,7 @@ void Swap(char *s1, char *s2);
 void BFS(int x, int y, int x1, int y1, int R);
 void InitRec(Login &log, int tamX, int tamY);
 void InitCircle(CircleClick click, int mau);
+void InitSoCau(Login &soCau,Login clock,int cauDaLam,int realQues);
 void DrawLogin(Login &login, Login &id, Login &pass);
 bool IsClickRec(Login log, int x, int y);
 bool IsClickCircle(CircleClick click, int x, int y);
@@ -118,18 +119,21 @@ void DrawLogin(Login &login, Login &id, Login &pass) {
 	outtextxy(login.left + 10, id.top + 15, "Tai Khoan");
 	outtextxy(login.left + 10, pass.top + 15, "Mat Khau");
 }
+
 bool IsClickRec(Login log, int x, int y) {
 	if (x <= log.right&&x >= log.left) {
 		if (y <= log.bottom&&y >= log.top) return true;
 	}
 	return false;
 }
+
 bool IsClickCircle(CircleClick click, int x, int y) {
 	if (((x - click.x)*(x - click.x) + (y - click.y)*(y - click.y)) <= click.bk*click.bk) {
 		return true;
 	}
 	return false;
 }
+
 void DangNhap(Login login, Login id, Login pass) {
 	bool signIn = false;
 	string tk = "", mk = "";
@@ -237,12 +241,14 @@ void DangNhap(Login login, Login id, Login pass) {
 	}
 
 }
+
 int TestId(string id, string pass) {
 	if (id == "GV"&& pass == "GV") {
 		return 1;
 	}
 	return 0;
 }
+
 void InitRec(Login &log, int tamX, int tamY) {
 
 	log.left = tamX - log.dai / 2;
@@ -252,6 +258,7 @@ void InitRec(Login &log, int tamX, int tamY) {
 	rectangle(log.left, log.top, log.right, log.bottom);
 
 }
+
 void InitCircle(CircleClick click, int mau) {
 	int k = getcolor();
 	
@@ -275,6 +282,18 @@ void InitCircle(CircleClick click, int mau) {
 	setcolor(k);
 	setfillstyle(0, k);	
 }
+
+void InitSoCau(Login &soCau,Login clock,int cauDaLam,int realQues){
+	InitRec(soCau,getmaxx()-30-soCau.dai/2,clock.bottom+soCau.rong/2+10+soCau.rong/2);
+	char temp[1000],sumCau[1000];
+	itoa(realQues,sumCau,10);
+	temp[0]='/';
+	strcat(temp,sumCau);
+	outtextxy(soCau.right-soCau.dai/2,soCau.top+soCau.rong/2,&temp[0]);
+	itoa(cauDaLam,temp,10);
+	outtextxy(soCau.left+30,soCau.top+soCau.rong/2,&temp[0]);
+}
+
 void InitQuestion() {
 	fstream file;
 	file.open("Ques.inp", ios::in | ios::binary);
@@ -340,10 +359,21 @@ void InitQuestion() {
 
 		Infor[i - 1].dapan = ans[numQues - i];
 	}
-
-	Login next, previous;
+	
+	for(int i=0;i<realQues;i++){
+		char c[100];
+		itoa(i+1,c,10);
+		strcat(c,".  ");
+		strcat(c,Infor[i].cauhoi);
+		strcpy(Infor[i].cauhoi,c);
+	}
+	Login next, previous ,soCau,clock;
 	next.dai = previous.dai = 90;
 	next.rong = previous.rong = 30;
+	soCau.dai=100;
+	soCau.rong=60;
+	clock.dai=100;
+	clock.rong=50;
 	bool isClick;
 	int *choose = new int[realQues];
 	for(int i=0;i<realQues;i++){
@@ -351,15 +381,15 @@ void InitQuestion() {
 	}
 
 	clearmouseclick(WM_LBUTTONDOWN);
-	int i=1;
+	int i=1,cauDaLam=0;
 	while(1) {
 		isClick = false;
 		cleardevice();
 		
-		char cc[1000];
-		itoa(choose[i-1],cc,10);
-		outtextxy(0,0,&cc[0]);
 		DrawTracNghiem(Infor[i - 1], click[i - 1],choose[i-1]);
+		
+		InitRec(clock,getmaxx()-30-clock.dai/2,30+clock.rong/2);
+		InitSoCau(soCau,clock,cauDaLam,realQues);
 
 		if (i < realQues) {
 			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
@@ -370,30 +400,47 @@ void InitQuestion() {
 			outtextxy(previous.left + 20, previous.top + 5, "PREV");
 		}
 
-		while (!isClick) {
+		while (1) {
 			delay(0.00001);
 			if (ismouseclick(WM_LBUTTONDOWN)) {
 				int moux = mousex(), mouy = mousey();
 				clearmouseclick(WM_LBUTTONDOWN);
 				//outtextxy(mousex(), mousey(), "x");
 				if (i<realQues&&IsClickRec(next, moux, mouy)) {
-					isClick = true;
+					//isClick = true;
 					i++;
+					break;
 				}
 				else if (i>1 && IsClickRec(previous, moux, mouy)) {
-					isClick = true;
+				//	isClick = true;
 					i--;
+					break;
 				}
-				for (int j = 0; j < 4; j++) {
+				
+				bool chon=false;
+				for(int j=0;j<4;j++){
 					if (IsClickCircle(click[i - 1][j], moux, mouy)) {
+						chon=true;
+						break;
+					}
+				}
+				
+				for (int j = 0;chon && j < 4; j++) {
+					if (IsClickCircle(click[i - 1][j], moux, mouy)) {
+							if(choose[i-1]==-1){
+								cauDaLam++;
+								InitSoCau(soCau,clock,cauDaLam,realQues);
+							}
 							InitCircle(click[i - 1][j], 1);
 							choose[i-1] = j+1;
+							
 					}
 					else {
 						InitCircle(click[i - 1][j], -1);
 						//choose[i] = 0;
 					}
 				}
+				
 			}
 		}
 		clearmouseclick(WM_LBUTTONDOWN);
