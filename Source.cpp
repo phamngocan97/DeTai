@@ -1,6 +1,7 @@
 
 #include<bits/stdc++.h>
 #include"winbgim.h"
+#include"Infor.h"
 
 using namespace std;
 
@@ -321,6 +322,7 @@ void InitCircle(CircleClick click, int mau) {
 	setcolor(k);
 	setfillstyle(0, k);	
 }
+
 
 void InitSoCau(Login &soCau,Login clock,int cauDaLam,int realQues){
 	InitRec(soCau,getmaxx()-30-soCau.dai/2,clock.bottom+soCau.rong/2+10+soCau.rong/2);
