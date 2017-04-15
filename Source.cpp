@@ -2,6 +2,10 @@
 #include<bits/stdc++.h>
 #include"winbgim.h"
 
+using namespace std;
+
+typedef long long ll;
+
 enum{
 	BLACK = 0,
   BLUE = 1,
@@ -20,13 +24,28 @@ enum{
  YELLOW = 14,
  WHITE = 15
 };
-using namespace std;
 
-typedef long long ll;
 enum {
+/*	int c;
+	while (1) {
+		c = _getch();
+		if (!isprint(c)) {// control key have 2 bytes
+			c = _getch();
+			cout << c << endl;
+			//cout << "Control\n";
+		}
+		else { char key has 1 byte
+			cout << "NO\n";
+		}
+	}
+	*/
 	ENTER = 13,
 	BACKSPACE = 8,
 	TAB = 9,
+	LEFT = 75,
+	RIGHT = 77,
+	UP = 72,
+	DOWN =80,
 };
 
 class Login {
@@ -135,10 +154,11 @@ bool IsClickCircle(CircleClick click, int x, int y) {
 }
 
 void DangNhap(Login login, Login id, Login pass) {
-	bool signIn = false;
+	bool signIn = false,taikhoan=false,matkhau=false;
 	string tk = "", mk = "";
 	int vtriIdx, vtriIdy, vtriPassx, vtriPassy;
 	int disId, disPass;
+	int moux=0,mouy=0;
 	disId = 15;
 	disPass = 5;
 
@@ -150,17 +170,27 @@ void DangNhap(Login login, Login id, Login pass) {
 	while (!signIn) {
 		delay(0.00001);
 		if (ismouseclick(WM_LBUTTONDOWN)) {
-
-			if (IsClickRec(id, mousex(), mousey())) {
+			moux=mousex(),mouy=mousey();
+			clearmouseclick(WM_LBUTTONDOWN);
+		}
+			if (taikhoan || IsClickRec(id, moux, mouy)) {
+				taikhoan=true;
+				matkhau=false;
 				char c;
 				bool flag = false;
 				bool outId = false;
 				while (!kbhit()) {
-					if (IsClickRec(pass, mousex(), mousey())) {
-						outId = true;
-						break;
+					if(ismouseclick(WM_LBUTTONDOWN)){
+						int xx,yy;
+						xx=mousex(),yy=mousey();
+						if(IsClickRec(pass,xx,yy)){
+							moux=xx;
+							mouy=yy;
+							outId=true;
+							break;
+						}
+						clearmouseclick(WM_LBUTTONDOWN)	;
 					}
-
 					if (flag) outtextxy(vtriIdx, vtriIdy, "|");
 					else outtextxy(vtriIdx, vtriIdy, " ");
 					flag = !flag;
@@ -193,14 +223,23 @@ void DangNhap(Login login, Login id, Login pass) {
 					}
 				}
 			}
-			if (IsClickRec(pass, mousex(), mousey())) {
+			if (matkhau || IsClickRec(pass, moux, mouy) ){
+				taikhoan=false;
+				matkhau=true;
 				char c;
 				bool flag = false;
 				bool outPass = false;
 				while (!kbhit()) {
-					if (IsClickRec(id, mousex(), mousey())) {
-						outPass = true;
-						break;
+					if(ismouseclick(WM_LBUTTONDOWN)){
+						int xx,yy;
+						xx=mousex(),yy=mousey();
+						if(IsClickRec(id,xx,yy)){
+							moux=xx;
+							mouy=yy;
+							outPass=true;
+							break;
+						}
+						clearmouseclick(WM_LBUTTONDOWN);
 					}
 					if (flag) outtextxy(vtriPassx, vtriPassy, "|");
 					else outtextxy(vtriPassx, vtriPassy, " ");
@@ -237,7 +276,7 @@ void DangNhap(Login login, Login id, Login pass) {
 					}
 				}
 			}
-		}
+		
 	}
 
 }
