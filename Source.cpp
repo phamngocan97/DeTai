@@ -83,11 +83,13 @@ void InitSoCau(Login &soCau,Login clock,int cauDaLam,int realQues);
 void DrawLogin(Login &login, Login &id, Login &pass);
 bool IsClickRec(Login log, int x, int y);
 bool IsClickCircle(CircleClick click, int x, int y);
-void DangNhap(Login login, Login id, Login pass);
+int DangNhap(Login login, Login id, Login pass);
 int TestId(string id, string pass);
 void InitQuestion();
 void DrawTracNghiem(QuesAndAns Infor, CircleClick *click,int type);
 void Write(char *s, int x, int y, int dai);
+
+void WindowGV( MonHoc *mh, DSDiemThi *dsDiem,DSSV *dssv,Lop *lop);
 int main() {
 
 	int bg = 0, bm = 0;
@@ -95,10 +97,19 @@ int main() {
 	initwindow(1200, 550);
 	//------------------------------------------------------------//
 
+	MonHoc mh[30];
+	Lop lop[30];
+	DSSV *dssv=new DSSV();
+	DSDiemThi *dsdiem=new DSDiemThi();
+
 	Login login, id, pass;
+	int typeSign;
 
 	DrawLogin(login, id, pass);
-	DangNhap(login, id, pass);
+	typeSign = DangNhap(login, id, pass);
+	if(typeSign==1){
+		WindowGV(mh,dsdiem,dssv,lop);
+	}
 
 	cleardevice();
 	circle(getmaxx() / 2, getmaxy() / 2, 50);
@@ -154,14 +165,15 @@ bool IsClickCircle(CircleClick click, int x, int y) {
 	return false;
 }
 
-void DangNhap(Login login, Login id, Login pass) {
+int DangNhap(Login login, Login id, Login pass) {
+	int typeSign;
 	bool signIn = false,taikhoan=false,matkhau=false;
 	string tk = "", mk = "";
 	int vtriIdx, vtriIdy, vtriPassx, vtriPassy;
 	int disId, disPass;
 	int moux=0,mouy=0;
 	disId = 15;
-	disPass = 5;
+	disPass = 8;
 
 	vtriIdx = id.left + 1;
 	vtriIdy = id.top + 5;
@@ -202,8 +214,9 @@ void DangNhap(Login login, Login id, Login pass) {
 				if (!outId) {
 					c = getch();
 					if (c == ENTER) {
-						if (TestId(tk, mk)) {
-							signIn = true;
+						typeSign=TestId(tk,mk);
+						if (typeSign!=0) {
+							signIn = true;							
 							break;
 						}
 						else {
@@ -252,7 +265,8 @@ void DangNhap(Login login, Login id, Login pass) {
 				if (!outPass) {
 					c = getch();
 					if (c == ENTER) {
-						if (TestId(tk, mk)) {
+						typeSign=TestId(tk,mk);
+						if (typeSign!=0) {
 							signIn = true;
 							break;
 						}
@@ -265,7 +279,7 @@ void DangNhap(Login login, Login id, Login pass) {
 						//mk.pop_back();
 						mk.erase(mk.size() - 1);
 						vtriPassx -= disPass;
-						outtextxy(vtriPassx, vtriPassy, "   ");
+						outtextxy(vtriPassx, vtriPassy, "    ");
 					}
 					else {
 						if (c == BACKSPACE) continue;
@@ -280,7 +294,9 @@ void DangNhap(Login login, Login id, Login pass) {
 		
 	}
 
+	return typeSign;
 }
+
 
 int TestId(string id, string pass) {
 	if (id == "GV"&& pass == "GV") {
@@ -623,4 +639,132 @@ void Swap(char *s1, char *s2) {
 	strcpy(t, s1);
 	strcpy(s1, s2);
 	strcpy(s2, t);
+}
+
+void WindowGV(MonHoc *mh, DSDiemThi *dsDiem,DSSV *dssv,Lop *lop){
+	
+	cleardevice();
+	Login nhapLop;
+	Login choose,inDsLop,nhapSv,NhapMon;
+	Login tha;
+	int tamX;
+	
+	string currentnhap="";
+	const string inDs="In danh sach";
+	const string addSv="Them sinh vien";
+	const string addMh="Them mon hoc";
+	const string addCauHoi="Them cau hoi";
+	
+	nhapLop.dai=220;
+	nhapLop.rong=60;
+	
+	choose.dai=inDsLop.dai=nhapSv.dai=NhapMon.dai=200;
+	choose.rong=80;
+	inDsLop.rong=nhapSv.rong=NhapMon.rong=50;
+	
+	//tha.dai=30;
+	//tha.rong=choose.rong;
+//-----------------------------------------------------------------------------------	
+	
+	
+	tamX=30+choose.dai/2;
+	InitRec(nhapLop,tamX,nhapLop.rong/2+10);	
+	InitRec(choose,tamX,nhapLop.bottom+60);	
+	//InitRec(tha,choose.right+tha.dai/2,choose.top+tha.rong/2);
+	int dis=inDsLop.rong/2;
+	int tamY=choose.bottom+20;
+	tamY+=dis;				
+	InitRec(inDsLop,tamX,tamY);
+	outtextxy(inDsLop.left+20,inDsLop.top+10,&inDs[0]);
+	
+			
+	tamY=dis+inDsLop.bottom;
+	InitRec(nhapSv,tamX,tamY);
+	outtextxy(nhapSv.left+20,nhapSv.top+10,&addMh[0]);
+			
+	tamY=dis+nhapSv.bottom;
+	InitRec(NhapMon,tamX,tamY);
+	outtextxy(NhapMon.left+20,NhapMon.top+10,&addSv[0]);
+//------------------------------------------------------------------
+	
+	int moux,mouy;
+	int indexXNhap=nhapLop.left+10;
+	int indexYNhap=nhapLop.top+nhapLop.rong/2;
+	int disChar=15;
+	bool nhap=false,clickTha=false;
+	char c;
+
+	while(1){
+		delay(0.000001);
+		if(ismouseclick(WM_LBUTTONDOWN)){
+			moux=mousex();
+			mouy=mousey();
+			clearmouseclick(WM_LBUTTONDOWN);
+		}
+		if(nhap || IsClickRec(nhapLop,moux,mouy)){
+			bool flag=false,out=false;
+			while (!kbhit()) {			
+				if(ismouseclick(WM_LBUTTONDOWN)){
+						int xx,yy;
+						xx=mousex(),yy=mousey();
+						if(!IsClickRec(nhapLop,xx,yy)){
+							out=true;
+							moux=mousex(),mouy=mousey();
+							nhap=false;
+							break;
+						}
+						clearmouseclick(WM_LBUTTONDOWN)	;
+					}
+				
+				if (flag) outtextxy(indexXNhap, indexYNhap, "|");
+				else outtextxy(indexXNhap, indexYNhap, " ");
+				
+				flag = !flag;
+				delay(400);
+			}
+			
+			outtextxy(indexXNhap, indexYNhap, " ");
+			c=getch();
+			if(out) continue;
+			if ((ll)currentnhap.size()>0 && c == BACKSPACE) {
+				//mk.pop_back();
+				currentnhap.erase(currentnhap.size() - 1);
+				indexXNhap -= disChar;
+				outtextxy(indexXNhap, indexYNhap, "      ");
+			}
+			else {
+				if(c==BACKSPACE) continue;
+				currentnhap.push_back(c);
+				outtextxy(indexXNhap,indexYNhap,&currentnhap[currentnhap.size()-1]);
+				indexXNhap+=disChar;
+			}
+		}
+		else{
+			
+			int chooseX=choose.left+10,chooseY=choose.top+20;
+			string xoa="                                ";
+			if(IsClickRec(inDsLop,moux,mouy)){
+				outtextxy(0,10,"  ");
+				outtextxy(0,10,"1");
+				outtextxy(chooseX,chooseY,&xoa[0]);
+				outtextxy(chooseX,chooseY,&inDs[0]);
+			}
+			else if(IsClickRec(nhapSv,moux,mouy)){
+				outtextxy(0,10,"  ");
+				outtextxy(0,10,"2");
+				outtextxy(chooseX,chooseY,&xoa[0]);
+				outtextxy(chooseX,chooseY,&addSv[0]);
+			}
+			else if(IsClickRec(NhapMon,moux,mouy)){
+				outtextxy(0,10,"  ");
+				outtextxy(0,10,"3");
+				outtextxy(chooseX,chooseY,&xoa[0]);
+				outtextxy(chooseX,chooseY,&addMh[0]);
+			}
+			moux=-1,mouy=-1;
+		}
+		
+		
+	}
+	
 }
