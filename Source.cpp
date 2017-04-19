@@ -1,4 +1,3 @@
-#include<bits/stdc++.h>
 //#include"graphics.h"
 #include"winbgim.h"
 #include"Infor.h"
@@ -92,7 +91,7 @@ void DrawTracNghiem(QuesAndAns Infor, CircleClick *click,int type);
 void Write(char *s, int x, int y, int dai);
 
 void ProcessGV(string lop,string malop,int type,int toadoX);
-void HieuUngNhap(Login log,string &s,int &indexX,int &indexY,int &moux,int &mouy,int disChar);
+void HieuUngNhap(Login log,string &s,int &indexX,int &indexY,int &moux,int &mouy,int disChar, int);
 void WindowGV();
 
 Infor *inf;
@@ -109,7 +108,6 @@ int main() {
 
 	DrawLogin(login, id, pass);
 	typeSign = DangNhap(login, id, pass);
-	
 
 	if(typeSign==1){
 		WindowGV();
@@ -156,6 +154,7 @@ void DrawLogin(Login &login, Login &id, Login &pass) {
 }
 
 int DangNhap(Login login, Login id, Login pass) {
+	int maxId=12,maxPass=24;
 	int typeSign;
 	bool signIn = false,taikhoan=false,matkhau=false;
 	string tk = "", mk = "";
@@ -220,7 +219,7 @@ int DangNhap(Login login, Login id, Login pass) {
 						outtextxy(vtriIdx, vtriIdy, "    ");
 					}
 					else {
-						if (c == BACKSPACE) continue;
+						if (c == BACKSPACE || (ll)tk.size()>=maxId) continue;
 						tk = tk + c;
 						outtextxy(vtriIdx, vtriIdy, &tk[tk.size() - 1]);
 						vtriIdx += disId;
@@ -272,7 +271,7 @@ int DangNhap(Login login, Login id, Login pass) {
 						outtextxy(vtriPassx, vtriPassy, "    ");
 					}
 					else {
-						if (c == BACKSPACE) continue;
+						if (c == BACKSPACE || (ll)mk.size()>=maxPass) continue;
 						if (iscntrl(c)) continue;
 
 						outtextxy(vtriPassx, vtriPassy, "*");
@@ -380,7 +379,7 @@ void InitQuestion() {
 
 	CircleClick **click = new CircleClick*[numQues];
 	QuesAndAns Infor[20];
-	//string *ques = new string[numQues];
+	
 	char **ques = new char*[numQues];
 	for (int i = 0; i < numQues; i++) {
 		ques[i] = new char[1000];
@@ -663,7 +662,7 @@ void Swap(char *s1, char *s2) {
 	strcpy(s2, t);
 }
 
-void HieuUngNhap(Login log,string &s,int &indexX,int &indexY,int &moux,int &mouy,int disChar){
+void HieuUngNhap(Login log,string &s,int &indexX,int &indexY,int &moux,int &mouy,int disChar,int maxS){
 		char c;
 		bool flag=false,out=false;
 			while (!kbhit()) {			
@@ -695,7 +694,7 @@ void HieuUngNhap(Login log,string &s,int &indexX,int &indexY,int &moux,int &mouy
 				outtextxy(indexX, indexY, "      ");
 			}
 			else {
-				if(c==BACKSPACE) return;
+				if(c==BACKSPACE || (ll)s.size()>=maxS) return;
 				s.push_back(c);
 				outtextxy(indexX,indexY,&s[s.size()-1]);
 				indexX+=disChar;
@@ -704,19 +703,25 @@ void HieuUngNhap(Login log,string &s,int &indexX,int &indexY,int &moux,int &mouy
 }
 
 void ProcessGV(string lop,string malop,int type,int toadoX){
-	Login xoa;
-	//xoa.dai=getmaxx()-toadoX;
-	//xoa.rong=getmaxy();
-	xoa.dai=xoa.rong=50;
-	InitRec(xoa,toadoX+getmaxx()/2,getmaxy()/2,WHITE);
+	
+  void *arrow;
+  unsigned int size;	
+
+   
+   
+   size = imagesize(0, 0, getmaxx(), getmaxy());//trai-tren: 0-0....phai-duoi: maxx,maxy
+   arrow = malloc(size);
+   getimage(0, 0, getmaxx(), getmaxy(),arrow);
+   putimage(0,0,arrow,COPY_PUT);
 	
 	int Nmalop;	
 	Nmalop=atoi(malop.c_str());
 	
+	bool Trai=true;
 	string Sma,Sho,Sten,Spassword;
 	Login ma,ho,ten,password,apply,cancel;
-	
-	
+	CircleClick nam,nu;
+
 	ma.rong=ho.rong=ten.rong=password.rong=40;
 	ma.dai=300;
 	ho.dai=100;
@@ -727,6 +732,7 @@ void ProcessGV(string lop,string malop,int type,int toadoX){
 	apply.rong=cancel.rong=30;
 	
 	int tamX=toadoX+80;
+	
 	InitRec(ma,tamX,ma.rong/2+30);
 	InitRec(ho,ma.left+ho.dai/2,ma.bottom+50);
 	InitRec(ten,tamX,ho.bottom+50);
@@ -743,6 +749,18 @@ void ProcessGV(string lop,string malop,int type,int toadoX){
 	InitRec(apply,cancel.left-50-apply.rong/2,getmaxy()-apply.rong/2-50);
 	outtextxy(apply.left+20,apply.top+5,"Apply");
 	
+	nam.bk=nu.bk=10;
+	nam.y=nu.y=password.bottom+30;
+	nam.x=password.left+40;
+	nu.x=nam.x+nam.bk+70;
+	
+	outtextxy(nam.x-nam.bk-40,nam.y-15,"Nam");
+	outtextxy(nu.x-nu.bk-30,nu.y-15,"Nu");
+	
+	InitCircle(nam,WHITE);
+	InitCircle(nu,-1);
+	
+
 	int moux=-1,mouy=-1;
 	int indexXMa,indexXHo,indexXTen,indexXPass;
 	int indexYMa,indexYHo,indexYTen,indexYPass;
@@ -756,6 +774,9 @@ void ProcessGV(string lop,string malop,int type,int toadoX){
 	indexYTen=ten.top+10;
 	indexYPass=password.top+10;
 	
+	
+	
+	
 	char c;	
 	if(type==2);
 	while(1){
@@ -765,19 +786,33 @@ void ProcessGV(string lop,string malop,int type,int toadoX){
 			clearmouseclick(WM_LBUTTONDOWN);
 		}
 		if(IsClickRec(ma,moux,mouy)){
-			HieuUngNhap(ma,Sma,indexXMa,indexYMa,moux,mouy,15);
+			HieuUngNhap(ma,Sma,indexXMa,indexYMa,moux,mouy,15,18);
 		}
 		else if(IsClickRec(ho,moux,mouy)){
-			HieuUngNhap(ho,Sho,indexXHo,indexYHo,moux,mouy,15);
+			HieuUngNhap(ho,Sho,indexXHo,indexYHo,moux,mouy,15,6);
 		}
 		else if(IsClickRec(ten,moux,mouy)){
-			HieuUngNhap(ten,Sten,indexXTen,indexYTen,moux,mouy,15);
+			HieuUngNhap(ten,Sten,indexXTen,indexYTen,moux,mouy,15,18);
 		}
 		else if(IsClickRec(password,moux,mouy)){
-			HieuUngNhap(password,Spassword,indexXPass,indexYPass,moux,mouy,15);
+			HieuUngNhap(password,Spassword,indexXPass,indexYPass,moux,mouy,15,18);
+		}
+		else if(IsClickCircle(nam,moux,mouy)||IsClickCircle(nu,moux,mouy)){
+				if(IsClickCircle(nam,moux,mouy)||Trai==false){
+					InitCircle(nam,WHITE);
+					InitCircle(nu,-1);
+					Trai=!Trai;
+				}
+				else if(IsClickCircle(nu,moux,mouy)||Trai==true){
+					InitCircle(nu,WHITE);
+					InitCircle(nam,-1);
+					Trai=!Trai;
+				}
+				moux=-1,mouy=-1;
 		}
 		else if(IsClickRec(cancel,moux,mouy)){
-			InitRec(xoa,toadoX+getmaxx()/2,getmaxy()/2,BLACK);			
+
+			putimage(0,0,arrow,COPY_PUT);
 			return;
 		}
 		//cc
@@ -832,6 +867,7 @@ void WindowGV(){
 	outtextxy(NhapMon.left+20,NhapMon.top+10,&addMh[0]);
 //------------------------------------------------------------------
 	
+	int maxS=13;
 	int moux,mouy;
 	int indexXNhap=nhapLop.left+10;
 	int indexYNhap=nhapLop.top+nhapLop.rong/2;
@@ -878,7 +914,7 @@ void WindowGV(){
 				outtextxy(indexXNhap, indexYNhap, "      ");
 			}
 			else {
-				if(c==BACKSPACE) continue;
+				if(c==BACKSPACE||(ll)currentnhap.size()>=maxS) continue;
 				currentnhap.push_back(c);
 				outtextxy(indexXNhap,indexYNhap,&currentnhap[currentnhap.size()-1]);
 				indexXNhap+=disChar;
