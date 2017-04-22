@@ -70,15 +70,15 @@ public:
 	SinhVien *sv;
 	DSSV *next;
 };
+
 class Lop {
 public:
-	Lop(){}
+	Lop(){};
 	Lop(string ma,string ten){
 		this->maLop=ma;
 		this->tenLop=ten;
 	}
-	string maLop;
+	string maLop,tenLop;
 	int soSv;
-	string tenLop;
 	DSSV *dssv;
 };
