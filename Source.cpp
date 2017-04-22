@@ -102,7 +102,8 @@ int main() {
 	initwindow(1200, 550);
 	//------------------------------------------------------------//
 
-
+	inf=new Infor(2,2);
+	
 	Login login, id, pass;
 	int typeSign;
 
@@ -702,23 +703,22 @@ void HieuUngNhap(Login log,string &s,int &indexX,int &indexY,int &moux,int &mouy
 	
 }
 
-void ProcessGV(string lop,string malop,int type,int toadoX){
+void ProcessGV(string tenlop,string malop,int type,int toadoX){
 	
   void *arrow;
-  unsigned int size;	
-
-   
+  unsigned int size;	   
    
    size = imagesize(0, 0, getmaxx(), getmaxy());//trai-tren: 0-0....phai-duoi: maxx,maxy
    arrow = malloc(size);
    getimage(0, 0, getmaxx(), getmaxy(),arrow);
-   putimage(0,0,arrow,COPY_PUT);
-	
-	int Nmalop;	
-	Nmalop=atoi(malop.c_str());
+   //putimage(0,0,arrow,COPY_PUT);
 	
 	bool Trai=true;
-	string Sma,Sho,Sten,Spassword;
+	string Sma,Sho,Sten,Spassword,Smalop,Stenlop;
+	
+	Smalop=malop;
+	Stenlop=tenlop;
+	
 	Login ma,ho,ten,password,apply,cancel;
 	CircleClick nam,nu;
 
@@ -809,6 +809,13 @@ void ProcessGV(string lop,string malop,int type,int toadoX){
 					Trai=!Trai;
 				}
 				moux=-1,mouy=-1;
+		}
+		else if(IsClickRec(apply,moux,mouy)){
+			*inf->sv= SinhVien(Sma,Sho,Sten,Spassword,Trai);
+			*inf->lopTemp=Lop(malop,tenlop);
+			
+			int kkk=inf->AddSv(inf->sv,inf->lopTemp);
+			moux=-1,mouy=-1;
 		}
 		else if(IsClickRec(cancel,moux,mouy)){
 
