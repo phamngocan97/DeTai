@@ -1,5 +1,5 @@
-#include "Infor.h"
 #include<bits/stdc++.h>
+#include "Infor.h"
 
 using namespace std;
 Infor::Infor()
@@ -13,17 +13,12 @@ Infor::Infor(int SoMonHoc, int SoLop) {
 		lop[i] = new Lop();
 		lop[i]->soSv = 0;
 	}
+	lopTemp=new Lop();
 	sv = new SinhVien();
 	_PmonHoc = 0;
 	_Plop = 0;
 	_SoMonHoc = SoMonHoc;
 	_SoLop = SoLop;
-}
-
-Infor::~Infor()
-{
-	delete[] monHoc;
-	delete[]lop;
 }
 
 int Infor::TestLop(string malop) {
@@ -80,3 +75,9 @@ bool Infor::TestSV(Lop *lop, string mssv) {
 	return true;
 }
 
+
+Infor::~Infor()
+{
+	delete[] monHoc;
+	delete[]lop;
+}
