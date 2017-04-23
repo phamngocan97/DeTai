@@ -21,9 +21,11 @@ void Ghi();
 void Doc();
 void PerformDoc();
 void PerformGhi();
+void PerformDoc2();
 int main() {
 	PerformGhi();
-	PerformDoc();
+	//PerformDoc();
+	PerformDoc2();
 	//Ghi();
 	//system("cls");
 	//Doc();
@@ -44,13 +46,6 @@ int main() {
 
 	}
 	t = ds;
-	fstream ghi;
-	string kk = "sdfg";
-	//char *c=new char[kk.length()+1];
-	char c[100];
-	strcpy(c, kk.c_str());
-	
-	ghi.close();
 	return 0;
 }
 void PerformGhi() {
@@ -89,6 +84,43 @@ void PerformGhi() {
 	ghi.close();
 
 
+}
+void PerformDoc2() {
+	fstream file;
+	file.open("DSSVbin.inp", ios::in | ios::binary);
+	int n;
+	file.read((char*)&n, sizeof(int));
+	string *malop = new string[n];
+	string *ho = new string[n];
+	string *ten = new string[n];
+	char c[100];
+	string ss;
+	
+	for (int i = 0; i<n; i++) {
+		int size;
+		malop[i].resize(100);
+		file.read((char*)&size, sizeof(int));
+		file.read(c, size + 1);
+		malop[i] = c;
+		cout << malop[i] << endl;
+	}
+	for (int i = 0; i<n; i++) {
+		int size;
+		ho[i].resize(100);
+		file.read((char*)&size, sizeof(int));
+		file.read(c, size + 1);
+		ho[i] = c;
+		cout << ho[i] << endl;
+	}
+	for (int i = 0; i<n; i++) {
+		int size;
+		ten[i].resize(100);
+		file.read((char*)&size, sizeof(int));
+		file.read(c, size + 1);
+		ten[i] = c;
+		cout << ten[i] << endl;
+	}
+	file.close();
 }
 void PerformDoc() {
 	fstream doc;
