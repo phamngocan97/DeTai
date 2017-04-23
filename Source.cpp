@@ -96,13 +96,13 @@ void WindowGV();
 
 Infor *inf;
 int main() {
-		
+	inf=new Infor(2,2);	
 	int bg = 0, bm = 0;
 	//initgraph(&bg, &bm, " ");
 	initwindow(1200, 550);
 	//------------------------------------------------------------//
 
-	inf=new Infor(2,2);
+	
 	
 	Login login, id, pass;
 	int typeSign;
@@ -714,11 +714,7 @@ void ProcessGV(string tenlop,string malop,int type,int toadoX){
    //putimage(0,0,arrow,COPY_PUT);
 	
 	bool Trai=true;
-	string Sma,Sho,Sten,Spassword,Smalop,Stenlop;
-	
-	Smalop=malop;
-	Stenlop=tenlop;
-	
+	string Sma,Sho,Sten,Spassword;
 	Login ma,ho,ten,password,apply,cancel;
 	CircleClick nam,nu;
 
@@ -812,10 +808,18 @@ void ProcessGV(string tenlop,string malop,int type,int toadoX){
 		}
 		else if(IsClickRec(apply,moux,mouy)){
 			*inf->sv= SinhVien(Sma,Sho,Sten,Spassword,Trai);
-			*inf->lopTemp=Lop(malop,tenlop);
+			*inf->lopTemp = Lop(malop,tenlop);
+			int isAdd=inf->AddSv(inf->sv,inf->lopTemp);
 			
-			int kkk=inf->AddSv(inf->sv,inf->lopTemp);
-			moux=-1,mouy=-1;
+			outtextxy(password.left+20,password.bottom+60,"                                            ");
+			if(isAdd==1){
+				outtextxy(password.left+20,password.bottom+60,"Them thanh cong");
+			}
+			else{
+				outtextxy(password.left+20,password.bottom+60,"Them that bai");
+			}
+			moux=-1;
+			mouy=-1;
 		}
 		else if(IsClickRec(cancel,moux,mouy)){
 
@@ -827,7 +831,7 @@ void ProcessGV(string tenlop,string malop,int type,int toadoX){
 	
 }
 void WindowGV(){
-	
+
 	cleardevice();
 	Login nhapLop;
 	Login choose,inDsLop,nhapSv,NhapMon;
@@ -881,7 +885,8 @@ void WindowGV(){
 	int disChar=15;
 	bool nhap=false,clickTha=false;
 	char c;
-
+	
+	getimage(0,0,getmaxx(),getmaxy(),screen);
 	while(1){
 		delay(0.000001);
 		if(ismouseclick(WM_LBUTTONDOWN)){
