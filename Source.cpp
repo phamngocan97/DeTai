@@ -112,6 +112,7 @@ int main() {
 	Login login, id, pass;
 	int typeSign;
 
+	//InitQuestion();	
 	LoadDSSV();
 	while(1){
 		cleardevice();
@@ -122,6 +123,7 @@ int main() {
 			WindowGV();
 		}
 		if(typeSign>=0){
+			//cout<<"sdfg";
 			InitQuestion();	
 			inf->UpdateDiem(inf->lop[typeSign]->maLop,currentId,"123",currentDiem);
 		}
@@ -372,14 +374,18 @@ void InitCircle(CircleClick click, int mau) {
 }
 
 int TestId(string id, string pass) {
+	//cout<<id<<endl;
+	//cout<<pass;
 	if (id == "GV"&& pass == "GV") {
 		return -1;
 	}
 	else{
 		bool test=false;
 		for(int i=0;i<inf->GetSoLop();i++){
+			cout<<inf->GetSoLop()<<" ";
 			test=inf->TestSV(inf->lop[i],id);
-			if(test){
+			if(!test){
+			//	cout<<i;
 				return i;	
 			}
 			
@@ -404,7 +410,7 @@ void InitSoCau(Login &soCau,Login clock,int cauDaLam,int realQues){
 void InitQuestion() {
 	fstream file;
 	file.open("Ques.inp", ios::in | ios::binary);
-
+	
 	int numQues, realQues;
 	realQues = 20;
 	file.read((char*)&numQues, sizeof(int));
@@ -568,6 +574,7 @@ void InitQuestion() {
 		if(choose[i]==CauHoi[i].dapan) socaudung++;
 	}
 	currentDiem=(socaudung*10)/((float)realQues);
+	file.close();
 }
 
 void DrawTracNghiem(QuesAndAns CauHoi, CircleClick *click,int type) {
@@ -1072,7 +1079,7 @@ void LoadDSSV(){
 		file.read((char*)&size, sizeof(int));
 		file.read(c, size + 1);
 		masv[i] = c;
-		cout << masv[i] << endl;
+		//cout << masv[i] << endl;
 	}
 	for (int i = 0; i<n; i++) {
 		int size;
@@ -1080,7 +1087,7 @@ void LoadDSSV(){
 		file.read((char*)&size, sizeof(int));
 		file.read(c, size + 1);
 		ho[i] = c;
-		cout << ho[i] << endl;
+	//	cout << ho[i] << endl;
 	}
 	for (int i = 0; i<n; i++) {
 		int size;
@@ -1088,7 +1095,7 @@ void LoadDSSV(){
 		file.read((char*)&size, sizeof(int));
 		file.read(c, size + 1);
 		ten[i] = c;
-		cout << ten[i] << endl;
+	//	cout << ten[i] << endl;
 	}
 	file.close();
 
