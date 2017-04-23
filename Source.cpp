@@ -94,6 +94,8 @@ void ProcessGV(string lop,string malop,int type,int toadoX);
 void HieuUngNhap(Login log,string &s,int &indexX,int &indexY,int &moux,int &mouy,int disChar, int maxS,int type=-1);
 void WindowGV();
 
+void LoadDSSV();
+
 Infor *inf;
 string currentId;
 float currentDiem;
@@ -110,6 +112,7 @@ int main() {
 	Login login, id, pass;
 	int typeSign;
 
+	LoadDSSV();
 	while(1){
 		cleardevice();
 		DrawLogin(login, id, pass);
@@ -1051,4 +1054,48 @@ void WindowGV(){
 	
 	}
 	
+}
+void LoadDSSV(){
+		fstream file;
+	file.open("DSSVbin.inp", ios::in | ios::binary);
+	int n;
+	file.read((char*)&n, sizeof(int));
+	string *masv = new string[n];
+	string *ho = new string[n];
+	string *ten = new string[n];
+	char c[100];
+	string ss;
+	
+	for (int i = 0; i<n; i++) {
+		int size;
+		masv[i].resize(100);
+		file.read((char*)&size, sizeof(int));
+		file.read(c, size + 1);
+		masv[i] = c;
+		cout << masv[i] << endl;
+	}
+	for (int i = 0; i<n; i++) {
+		int size;
+		ho[i].resize(100);
+		file.read((char*)&size, sizeof(int));
+		file.read(c, size + 1);
+		ho[i] = c;
+		cout << ho[i] << endl;
+	}
+	for (int i = 0; i<n; i++) {
+		int size;
+		ten[i].resize(100);
+		file.read((char*)&size, sizeof(int));
+		file.read(c, size + 1);
+		ten[i] = c;
+		cout << ten[i] << endl;
+	}
+	file.close();
+
+
+			for(int i=0;i<n;i++)	{
+				*inf->sv=SinhVien(masv[i],ho[i],ten[i],masv[i],true);
+				*inf->lopTemp=Lop("D15CQCN02-N","CNTT");
+				inf->AddSv(inf->sv,inf->lopTemp);
+			}
 }
