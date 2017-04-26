@@ -100,6 +100,7 @@ Infor *inf;
 string currentId;
 float currentDiem;
 int TIME=-1,SOCAU=-1;
+bool OVERTIME=false;
 int main() {
 	inf=new Infor(2,2);	
 	int bg = 0, bm = 0;
@@ -506,6 +507,7 @@ void InitQuestion() {
 	clearmouseclick(WM_LBUTTONDOWN);
 	int i=1,cauDaLam=0;
 	while(1) {
+		//if(HETGIO) break;
 		isClick = false;
 		cleardevice();
 		
