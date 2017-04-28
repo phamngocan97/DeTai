@@ -15,20 +15,22 @@ public:
 	Infor(int, int);
 	
 
-	MonHoc *monHoc;
+	MonHoc **monHoc;
 	Lop **lop;
 	Lop *lopTemp;
 	SinhVien *sv;
 	
-	int AddSv(SinhVien *sv,Lop *lop);
+	int AddSv(SinhVien *sinhvien,Lop *lop);
+	int AddMh(string ma,string ten);
 	int TestLop(string malop);
 	bool TestSV(Lop *lop, string mssv);
-	
+	int UpdateDiem(string malop,string masv,string mamh,float diem);
+	int GetSoLop();
+	int GetSoMon();
 	~Infor();
 private:
 	int _PmonHoc,_SoMonHoc;
 	int _Plop,_SoLop;
-
 };
 
 
@@ -39,9 +41,9 @@ public:
 };
 class DSDiemThi {
 public:
-	string maMH;
-	int diem;
-	DSDiemThi *next;
+	MonHoc *mh;
+	float diemThi;
+	//DSDiemThi *next;
 };
 class SinhVien {
 public:
@@ -63,14 +65,13 @@ public:
 	string maSV;
 	string Ho,Ten,PassWord;
 	bool Nam;
-	DSDiemThi *diem;
+	DSDiemThi **diem;
 };
 class DSSV {
 public:
 	SinhVien *sv;
 	DSSV *next;
 };
-
 class Lop {
 public:
 	Lop(){};
@@ -78,7 +79,8 @@ public:
 		this->maLop=ma;
 		this->tenLop=ten;
 	}
-	string maLop,tenLop;
+	string maLop;
 	int soSv;
+	string tenLop;
 	DSSV *dssv;
 };
