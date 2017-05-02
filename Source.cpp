@@ -107,7 +107,7 @@ void LoadDSSV();
 Infor *inf;
 string currentId;
 float currentDiem;
-int TIME=-1,SOCAU=-1;
+int TIME=45,SOCAU=20;
 bool OVERTIME=false;
 int main() {
 	inf=new Infor(2,2);	
@@ -133,9 +133,8 @@ int main() {
 		}
 		if(typeSign>=0){
 			//cout<<"sdfg";
-			int numCau=SOCAU==-1?20:SOCAU;
 			InitQuestion(SOCAU);	
-			inf->UpdateDiem(inf->lop[typeSign]->maLop,currentId,"123",currentDiem);
+			inf->UpdateDiem(inf->lop[typeSign]->maLop,currentId,"a",currentDiem);
 		}
 	}
 	
@@ -419,6 +418,11 @@ void InitSoCau(Login &soCau,Login clock,int cauDaLam,int realQues){
 }
 
 void InitQuestion(int realQues) {
+	void *screen;
+	int size=imagesize(0,0,getmaxx(),getmaxy());
+	screen=malloc(size);
+	
+	inf->AddMh("ma","ten");
 	fstream file;
 	file.open("Ques.inp", ios::in | ios::binary);
 	
@@ -500,9 +504,11 @@ void InitQuestion(int realQues) {
 			
 		}
 	}
-	Login next, previous ,soCau,clock;
+	Login next, previous ,soCau,clock,ketThuc;
 	next.dai = previous.dai = 90;
-	next.rong = previous.rong = 30;
+	next.rong = previous.rong =ketThuc.rong= 30;
+	ketThuc.dai=120;
+	
 	soCau.dai=100;
 	soCau.rong=60;
 	clock.dai=100;
@@ -515,9 +521,15 @@ void InitQuestion(int realQues) {
 
 	clearmouseclick(WM_LBUTTONDOWN);
 	int i=1,cauDaLam=0;
+	
+	getimage(0,0,getmaxx(),getmaxy(),screen);
+	InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
+	InitRec(previous, next.left - 50 - previous.rong / 2, getmaxy() - previous.rong - 50);
+	putimage(0,0,screen,COPY_PUT);
+	
 	while(1) {
 		delay(0.00001);
-		//if(HETGIO) break;
+		if(OVERTIME) break;
 		isClick = false;
 		cleardevice();
 		
@@ -534,9 +546,12 @@ void InitQuestion(int realQues) {
 			InitRec(previous, next.left - 50 - previous.rong / 2, getmaxy() - previous.rong - 50);
 			outtextxy(previous.left + 20, previous.top + 5, "PREV");
 		}
-
+		InitRec(ketThuc,40,getmaxy()-ketThuc.rong/2-50);
+		outtextxy(ketThuc.left+40,ketThuc.top+5,"Ket Thuc");
+		
 		while (1) {
 			delay(0.00001);
+			if(OVERTIME) break;
 			if (ismouseclick(WM_LBUTTONDOWN)) {
 				int moux = mousex(), mouy = mousey();
 				clearmouseclick(WM_LBUTTONDOWN);
@@ -551,7 +566,40 @@ void InitQuestion(int realQues) {
 					i--;
 					break;
 				}
-				
+				else if(IsClickRec(ketThuc,moux,mouy)){
+					getimage(0,0,getmaxx(),getmaxy(),screen);
+					Login Big,yes,no;
+					Big = Login(70,230);
+					yes=Login(30,50);
+					no=Login(30,50);
+					
+					
+					InitRec(Big,ketThuc.right+Big.dai/2+30,getmaxy()-30-Big.rong/2);
+					InitRec(yes,Big.left+130,Big.top+50);
+					InitRec(no,yes.right+20+no.dai/2,Big.top+50);
+					outtextxy(Big.left+20,Big.top+5,"Ban co muon ket thuc?");
+					outtextxy(yes.left+10,yes.top+5,"Yes");
+					outtextxy(no.left+10,no.top+5,"No");
+					bool clickNo=false;
+					int  _moux=-1,_mouy=-1;
+					while(1){
+						delay(0.00001);
+						if(ismouseclick(WM_LBUTTONDOWN)){
+							_moux=mousex();
+							_mouy=mousey();
+							clearmouseclick(WM_LBUTTONDOWN);
+						}
+						if(IsClickRec(yes,_moux,_mouy)){
+							OVERTIME=TRUE;
+							break;
+						}
+						else if(IsClickRec(no,_moux,_mouy)){
+							clickNo=true;
+							break;
+						}
+					}
+					if(clickNo) putimage(0,0,screen,COPY_PUT);
+				}
 				bool chon=false;
 				for(int j=0;j<4;j++){
 					if (IsClickCircle(click[i - 1][j], moux, mouy)) {
@@ -757,7 +805,7 @@ void HieuUngNhap(Login log,string &s,int &indexX,int &indexY,int &moux,int &mouy
 			}
 			else {
 				if(c==BACKSPACE || (ll)s.size()>=maxS) return;
-						
+				if(c==ENTER) return;
 				if(!isprint(c)){
 					c=getch();
 					return;
@@ -900,8 +948,18 @@ void ProcessGV(string tenlop,string malop,int type,int toadoX){
 	
 }
 void InDS(string malop,string maMH,int maxInPage,int X){
+	void *arrow;
+   unsigned int size;	      
+   size = imagesize(0, 0, getmaxx(), getmaxy());//trai-tren: 0-0....phai-duoi: maxx,maxy
+   arrow = malloc(size);
+   getimage(0, 0, getmaxx(), getmaxy(),arrow);
+   cleardevice();
+   
+   /////-----------------------------------------------------------------------/
+   //////////////////////
 	int indexLop=inf->TestLop(malop);
 	int sosv=inf->lop[indexLop]->soSv;
+	int indexMH=inf->TestMH(maMH);
 	int index=0;
 	
 	SinhVien **sv=new SinhVien*[sosv];
@@ -923,7 +981,7 @@ void InDS(string malop,string maMH,int maxInPage,int X){
 	while(1) {
 		delay(0.00001);
 		cleardevice();
-		if (index +maxInPage < sosv) {
+		if (index + maxInPage < sosv) {
 			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
 			outtextxy(next.left + 20, next.top + 5, "NEXT");
 		}
@@ -932,14 +990,33 @@ void InDS(string malop,string maMH,int maxInPage,int X){
 			outtextxy(previous.left + 20, previous.top + 5, "PREV");
 		}
 		InitRec(exit,getmaxx()-exit.dai-50,getmaxy()-exit.rong-20);
-		int indexY=30;
-		for(int i=index;i<index+maxInPage;i++){
+		outtextxy(exit.left+10,exit.top+5,"Thoat");
+		int indexY=60;
+		outtextxy(X,indexY-40,"Ma SV");
+		outtextxy(X+200,indexY-40,"Ho");
+		outtextxy(X+400,indexY-40,"Ten");
+		outtextxy(X+630,indexY-40,"Diem");
+		
+		line(0,indexY-10,X+700,indexY-10);		
+
+		line(X+170,0,X+170,getmaxy());
+		line(X+370,0,X+370,getmaxy());
+		
+		line(X+600,0,X+600,getmaxy());
+		line(X+700,0,X+700,getmaxy());
+		
+		char cDiem[10];
+		for(int i=index;i<sosv && i<index+maxInPage;i++){
+		//	cout<<i<<endl;
+			memset(cDiem,0,sizeof cDiem);
+			itoa(sv[i]->diem[indexMH]->diemThi,cDiem,10);
 			
 			outtextxy(X,indexY,&sv[i]->maSV[0]);
-			outtextxy(X+40,indexY,&sv[i]->Ho[0]);
-			outtextxy(X+40,indexY,&sv[i]->Ten[0]);
-			
-			indexY+=15;
+			outtextxy(X+200,indexY,&sv[i]->Ho[0]);
+			outtextxy(X+400,indexY,&sv[i]->Ten[0]);
+			outtextxy(X+630,indexY,cDiem);
+			indexY+=40;
+		//	if(i==sosv-2) cout<<"ccc";
 		}
 		while(1){
 		delay(0.00001);
@@ -947,20 +1024,26 @@ void InDS(string malop,string maMH,int maxInPage,int X){
 				int moux = mousex(), mouy = mousey();
 				clearmouseclick(WM_LBUTTONDOWN);
 				//outtextxy(mousex(), mousey(), "x");
-				if (index<sosv&&IsClickRec(next, moux, mouy)) {
+				if (index + maxInPage<sosv&&IsClickRec(next, moux, mouy)) {
 					//isClick = true;
 					index+=maxInPage;
 					break;
 				}
-				else if (index>1 && IsClickRec(previous, moux, mouy)) {
+				else if (index>=maxInPage && IsClickRec(previous, moux, mouy)) {
 				//	isClick = true;
 					index-=maxInPage;
 					break;
 				}
+				else if(IsClickRec(exit,moux,mouy)){
+					putimage(0,0,arrow,COPY_PUT);
+					return;					
+				}
+				
 	
 			}
 		}
 	}
+
 }
 void WindowGV(){
 	cleardevice();
@@ -1025,7 +1108,7 @@ void WindowGV(){
 //------------------------------------------------------------------
 	
 	int maxS=13;
-	int moux,mouy;
+	int moux =-1,mouy=-1;
 	int indexXMaLop,indexXTenLop;
 	int indexYMaLop,indexYTenLop;
 	indexXMaLop=maLop.left+10;	
@@ -1072,6 +1155,8 @@ void WindowGV(){
 				TIME=atoi((char*)sophut.c_str());
 		}
 		else if(IsClickRec(exit,moux,mouy)){
+			return ;
+			/*
 			if(TIME==-1||SOCAU==-1){
 				outtextxy(exit.left-15,exit.top-25,"Nhap Thoi gian/So cau");
 			}
@@ -1079,6 +1164,7 @@ void WindowGV(){
 				return;
 			}
 			moux=-1,mouy=-1;
+			*/
 		}
 		else{//cc
 			
@@ -1091,7 +1177,9 @@ void WindowGV(){
 				outtextxy(chooseX,chooseY,&xoa[0]);
 				outtextxy(chooseX,chooseY,&inDs[0]);
 				//void InDS(string malop,string maMH,int maxInPage,int X)
-				
+				if(inf->TestLop(currentMaLop)!=-1){
+					InDS(currentMaLop,inf->monHoc[0]->maMH,10,100);
+				}
 			}
 			else if(IsClickRec(nhapSv,moux,mouy)){
 		//		outtextxy(0,10,"  ");
@@ -1118,6 +1206,7 @@ void WindowGV(){
 	
 }
 void LoadDSSV(){
+	inf->AddMh("a","b");
 		fstream file;
 	file.open("DSSVbin.inp", ios::in | ios::binary);
 	int n;
@@ -1157,7 +1246,7 @@ void LoadDSSV(){
 
 			for(int i=0;i<n;i++)	{
 				*inf->sv=SinhVien(masv[i],ho[i],ten[i],masv[i],true);
-				*inf->lopTemp=Lop("D15CQCN02-N","CNTT");
+				*inf->lopTemp=Lop("CC","CNTT");
 				inf->AddSv(inf->sv,inf->lopTemp);
 			}
 }
