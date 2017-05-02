@@ -59,6 +59,7 @@ int Infor::AddSv(SinhVien *sinhvien, Lop *_lop) {
 				temp->next = new DSSV();
 				temp->next->sv = svTemp;
 				temp->next->next = NULL;
+				temp=temp->next;
 				
 				temp->sv->diem=new DSDiemThi*[this->_SoMonHoc];
 				for(int i=0;i<this->_SoMonHoc;i++){
@@ -153,6 +154,46 @@ int Infor::AddMh(string ma,string ten){
 	monHoc[_PmonHoc]->tenMH=ten;
 	
 	_PmonHoc++;
+	return 1;
+}
+int Infor::TestMH(string ma){
+	for(int i=0;i<_PmonHoc;i++){
+		if(monHoc[i]->maMH==ma) return  i;
+	}
+	return -1;
+}
+
+int Infor::DeleteSV(string mssv){
+	int indexLop=-1;
+	for(int i=0;i<_Plop;i++){
+		if(TestSV(lop[i],mssv)){
+			indexLop=i;
+		}
+	}
+	if(indexLop==-1) return -1;
+	
+	DSSV *ds=lop[indexLop]->dssv;
+	if(ds->sv->maSV==mssv){
+		lop[indexLop]->dssv=lop[indexLop]->dssv->next;
+		delete ds;
+	}
+	else{
+		DSSV *prev,*del,*temp;
+		temp=lop[indexLop]->dssv;
+		while(1){
+			if(temp->next->sv->maSV==mssv){
+				prev=temp;
+				temp=temp->next->next;
+				break;
+			}
+			prev=temp;
+			temp=temp->next;			
+		}
+		del=prev->next;
+		prev->next=temp;
+		delete del;
+		
+	}
 	return 1;
 }
 Infor::~Infor()
