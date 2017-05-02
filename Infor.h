@@ -24,9 +24,11 @@ public:
 	int AddMh(string ma,string ten);
 	int TestLop(string malop);
 	bool TestSV(Lop *lop, string mssv);
+	int TestMH(string ma);
 	int UpdateDiem(string malop,string masv,string mamh,float diem);
 	int GetSoLop();
 	int GetSoMon();
+	int DeleteSV(string mssv);
 	~Infor();
 private:
 	int _PmonHoc,_SoMonHoc;
@@ -43,7 +45,7 @@ class DSDiemThi {
 public:
 	MonHoc *mh;
 	float diemThi;
-	//DSDiemThi *next;
+	DSDiemThi *next;
 };
 class SinhVien {
 public:
