@@ -176,6 +176,7 @@ int Infor::DeleteSV(string mssv){
 	if(ds->sv->maSV==mssv){
 		lop[indexLop]->dssv=lop[indexLop]->dssv->next;
 		delete ds;
+		lop[indexLop]->soSv--;
 	}
 	else{
 		DSSV *prev,*del,*temp;
@@ -192,7 +193,7 @@ int Infor::DeleteSV(string mssv){
 		del=prev->next;
 		prev->next=temp;
 		delete del;
-		
+		lop[indexLop]->soSv--;
 	}
 	return 1;
 }
