@@ -166,7 +166,7 @@ int Infor::TestMH(string ma){
 int Infor::DeleteSV(string mssv){
 	int indexLop=-1;
 	for(int i=0;i<_Plop;i++){
-		if(TestSV(lop[i],mssv)){
+		if(!TestSV(lop[i],mssv)){
 			indexLop=i;
 		}
 	}
