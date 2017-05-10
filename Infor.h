@@ -81,6 +81,7 @@ public:
 		this->maLop=ma;
 		this->tenLop=ten;
 	}
+	
 	string maLop;
 	int soSv;
 	string tenLop;
