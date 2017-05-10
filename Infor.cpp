@@ -38,64 +38,6 @@ int Infor::TestLop(string malop) {
 	return -1;
 }
 
-
-int Infor::AddSv(SinhVien *sinhvien, Lop *_lop) {
-	if(sinhvien->maSV.size()==0||sinhvien->Ho.size()==0||sinhvien->Ten.size()==0||sinhvien->PassWord.size()==0){
-			return -1;
-	}
-	if(_lop->maLop.size()==0||_lop->tenLop.size()==0){
-		return -1;
-	}
-	int flag;//vitri lop trong mang
-	flag = TestLop(_lop->maLop);
-	if (flag != -1) {//lop da co
-		bool test = TestSV(this->lop[flag], sinhvien->maSV);
-		if (test) {//chua co sv nay
-			DSSV *temp = this->lop[flag]->dssv;
-			if(temp!=NULL)
-				while (temp->sv->maSV != sinhvien->maSV && temp->next != NULL) temp = temp->next;
-			if (temp->sv->maSV != sinhvien->maSV) {
-				SinhVien *svTemp = new SinhVien(sinhvien);
-				temp->next = new DSSV();
-				temp->next->sv = svTemp;
-				temp->next->next = NULL;
-				temp=temp->next;
-				
-				temp->sv->diem=new DSDiemThi*[this->_SoMonHoc];
-				for(int i=0;i<this->_SoMonHoc;i++){
-					temp->sv->diem[i]=new DSDiemThi();
-					temp->sv->diem[i]->diemThi=-1;
-				}
-				
-				
-				this->lop[flag]->soSv++;
-				return 1;
-			}			
-		}
-		else {
-				return -1;
-			}
-	}
-	else {
-		lop[_Plop]->dssv = new DSSV();
-		lop[_Plop]->maLop = _lop->maLop;
-		lop[_Plop]->tenLop = _lop->tenLop;
-
-		DSSV *temp = lop[_Plop]->dssv;
-		SinhVien *svT = new SinhVien(sv);
-		temp->sv = svT;
-		temp->next = NULL;
-		temp->sv->diem=new DSDiemThi*[this->_SoMonHoc];
-		for(int i=0;i<this->_SoMonHoc;i++){
-			temp->sv->diem[i]=new DSDiemThi();
-			temp->sv->diem[i]->diemThi=-1;
-		}
-		
-		lop[_Plop]->soSv++;
-		_Plop++;
-		return 1;
-	}
-}
 bool Infor::TestSV(Lop *lop, string mssv) {
 	DSSV *temp = lop->dssv;
 	while (temp != NULL) {
@@ -104,8 +46,134 @@ bool Infor::TestSV(Lop *lop, string mssv) {
 	}
 	return true;
 }
+int Infor::AddSv(SinhVien *sinhvien, Lop *_lop) {
+	if (sinhvien->maSV.size() == 0 || sinhvien->Ho.size() == 0 || sinhvien->Ten.size() == 0 || sinhvien->PassWord.size() == 0) {
+		return -1;
+	}
+	if (_lop->maLop.size() == 0 || _lop->tenLop.size() == 0) {
+		return -1;
+	}
+	for (int i = 0; i < _Plop; i++) {
+		if (!TestSV(lop[i], sinhvien->maSV)) {
+			cout << "daco";
+			return -1;
+		}
+	}
+	int flag;//vitri lop trong mang
+	flag = TestLop(_lop->maLop);
+	if (flag != -1 && lop[flag]->soSv != 0) {//lop da co		
+
+		DSSV *temp = this->lop[flag]->dssv;
+		DSSV *prev = NULL;
+
+		if (temp != NULL) {
+			while (temp->next != NULL) {
+				if (temp->sv->Ten != sinhvien->Ten) {
+					if (temp->sv->Ten < sinhvien->Ten) {
+						prev = temp;
+						temp = temp->next;
+					}
+					else break;
+				}
+				else {
+					if (temp->sv->Ho < sinhvien->Ho) {
+						prev = temp;
+						temp = temp->next;
+					}
+					else break;
+				}
+			}
+		}
+
+		if (temp->sv->maSV != sinhvien->maSV) {
+			SinhVien *svTemp = new SinhVien(sinhvien);
+
+			if (prev == NULL) {
+				bool truoc = true;
+				if (this->lop[flag]->soSv == 1) {
+					if (temp->sv->Ten != sinhvien->Ten) {
+						if (temp->sv->Ten < sinhvien->Ten) truoc = false;
+					}
+					else {
+						if (temp->sv->Ho < sinhvien->Ho) truoc = false;
+					}
+				}
+				if (truoc) {
+					DSSV *dstemp = new DSSV();
+					dstemp->sv = svTemp;
+
+					dstemp->next = temp;
+					this->lop[flag]->dssv = dstemp;
+					temp = this->lop[flag]->dssv;
+				}
+				else {
+					temp->next = new DSSV();
+					temp->next->sv = svTemp;
+					temp->next->next = NULL;
+					temp = temp->next;
+				}
+			}
+			else {
+				bool truoc = true;
+				if (temp->next == NULL) {
+					if (temp->sv->Ten != sinhvien->Ten) {
+						if (temp->sv->Ten < sinhvien->Ten) truoc = false;
+					}
+					else {
+						if (temp->sv->Ho < sinhvien->Ho) truoc = false;
+					}
+				}
+				if (temp->next == NULL && !truoc) {
+					temp->next = new DSSV();
+					temp->next->sv = svTemp;
+					temp->next->next = NULL;
+					temp = temp->next;
+				}
+				else {
+					DSSV *dstemp = new DSSV();
+					dstemp->sv = svTemp;
+
+					DSSV *currentnext = prev->next;
+					dstemp->next = currentnext;
+					prev->next = dstemp;
+				}
+				temp = prev->next;
+
+			}
+			temp->sv->diem = new DSDiemThi*[this->_SoMonHoc];
+			for (int i = 0; i < this->_SoMonHoc; i++) {
+				temp->sv->diem[i] = new DSDiemThi();
+				temp->sv->diem[i]->diemThi = -1;
+			}
 
 
+			this->lop[flag]->soSv++;
+			return 1;
+		}
+	}
+	else {
+		lop[_Plop]->dssv = new DSSV();
+		if (flag = -1) {
+			lop[_Plop]->maLop = _lop->maLop;
+			lop[_Plop]->tenLop = _lop->tenLop;
+		}
+
+		DSSV *temp = lop[_Plop]->dssv;
+		SinhVien *svT = new SinhVien(sv);
+		temp->sv = svT;
+		temp->next = NULL;
+		temp->sv->diem = new DSDiemThi*[this->_SoMonHoc];
+		for (int i = 0; i < this->_SoMonHoc; i++) {
+			temp->sv->diem[i] = new DSDiemThi();
+			temp->sv->diem[i]->diemThi = -1;
+		}
+
+		lop[_Plop]->soSv++;
+		if (flag == -1) _Plop++;
+
+		return 1;
+	}
+}
 int Infor::UpdateDiem(string malop,string masv,string mamh,float diem){
 	int indexLop=TestLop(malop);
 	if(indexLop!=-1){
