@@ -136,8 +136,9 @@ int Infor::AddSv(SinhVien *sinhvien, Lop *_lop) {
 					DSSV *currentnext = prev->next;
 					dstemp->next = currentnext;
 					prev->next = dstemp;
+					temp = prev->next;
 				}
-				temp = prev->next;
+				
 
 			}
 			temp->sv->diem = new DSDiemThi*[this->_SoMonHoc];
