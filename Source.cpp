@@ -100,9 +100,10 @@ void Write(char *s, int x, int y, int dai);
 void ThemSINHVIEN(string lop, string malop, int type, int toadoX);
 void HieuUngNhap(Login log, string &s, int &indexX, int &indexY, int &moux, int &mouy, int disChar, int maxS, int type = -1);
 void InDS(string malop, string maMH, int maxInPage, int X);
-void DeleteSV(string malop, int maxInPage, int X);
+int DeleteSV(string malop, int maxInPage, int X);
 void WindowGV();
 void WindowThongBao(string s);
+bool WindowThongBaoYN(string s);
 
 void LoadDSSV();
 
@@ -124,7 +125,8 @@ int main() {
 	int typeSign;
 
 	//InitQuestion();	
-	LoadDSSV();
+	//LoadDSSV();
+	inf->AddMh("a", "b");
 	while (1) {
 		cleardevice();
 		DrawLogin(login, id, pass);
@@ -778,13 +780,15 @@ void HieuUngNhap(Login log, string &s, int &indexX, int &indexY, int &moux, int 
 	char c;
 	bool flag = false, out = false;
 	while (!kbhit()) {
+		
 		if (ismouseclick(WM_LBUTTONDOWN)) {
 			int xx, yy;
 			xx = mousex(), yy = mousey();
 			if (!IsClickRec(log, xx, yy)) {
 				out = true;
 				moux = mousex(), mouy = mousey();
-				break;
+				outtextxy(indexX, indexY, " ");
+				return;
 			}
 			clearmouseclick(WM_LBUTTONDOWN);
 		}
@@ -812,8 +816,14 @@ void HieuUngNhap(Login log, string &s, int &indexX, int &indexY, int &moux, int 
 			c = getch();
 			return;
 		}
+		if(type!=3 && c== ' ') return;
 		if (type == 1 && !(c <= '9'&&c >= '0')) return;
 		if (type == 0 && !((c <= 'Z'&&c >= 'A') || (c <= 'z'&&c >= 'A'))) return;
+		if(type==3){
+			if(c!=' ' && !((c <= 'Z'&&c >= 'A') || (c <= 'z'&&c >= 'A')))
+			return;
+		}
+		
 		s.push_back(c);
 		outtextxy(indexX, indexY, &s[s.size() - 1]);
 		indexX += disChar;
@@ -893,7 +903,7 @@ void ThemSINHVIEN(string tenlop, string malop, int type, int toadoX) {
 
 
 	char c;
-	if (type == THEMSV);
+	if (type == THEMSV)
 	while (1) {
 		delay(0.00001);
 		if (ismouseclick(WM_LBUTTONDOWN)) {
@@ -907,7 +917,7 @@ void ThemSINHVIEN(string tenlop, string malop, int type, int toadoX) {
 			HieuUngNhap(ho, Sho, indexXHo, indexYHo, moux, mouy, 15, 6, 0);
 		}
 		else if (IsClickRec(ten, moux, mouy)) {
-			HieuUngNhap(ten, Sten, indexXTen, indexYTen, moux, mouy, 15, 18, 0);
+			HieuUngNhap(ten, Sten, indexXTen, indexYTen, moux, mouy, 15, 18, 3);
 		}
 		else if (IsClickRec(password, moux, mouy)) {
 			HieuUngNhap(password, Spassword, indexXPass, indexYPass, moux, mouy, 15, 18);
@@ -929,7 +939,7 @@ void ThemSINHVIEN(string tenlop, string malop, int type, int toadoX) {
 			*inf->sv = SinhVien(Sma, Sho, Sten, Spassword, Trai);
 			*inf->lopTemp = Lop(malop, tenlop);
 			int isAdd = inf->AddSv(inf->sv, inf->lopTemp);
-
+			
 			outtextxy(password.left + 20, password.bottom + 60, "                                            ");
 			if (isAdd == 1) {
 				outtextxy(password.left + 20, password.bottom + 60, "Them thanh cong");
@@ -988,7 +998,7 @@ void InDS(string malop, string maMH, int maxInPage, int X) {
 			outtextxy(next.left + 20, next.top + 5, "NEXT");
 		}
 		if (index >= maxInPage) {
-			InitRec(previous, next.left - 50 - previous.rong / 2, getmaxy() - previous.rong - 50);
+			InitRec(previous, next.left - previous.dai / 2, getmaxy() - previous.rong - 50);
 			outtextxy(previous.left + 20, previous.top + 5, "PREV");
 		}
 		InitRec(exit, getmaxx() - exit.dai - 50, getmaxy() - exit.rong - 20);
@@ -1053,7 +1063,7 @@ void InDS(string malop, string maMH, int maxInPage, int X) {
 	}
 
 }
-void DeleleSV(string malop, int maxInPage, int X) {
+int DeleleSV(string malop, int maxInPage, int X) {
 	void *arrow;
 	unsigned int size;
 	size = imagesize(0, 0, getmaxx(), getmaxy());//trai-tren: 0-0....phai-duoi: maxx,maxy
@@ -1086,11 +1096,12 @@ void DeleleSV(string malop, int maxInPage, int X) {
 		click[i].x = X - 40;
 	}
 
-	Login next, previous, exit;
-	next.dai = previous.dai = exit.dai = 90;
-	next.rong = previous.rong = exit.rong = 30;
+	Login next, previous, exit, del;
+	next.dai = previous.dai = exit.dai = del.dai = 90;
+	next.rong = previous.rong = exit.rong = del.rong = 30;
 
 	index = 0;
+	int chon=0;
 	while (1) {
 		delay(0.00001);
 		cleardevice();
@@ -1099,16 +1110,20 @@ void DeleleSV(string malop, int maxInPage, int X) {
 			outtextxy(next.left + 20, next.top + 5, "NEXT");
 		}
 		if (index >= maxInPage) {
-			InitRec(previous, next.left - 50 - previous.rong / 2, getmaxy() - previous.rong - 50);
+			InitRec(previous, next.left - previous.dai / 2, getmaxy() - previous.rong - 50);
 			outtextxy(previous.left + 20, previous.top + 5, "PREV");
 		}
 		InitRec(exit, getmaxx() - exit.dai - 50, getmaxy() - exit.rong - 20);
 		outtextxy(exit.left + 10, exit.top + 5, "Thoat");
+		InitRec(del, exit.left - del.dai / 2, exit.top + del.rong / 2);
+		outtextxy(del.left + 10, del.top + 5, "Xoa");
+
 		int indexY = 60;
 		outtextxy(X, indexY - 40, "Ma SV");
 		outtextxy(X + 200, indexY - 40, "Ho");
 		outtextxy(X + 400, indexY - 40, "Ten");
-
+		outtextxy(X + 630, indexY - 40, "Diem");
+		
 		line(0, indexY - 10, X + 700, indexY - 10);
 
 		line(X + 170, 0, X + 170, getmaxy());
@@ -1126,50 +1141,117 @@ void DeleleSV(string malop, int maxInPage, int X) {
 			outtextxy(X, indexY, &sv[i]->maSV[0]);
 			outtextxy(X + 200, indexY, &sv[i]->Ho[0]);
 			outtextxy(X + 400, indexY, &sv[i]->Ten[0]);
+			if(sv[i]->Nam){
+				outtextxy(X + 610, indexY, "Nam");
+			}
+			else{
+				outtextxy(X + 610, indexY, "Nu");	
+			}
+			
 			indexY += 40;
-			//	if(i==sosv-2) cout<<"ccc";
 		}
+		int moux = -1, mouy = -1;
 		while (1) {
 			delay(0.00001);
 			if (ismouseclick(WM_LBUTTONDOWN)) {
-				int moux = mousex(), mouy = mousey();
+				moux = mousex(), mouy = mousey();
 				clearmouseclick(WM_LBUTTONDOWN);
-				//outtextxy(mousex(), mousey(), "x");
-				if (index + maxInPage < sosv&&IsClickRec(next, moux, mouy)) {
-					//isClick = true;
-					index += maxInPage;
-					break;
-				}
-				else if (index >= maxInPage && IsClickRec(previous, moux, mouy)) {
-					//	isClick = true;
-					index -= maxInPage;
-					break;
-				}
+			}
+			if (index + maxInPage < sosv&&IsClickRec(next, moux, mouy)) {
+				index += maxInPage;
+				break;
+			}
+			else if (index >= maxInPage && IsClickRec(previous, moux, mouy)) {
+				index -= maxInPage;
+				break;
+			}
 
-				else if (IsClickRec(exit, moux, mouy)) {
-					putimage(0, 0, arrow, COPY_PUT);
-					return;
-				}
-
-				for (int t = index; t < sosv && t < index + maxInPage; t++) {
-					if (IsClickCircle(click[t], moux, mouy)) {
+			else if (IsClickRec(exit, moux, mouy)) {
+				//	putimage(0, 0, arrow, COPY_PUT);
+				return 0;
+			}
+			else if (IsClickRec(del, moux, mouy) && chon>0) {
+				bool test;
+				test = WindowThongBaoYN("Ban Co Muon Xoa Khong ?");
+				if (test) {
+					for (int t = 0; t < sosv; t++) {
 						if (mark[t] != -1) {
-							mark[t] = -1;
-							InitCircle(click[t], mark[t]);
-						}
-						else {
-							mark[t] = 1;
-							InitCircle(click[t], mark[t]);
+							inf->DeleteSV(sv[t]->maSV);
 						}
 					}
-				}//for
-
+					return 1;
+				}
+				else {
+					moux = -1, mouy = -1;
+					continue;
+				}
 			}
+			for (int t = index; t < sosv && t < index + maxInPage; t++) {
+				if (IsClickCircle(click[t], moux, mouy)) {
+					if (mark[t] != -1) {
+						mark[t] = -1;
+						InitCircle(click[t], mark[t]);
+						chon--;
+					}
+					else {
+						chon++;
+						mark[t] = 1;
+						InitCircle(click[t], mark[t]);
+					}
+				}
+			}//for
+			moux = -1, mouy = -1;
+
 		}
 	}
 
 
 }
+bool WindowThongBaoYN(string s) {
+	void *screen;
+	int size = imagesize(0, 0, getmaxx(), getmaxy());
+	screen = malloc(size);
+	getimage(0, 0, getmaxx(), getmaxy(), screen);
+
+	cleardevice();
+
+	int moux = -1, mouy = -1;
+	Login ThongBao, Yes, No;
+	ThongBao.dai = 300;
+	ThongBao.rong = 100;
+	Yes.dai = No.dai = 80;
+	Yes.rong = No.rong = 30;
+	InitRec(ThongBao, getmaxx() / 2, getmaxy() / 2);
+	InitRec(Yes, ThongBao.left + 70, ThongBao.bottom - Yes.rong - 10);
+	InitRec(No, ThongBao.right - 70, ThongBao.bottom - Yes.rong - 10);
+
+	outtextxy(ThongBao.left + 10, ThongBao.top + 10, &s[0]);
+	outtextxy(Yes.left + 10, Yes.top + 5, "Yes");
+	outtextxy(No.left + 10, No.top + 5, "No");
+	int xx = -1, yy = -1;
+	bool IsYes = false;
+	while (1) {
+		delay(0.00001);
+		if (ismouseclick(WM_LBUTTONDOWN)) {
+			xx = mousex(), yy = mousey();
+			clearmouseclick(WM_LBUTTONDOWN);
+		}
+		if (IsClickRec(Yes, xx, yy)) {
+			putimage(0, 0, screen, COPY_PUT);
+			IsYes = true;
+			break;
+		}
+		else if (IsClickRec(No, xx, yy)) {
+			putimage(0, 0, screen, COPY_PUT);
+			IsYes = false;
+			break;
+		}
+	}
+
+	putimage(0, 0, screen, COPY_PUT);
+	return IsYes;
+}
+
 void WindowThongBao(string s) {
 	void *screen;
 	int size = imagesize(0, 0, getmaxx(), getmaxy());
@@ -1319,15 +1401,6 @@ void WindowGV() {
 		}
 		else if (IsClickRec(exit, moux, mouy)) {
 			return;
-			/*
-			if(TIME==-1||SOCAU==-1){
-			outtextxy(exit.left-15,exit.top-25,"Nhap Thoi gian/So cau");
-			}
-			else{
-			return;
-			}
-			moux=-1,mouy=-1;
-			*/
 		}
 		else {//cc
 
@@ -1339,7 +1412,6 @@ void WindowGV() {
 				outtextxy(exit.left - 15, exit.top - 25, "                                                        ");
 				outtextxy(chooseX, chooseY, &xoa[0]);
 				outtextxy(chooseX, chooseY, &inDs[0]);
-
 
 
 				if (inf->TestLop(currentMaLop) != -1) {
@@ -1357,8 +1429,7 @@ void WindowGV() {
 				}
 
 				getimage(0, 0, getmaxx(), getmaxy(), screen);
-				//		outtextxy(0,10,"  ");
-				//		outtextxy(0,10,"2");
+
 				outtextxy(exit.left - 15, exit.top - 25, "                                                        ");
 				outtextxy(chooseX, chooseY, &xoa[0]);
 				outtextxy(chooseX, chooseY, &SinhVien[0]);
@@ -1371,41 +1442,51 @@ void WindowGV() {
 				outtextxy(xoaSv.left + 10, xoaSv.top + 5, &XoaSV[0]);
 				outtextxy(suaSv.left + 10, suaSv.top + 5, &SuaSV[0]);
 
-
+				int xx = -1, yy = -1;
 				while (1) {
 					delay(0.0001);
 					if (ismouseclick(WM_LBUTTONDOWN)) {
-						if (IsClickRec(themSv, mousex(), mousey())) {
-							ThemSINHVIEN(currentMaLop, currentTenLop, 2, SV.right + 400);
-
-						}
-						else if (IsClickRec(xoaSv, mousex(), mousey())) {
-							if (inf->TestLop(currentMaLop) == -1) {
-								putimage(0, 0, screen, COPY_PUT);
-								WindowThongBao("Lop Khong Ton Tai !");
-								moux = -1, mouy = -1;
-								break;
-							}
-							DeleleSV(currentMaLop, 10, 100);
-						}
-						else if (IsClickRec(suaSv, mousex(), mousey())) {
-							if (inf->TestLop(currentMaLop) == -1) {
-								putimage(0, 0, screen, COPY_PUT);
-								WindowThongBao("Lop Khong Ton Tai !");
-								moux = -1, mouy = -1;
-								break;
-							}
-							cout << "a";
-						}
-						else {
-							clearmouseclick(WM_LBUTTONDOWN);
-							break;
-						}
+						xx = mousex(), yy = mousey();
 						clearmouseclick(WM_LBUTTONDOWN);
 
+						if (IsClickRec(themSv, xx, yy)) {
+							ThemSINHVIEN(currentTenLop, currentMaLop, THEMSV, SV.right + 400);
+							xx = -1, yy = -1;
+							break;
+						}
+						else if (IsClickRec(xoaSv, xx, yy)) {
+							if (inf->TestLop(currentMaLop) == -1) {
+								putimage(0, 0, screen, COPY_PUT);
+								WindowThongBao("Lop Khong Ton Tai !");
+								moux = -1, mouy = -1;
+								break;
+							}
+							int type = 0;
+
+							while (1) {
+								type = DeleleSV(currentMaLop, 10, 100);
+								if (type == 0) break;
+							}
+							xx = -1, yy = -1;
+							break;
+						}
+
+
+						else if (IsClickRec(suaSv, xx, yy)) {
+							if (inf->TestLop(currentMaLop) == -1) {
+								putimage(0, 0, screen, COPY_PUT);
+								WindowThongBao("Lop Khong Ton Tai !");
+								moux = -1, mouy = -1;
+								break;
+							}
+						}
+						else {//click ra ngoai
+							  //clearmouseclick(WM_LBUTTONDOWN);
+							break;
+						}
 					}
 				}
-				//moux = -1, mouy = -1;
+				moux = -1, mouy = -1;
 				putimage(0, 0, screen, COPY_PUT);
 
 			}
