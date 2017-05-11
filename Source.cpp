@@ -8,73 +8,73 @@ class SinhVien;
 class DSSV;
 class DSDiemThi;
 enum {
-	BLACK = 0,
-	BLUE = 1,
-	GREEN = 2,
-	CYAN = 3,
-	RED = 4,
-	MAGENTA = 5,
-	BROWN = 6,
-	LIGHTGRAY = 7,
-	DARKGRAY = 8,
-	LIGHTBLUE = 9,
-	LIGHTGREEN = 10,
-	LIGHTCYAN = 11,
-	LIGHTRED = 12,
-	LIGHTMAGENTA = 13,
-	YELLOW = 14,
-	WHITE = 15
+    BLACK = 0,
+    BLUE = 1,
+    GREEN = 2,
+    CYAN = 3,
+    RED = 4,
+    MAGENTA = 5,
+    BROWN = 6,
+    LIGHTGRAY = 7,
+    DARKGRAY = 8,
+    LIGHTBLUE = 9,
+    LIGHTGREEN = 10,
+    LIGHTCYAN = 11,
+    LIGHTRED = 12,
+    LIGHTMAGENTA = 13,
+    YELLOW = 14,
+    WHITE = 15
 };
 enum {
-	XOASV = 1,
-	THEMSV = 2,
-	SUASV = 3,
+    XOASV = 1,
+    THEMSV = 2,
+    SUASV = 3,
 };
 enum {
-	/*	int c;
-	while (1) {
-	c = _getch();
-	if (!isprint(c)) {// control key have 2 bytes
-	c = _getch();
-	cout << c << endl;
-	//cout << "Control\n";
-	}
-	else { char key has 1 byte
-	cout << "NO\n";
-	}
-	}
-	*/
-	ENTER = 13,
-	BACKSPACE = 8,
-	TAB = 9,
-	LEFT = 75,
-	RIGHT = 77,
-	UP = 72,
-	DOWN = 80,
+    /*	int c;
+    while (1) {
+    c = _getch();
+    if (!isprint(c)) {// control key have 2 bytes
+    c = _getch();
+    cout << c << endl;
+    //cout << "Control\n";
+    }
+    else { char key has 1 byte
+    cout << "NO\n";
+    }
+    }
+    */
+    ENTER = 13,
+    BACKSPACE = 8,
+    TAB = 9,
+    LEFT = 75,
+    RIGHT = 77,
+    UP = 72,
+    DOWN = 80,
 };
 
 
 class Login {
-public:
-	Login() {}
+	public:
+		Login() {}
 
-	Login(int rong, int dai) {
-		this->dai = dai;
-		this->rong = rong;
-	}
-	int dai, rong;
-	int left, right, top, bottom;
+		Login(int rong, int dai) {
+			this->dai = dai;
+			this->rong = rong;
+		}
+		int dai, rong;
+		int left, right, top, bottom;
 };
 class QuesAndAns {
-public:
-	//string cauhoi, traloi[4];
-	char cauhoi[1000];
-	char traloi[4][1000];
-	int dapan;
+	public:
+		//string cauhoi, traloi[4];
+		char cauhoi[1000];
+		char traloi[4][1000];
+		int dapan;
 };
 class CircleClick {
-public:
-	int bk, x, y;
+	public:
+		int bk, x, y;
 };
 
 int linex[] = { -1,0,1,1,1,0,-1 - 1 };
@@ -102,7 +102,7 @@ void HieuUngNhap(Login log, string &s, int &indexX, int &indexY, int &moux, int 
 void InDS(string malop, string maMH, int maxInPage, int X);
 int DeleteSV(string malop, int maxInPage, int X);
 int SuaSinhVien(string malop, int maxInPage, int X);
-void WindowSuaSV(string malop, SinhVien *sv, int toadoX);
+void WindowSuaSV(string malop,string tenlop, SinhVien *sv, int toadoX);
 void WindowGV();
 void WindowThongBao(string s);
 bool WindowThongBaoYN(string s);
@@ -126,7 +126,7 @@ int main() {
 	Login login, id, pass;
 	int typeSign;
 
-	//InitQuestion();	
+	//InitQuestion();
 	LoadDSSV();
 //	inf->AddMh("a", "b");
 	while (1) {
@@ -237,18 +237,15 @@ int DangNhap(Login login, Login id, Login pass) {
 						signIn = true;
 						currentId = tk;
 						break;
-					}
-					else {
+					} else {
 						outtextxy(login.bottom + 20, login.left + 50, "Sai ID/PassWord");
 					}
-				}
-				else if ((ll)tk.size() > 0 && c == BACKSPACE) {
+				} else if ((ll)tk.size() > 0 && c == BACKSPACE) {
 					//tk.pop_back();
 					tk.erase(tk.size() - 1);
 					vtriIdx -= disId;
 					outtextxy(vtriIdx, vtriIdy, "    ");
-				}
-				else {
+				} else {
 					if (c == BACKSPACE || (ll)tk.size() >= maxId) continue;
 					if (!isprint(c)) {
 						c = getch();
@@ -293,8 +290,7 @@ int DangNhap(Login login, Login id, Login pass) {
 						signIn = true;
 						currentId = tk;
 						break;
-					}
-					else {
+					} else {
 						outtextxy(login.left + 20, login.bottom + 50, "Sai ID/PassWord");
 					}
 				}
@@ -304,8 +300,7 @@ int DangNhap(Login login, Login id, Login pass) {
 					mk.erase(mk.size() - 1);
 					vtriPassx -= disPass;
 					outtextxy(vtriPassx, vtriPassy, "    ");
-				}
-				else {
+				} else {
 					if (c == BACKSPACE || (ll)mk.size() >= maxPass) continue;
 
 					if (!isprint(c)) {
@@ -376,8 +371,7 @@ void InitCircle(CircleClick click, int mau) {
 		setcolor(WHITE);
 		circle(click.x, click.y, click.bk);
 
-	}
-	else {
+	} else {
 		//	setcolor(WHITE);
 		circle(click.x, click.y, click.bk);
 		setfillstyle(12, WHITE);
@@ -393,8 +387,7 @@ int TestId(string id, string pass) {
 	//cout<<pass;
 	if (id == "GV"&& pass == "GV") {
 		return -1;
-	}
-	else {
+	} else {
 		bool test = false;
 		for (int i = 0; i < inf->GetSoLop(); i++) {
 			//	cout<<inf->GetSoLop()<<" ";
@@ -566,13 +559,11 @@ void InitQuestion(int realQues) {
 					//isClick = true;
 					i++;
 					break;
-				}
-				else if (i > 1 && IsClickRec(previous, moux, mouy)) {
+				} else if (i > 1 && IsClickRec(previous, moux, mouy)) {
 					//	isClick = true;
 					i--;
 					break;
-				}
-				else if (IsClickRec(ketThuc, moux, mouy)) {
+				} else if (IsClickRec(ketThuc, moux, mouy)) {
 					getimage(0, 0, getmaxx(), getmaxy(), screen);
 					Login Big, yes, no;
 					Big = Login(70, 230);
@@ -598,8 +589,7 @@ void InitQuestion(int realQues) {
 						if (IsClickRec(yes, _moux, _mouy)) {
 							OVERTIME = TRUE;
 							break;
-						}
-						else if (IsClickRec(no, _moux, _mouy)) {
+						} else if (IsClickRec(no, _moux, _mouy)) {
 							clickNo = true;
 							break;
 						}
@@ -623,8 +613,7 @@ void InitQuestion(int realQues) {
 						InitCircle(click[i - 1][j], 1);
 						choose[i - 1] = j + 1;
 
-					}
-					else {
+					} else {
 						InitCircle(click[i - 1][j], -1);
 						//choose[i] = 0;
 					}
@@ -666,8 +655,7 @@ void DrawTracNghiem(QuesAndAns CauHoi, CircleClick *click, int type) {
 		traloi[i - 1].rong *= 10;
 		if (i == 1) {
 			tamY = cauhoi.bottom + 30 + traloi[i - 1].rong / 2;
-		}
-		else {
+		} else {
 			tamY = traloi[i - 2].bottom + 30 + traloi[i - 1].rong / 2;
 		}
 		InitRec(traloi[i - 1], tamX, tamY);
@@ -683,8 +671,7 @@ void DrawTracNghiem(QuesAndAns CauHoi, CircleClick *click, int type) {
 	for (int i = 1; i <= 4; i++) {
 		if (type != i) {
 			InitCircle(click[i - 1], -1);
-		}
-		else {
+		} else {
 			InitCircle(click[i - 1], 1);
 		}
 	}
@@ -782,7 +769,7 @@ void HieuUngNhap(Login log, string &s, int &indexX, int &indexY, int &moux, int 
 	char c;
 	bool flag = false, out = false;
 	while (!kbhit()) {
-		
+
 		if (ismouseclick(WM_LBUTTONDOWN)) {
 			int xx, yy;
 			xx = mousex(), yy = mousey();
@@ -810,8 +797,7 @@ void HieuUngNhap(Login log, string &s, int &indexX, int &indexY, int &moux, int 
 		s.erase(s.size() - 1);
 		indexX -= disChar;
 		outtextxy(indexX, indexY, "      ");
-	}
-	else {
+	} else {
 		if (c == BACKSPACE || (ll)s.size() >= maxS) return;
 		if (c == ENTER) return;
 		if (!isprint(c)) {
@@ -821,11 +807,11 @@ void HieuUngNhap(Login log, string &s, int &indexX, int &indexY, int &moux, int 
 		if(type!=3 && c== ' ') return;
 		if (type == 1 && !(c <= '9'&&c >= '0')) return;
 		if (type == 0 && !((c <= 'Z'&&c >= 'A') || (c <= 'z'&&c >= 'A'))) return;
-		if(type==3){
+		if(type==3) {
 			if(c!=' ' && !((c <= 'Z'&&c >= 'A') || (c <= 'z'&&c >= 'A')))
-			return;
+				return;
 		}
-		
+
 		s.push_back(c);
 		outtextxy(indexX, indexY, &s[s.size() - 1]);
 		indexX += disChar;
@@ -906,60 +892,52 @@ void ThemSINHVIEN(string tenlop, string malop, int type, int toadoX) {
 
 	char c;
 	if (type == THEMSV)
-	while (1) {
-		delay(0.00001);
-		if (ismouseclick(WM_LBUTTONDOWN)) {
-			outtextxy(password.left + 20, password.bottom + 60, "                               ");
-			moux = mousex(), mouy = mousey();
-			clearmouseclick(WM_LBUTTONDOWN);
-		}
-		if (IsClickRec(ma, moux, mouy)) {
-			HieuUngNhap(ma, Sma, indexXMa, indexYMa, moux, mouy, 15, 18);
-		}
-		else if (IsClickRec(ho, moux, mouy)) {
-			HieuUngNhap(ho, Sho, indexXHo, indexYHo, moux, mouy, 15, 6, 0);
-		}
-		else if (IsClickRec(ten, moux, mouy)) {
-			HieuUngNhap(ten, Sten, indexXTen, indexYTen, moux, mouy, 15, 18, 3);
-		}
-		else if (IsClickRec(password, moux, mouy)) {
-			HieuUngNhap(password, Spassword, indexXPass, indexYPass, moux, mouy, 15, 18);
-		}
-		else if (IsClickCircle(nam, moux, mouy) || IsClickCircle(nu, moux, mouy)) {
-			if (IsClickCircle(nam, moux, mouy) || Trai == false) {
-				InitCircle(nam, WHITE);
-				InitCircle(nu, -1);
-				Trai = !Trai;
+		while (1) {
+			delay(0.00001);
+			if (ismouseclick(WM_LBUTTONDOWN)) {
+				outtextxy(password.left + 20, password.bottom + 60, "                               ");
+				moux = mousex(), mouy = mousey();
+				clearmouseclick(WM_LBUTTONDOWN);
 			}
-			else if (IsClickCircle(nu, moux, mouy) || Trai == true) {
-				InitCircle(nu, WHITE);
-				InitCircle(nam, -1);
-				Trai = !Trai;
-			}
-			moux = -1, mouy = -1;
-		}
-		else if (IsClickRec(apply, moux, mouy)) {
-			*inf->sv = SinhVien(Sma, Sho, Sten, Spassword, Trai);
-			*inf->lopTemp = Lop(malop, tenlop);
-			int isAdd = inf->AddSv(inf->sv, inf->lopTemp);
-			
-			outtextxy(password.left + 20, password.bottom + 60, "                                            ");
-			if (isAdd == 1) {
-				outtextxy(password.left + 20, password.bottom + 60, "Them thanh cong");
-			}
-			else {
-				outtextxy(password.left + 20, password.bottom + 60, "Them that bai");
-			}
-			moux = -1;
-			mouy = -1;
-		}
-		else if (IsClickRec(cancel, moux, mouy)) {
+			if (IsClickRec(ma, moux, mouy)) {
+				HieuUngNhap(ma, Sma, indexXMa, indexYMa, moux, mouy, 15, 18);
+			} else if (IsClickRec(ho, moux, mouy)) {
+				HieuUngNhap(ho, Sho, indexXHo, indexYHo, moux, mouy, 15, 6, 0);
+			} else if (IsClickRec(ten, moux, mouy)) {
+				HieuUngNhap(ten, Sten, indexXTen, indexYTen, moux, mouy, 15, 18, 3);
+			} else if (IsClickRec(password, moux, mouy)) {
+				HieuUngNhap(password, Spassword, indexXPass, indexYPass, moux, mouy, 15, 18);
+			} else if (IsClickCircle(nam, moux, mouy) || IsClickCircle(nu, moux, mouy)) {
+				if (IsClickCircle(nam, moux, mouy) || Trai == false) {
+					InitCircle(nam, WHITE);
+					InitCircle(nu, -1);
+					Trai = !Trai;
+				} else if (IsClickCircle(nu, moux, mouy) || Trai == true) {
+					InitCircle(nu, WHITE);
+					InitCircle(nam, -1);
+					Trai = !Trai;
+				}
+				moux = -1, mouy = -1;
+			} else if (IsClickRec(apply, moux, mouy)) {
+				*inf->sv = SinhVien(Sma, Sho, Sten, Spassword, Trai);
+				*inf->lopTemp = Lop(malop, tenlop);
+				int isAdd = inf->AddSv(inf->sv, inf->lopTemp);
 
-			putimage(0, 0, arrow, COPY_PUT);
-			return;
+				outtextxy(password.left + 20, password.bottom + 60, "                                            ");
+				if (isAdd == 1) {
+					outtextxy(password.left + 20, password.bottom + 60, "Them thanh cong");
+				} else {
+					outtextxy(password.left + 20, password.bottom + 60, "Them that bai");
+				}
+				moux = -1;
+				mouy = -1;
+			} else if (IsClickRec(cancel, moux, mouy)) {
+
+				putimage(0, 0, arrow, COPY_PUT);
+				return;
+			}
+			//cc
 		}
-		//cc
-	}
 
 }
 void InDS(string malop, string maMH, int maxInPage, int X) {
@@ -1031,8 +1009,7 @@ void InDS(string malop, string maMH, int maxInPage, int X) {
 			outtextxy(X + 400, indexY, &sv[i]->Ten[0]);
 			if (sv[i]->diem[indexMH]->diemThi != -1) {
 				outtextxy(X + 630, indexY, cDiem);
-			}
-			else {
+			} else {
 				outtextxy(X + 610, indexY, "Chua Thi");
 			}
 
@@ -1049,13 +1026,11 @@ void InDS(string malop, string maMH, int maxInPage, int X) {
 					//isClick = true;
 					index += maxInPage;
 					break;
-				}
-				else if (index >= maxInPage && IsClickRec(previous, moux, mouy)) {
+				} else if (index >= maxInPage && IsClickRec(previous, moux, mouy)) {
 					//	isClick = true;
 					index -= maxInPage;
 					break;
-				}
-				else if (IsClickRec(exit, moux, mouy)) {
+				} else if (IsClickRec(exit, moux, mouy)) {
 					putimage(0, 0, arrow, COPY_PUT);
 					return;
 				}
@@ -1126,7 +1101,7 @@ int DeleteSV(string malop, int maxInPage, int X) {
 		outtextxy(X + 200, indexY - 40, "Ho");
 		outtextxy(X + 400, indexY - 40, "Ten");
 		outtextxy(X + 630, indexY - 40, "Diem");
-		
+
 		line(0, indexY - 10, X + 700, indexY - 10);
 
 		line(X + 170, 0, X + 170, getmaxy());
@@ -1144,13 +1119,12 @@ int DeleteSV(string malop, int maxInPage, int X) {
 			outtextxy(X, indexY, &sv[i]->maSV[0]);
 			outtextxy(X + 200, indexY, &sv[i]->Ho[0]);
 			outtextxy(X + 400, indexY, &sv[i]->Ten[0]);
-			if(sv[i]->Nam){
+			if(sv[i]->Nam) {
 				outtextxy(X + 610, indexY, "Nam");
+			} else {
+				outtextxy(X + 610, indexY, "Nu");
 			}
-			else{
-				outtextxy(X + 610, indexY, "Nu");	
-			}
-			
+
 			indexY += 40;
 		}
 		int moux = -1, mouy = -1;
@@ -1163,17 +1137,14 @@ int DeleteSV(string malop, int maxInPage, int X) {
 			if (index + maxInPage < sosv&&IsClickRec(next, moux, mouy)) {
 				index += maxInPage;
 				break;
-			}
-			else if (index >= maxInPage && IsClickRec(previous, moux, mouy)) {
+			} else if (index >= maxInPage && IsClickRec(previous, moux, mouy)) {
 				index -= maxInPage;
 				break;
 			}
 
 			else if (IsClickRec(exit, moux, mouy)) {
-				//	putimage(0, 0, arrow, COPY_PUT);
 				return 0;
-			}
-			else if (IsClickRec(del, moux, mouy) && chon>0) {
+			} else if (IsClickRec(del, moux, mouy) && chon>0) {
 				bool test;
 				test = WindowThongBaoYN("Ban Co Muon Xoa Khong ?");
 				if (test) {
@@ -1183,8 +1154,7 @@ int DeleteSV(string malop, int maxInPage, int X) {
 						}
 					}
 					return 1;
-				}
-				else {
+				} else {
 					moux = -1, mouy = -1;
 					continue;
 				}
@@ -1195,8 +1165,7 @@ int DeleteSV(string malop, int maxInPage, int X) {
 						mark[t] = -1;
 						InitCircle(click[t], mark[t]);
 						chon--;
-					}
-					else {
+					} else {
 						chon++;
 						mark[t] = 1;
 						InitCircle(click[t], mark[t]);
@@ -1211,7 +1180,7 @@ int DeleteSV(string malop, int maxInPage, int X) {
 
 }
 
-int SuaSinhVien(string malop, int maxInPage, int X) {
+int SuaSinhVien(string malop,string tenlop, int maxInPage, int X) {
 	void *arrow;
 	unsigned int size;
 	size = imagesize(0, 0, getmaxx(), getmaxy());//trai-tren: 0-0....phai-duoi: maxx,maxy
@@ -1269,7 +1238,7 @@ int SuaSinhVien(string malop, int maxInPage, int X) {
 		outtextxy(X + 200, indexY - 40, "Ho");
 		outtextxy(X + 400, indexY - 40, "Ten");
 		outtextxy(X + 630, indexY - 40, "Diem");
-		
+
 		line(0, indexY - 10, X + 700, indexY - 10);
 
 		line(X + 170, 0, X + 170, getmaxy());
@@ -1288,13 +1257,12 @@ int SuaSinhVien(string malop, int maxInPage, int X) {
 			outtextxy(X, indexY, &sv[i]->maSV[0]);
 			outtextxy(X + 200, indexY, &sv[i]->Ho[0]);
 			outtextxy(X + 400, indexY, &sv[i]->Ten[0]);
-			if(sv[i]->Nam){
+			if(sv[i]->Nam) {
 				outtextxy(X + 610, indexY, "Nam");
+			} else {
+				outtextxy(X + 610, indexY, "Nu");
 			}
-			else{
-				outtextxy(X + 610, indexY, "Nu");	
-			}
-			
+
 			indexY += 40;
 		}
 		int moux = -1, mouy = -1;
@@ -1307,8 +1275,7 @@ int SuaSinhVien(string malop, int maxInPage, int X) {
 			if (index + maxInPage < sosv&&IsClickRec(next, moux, mouy)) {
 				index += maxInPage;
 				break;
-			}
-			else if (index >= maxInPage && IsClickRec(previous, moux, mouy)) {
+			} else if (index >= maxInPage && IsClickRec(previous, moux, mouy)) {
 				index -= maxInPage;
 				break;
 			}
@@ -1316,25 +1283,24 @@ int SuaSinhVien(string malop, int maxInPage, int X) {
 			else if (IsClickRec(exit, moux, mouy)) {
 				//	putimage(0, 0, arrow, COPY_PUT);
 				return 0;
-			}
-			else if (IsClickRec(fix, moux, mouy) && choose!=-1) {
+			} else if (IsClickRec(fix, moux, mouy) && choose!=-1) {
 				bool test;
 				test = WindowThongBaoYN("Ban Co Muon Sua Khong ?");
 				if (test) {
 					for (int t = 0; t < sosv; t++) {
 						if (t==choose) {
 							//inf->DeleteSV(sv[t]->maSV);
-							WindowSuaSV(malop,sv[choose],600);
+							WindowSuaSV(malop,tenlop,sv[choose],600);
+							break;
 						}
 					}
 					return 1;
-				}
-				else {
+				} else {
 					moux = -1, mouy = -1;
 					continue;
 				}
 			}
-			
+
 			bool isClick=false;
 			for (int t = index; t < sosv && t < index + maxInPage; t++) {
 				if (IsClickCircle(click[t], moux, mouy)) {
@@ -1344,15 +1310,14 @@ int SuaSinhVien(string malop, int maxInPage, int X) {
 				}
 			}//for
 			if(isClick)
-			for (int t = index; t < sosv && t < index + maxInPage; t++) {
-				if(choose==t){
-					InitCircle(click[t],1);
-				}
-				else{
-					InitCircle(click[t],-1);
-				}				
-			}//for
-			
+				for (int t = index; t < sosv && t < index + maxInPage; t++) {
+					if(choose==t) {
+						InitCircle(click[t],1);
+					} else {
+						InitCircle(click[t],-1);
+					}
+				}//for
+
 			moux = -1, mouy = -1;
 
 		}
@@ -1361,21 +1326,18 @@ int SuaSinhVien(string malop, int maxInPage, int X) {
 
 }
 
-void WindowSuaSV(string malop, SinhVien *sv, int toadoX) {
+void WindowSuaSV(string malop,string tenlop, SinhVien *sv, int toadoX) {
 
-	void *arrow;
-	unsigned int size;
-
-	size = imagesize(0, 0, getmaxx(), getmaxy());//trai-tren: 0-0....phai-duoi: maxx,maxy
-	arrow = malloc(size);
-	getimage(0, 0, getmaxx(), getmaxy(), arrow);
 	cleardevice();
 	//putimage(0,0,arrow,COPY_PUT);
 
 	bool Trai = true;
-	string Sma, Sho, Sten, Spassword;
-	Login ma, ho, ten, password, apply, cancel;
+	string Sma, Sho, Sten, Spassword,SLop,Smalop,Stenlop;
+	Login ma, ho, ten, password, apply, cancel,maLop,tenLop;
 	CircleClick nam, nu;
+
+	maLop.dai = tenLop.dai = 220;
+	maLop.rong = tenLop.rong = 60;
 
 	ma.rong = ho.rong = ten.rong = password.rong = 40;
 	ma.dai = 300;
@@ -1388,17 +1350,23 @@ void WindowSuaSV(string malop, SinhVien *sv, int toadoX) {
 
 	int tamX = toadoX + 80;
 
-	InitRec(ma, tamX, ma.rong / 2 + 30);
+	InitRec(maLop, tamX - 30, maLop.rong / 2 + 10);
+	outtextxy(maLop.left - 90, maLop.top + 5, "Ma Lop");
+	InitRec(tenLop, maLop.right + tenLop.dai / 2 + 100, maLop.top + tenLop.rong / 2);
+	outtextxy(maLop.right + 10, maLop.top + 5, "Ten Lop");
+
+
+	InitRec(ma, tamX, maLop.bottom + ma.rong / 2 + 30);
 	InitRec(ho, ma.left + ho.dai / 2, ma.bottom + 50);
 	InitRec(ten, tamX, ho.bottom + 50);
 	InitRec(password, tamX, ten.bottom + 50);
-	
+
 	outtextxy(10,10,"Lop: ");
-	outtextxy(50,10,&malop[0]);
+	outtextxy(70,10,&malop[0]);
 	outtextxy(10,50,"Ho: ");
-	outtextxy(50,30,&sv->Ho[0]);
+	outtextxy(70,50,&sv->Ho[0]);
 	outtextxy(10,100,"Ten: ");
-	outtextxy(50,50,&sv->Ten[0]);
+	outtextxy(70,100,&sv->Ten[0]);
 	outtextxy(10,150,"Gioi tinh: ");
 	if(sv->Nam) outtextxy(85,150,"Nam");
 	else outtextxy(85,150,"Nu");
@@ -1427,66 +1395,104 @@ void WindowSuaSV(string malop, SinhVien *sv, int toadoX) {
 
 
 	int moux = -1, mouy = -1;
-	int indexXMa, indexXHo, indexXTen, indexXPass;
-	int indexYMa, indexYHo, indexYTen, indexYPass;
+	int indexXMa, indexXHo, indexXTen, indexXPass,indexXMalop,indexXTenlop;
+	int indexYMa, indexYHo, indexYTen, indexYPass,indexYMalop,indexYTenlop;
+
+	indexXMalop=maLop.left+5;
+	indexXTenlop=tenLop.left+5;
 	indexXHo = ho.left + 5;
 	indexXMa = ma.left + 5;
 	indexXTen = ten.left + 5;
 	indexXPass = password.left + 5;
 
+	indexYMalop=maLop.top+10;
+	indexYTenlop=tenLop.top+10;
 	indexYHo = ho.top + 10;
 	indexYMa = ma.top + 10;
 	indexYTen = ten.top + 10;
 	indexYPass = password.top + 10;
 
-
-
-
 	char c;
 	while (1) {
 		delay(0.00001);
 		if (ismouseclick(WM_LBUTTONDOWN)) {
-			outtextxy(password.left + 20, password.bottom + 60, "                               ");
+			//outtextxy(apply.left , apply.top -30, "                               ");
 			moux = mousex(), mouy = mousey();
 			clearmouseclick(WM_LBUTTONDOWN);
 		}
-		if (IsClickRec(ma, moux, mouy)) {
+		if(IsClickRec(maLop,moux,mouy)) {
+			HieuUngNhap(maLop,Smalop,indexXMalop,indexYMalop,moux,mouy,13,15);
+		} else if(IsClickRec(tenLop,moux,mouy)) {
+			HieuUngNhap(tenLop,Stenlop,indexXTenlop,indexYTenlop,moux,mouy,13,15);
+		} else if (IsClickRec(ma, moux, mouy)) {
 			HieuUngNhap(ma, Sma, indexXMa, indexYMa, moux, mouy, 15, 18);
-		}
-		else if (IsClickRec(ho, moux, mouy)) {
+		} else if (IsClickRec(ho, moux, mouy)) {
 			HieuUngNhap(ho, Sho, indexXHo, indexYHo, moux, mouy, 15, 6, 0);
-		}
-		else if (IsClickRec(ten, moux, mouy)) {
+		} else if (IsClickRec(ten, moux, mouy)) {
 			HieuUngNhap(ten, Sten, indexXTen, indexYTen, moux, mouy, 15, 18, 3);
-		}
-		else if (IsClickRec(password, moux, mouy)) {
+		} else if (IsClickRec(password, moux, mouy)) {
 			HieuUngNhap(password, Spassword, indexXPass, indexYPass, moux, mouy, 15, 18);
-		}
-		else if (IsClickCircle(nam, moux, mouy) || IsClickCircle(nu, moux, mouy)) {
+		} else if (IsClickCircle(nam, moux, mouy) || IsClickCircle(nu, moux, mouy)) {
 			if (IsClickCircle(nam, moux, mouy) || Trai == false) {
 				InitCircle(nam, WHITE);
 				InitCircle(nu, -1);
 				Trai = !Trai;
-			}
-			else if (IsClickCircle(nu, moux, mouy) || Trai == true) {
+			} else if (IsClickCircle(nu, moux, mouy) || Trai == true) {
 				InitCircle(nu, WHITE);
 				InitCircle(nam, -1);
 				Trai = !Trai;
 			}
 			moux = -1, mouy = -1;
-		}
-		else if (IsClickRec(apply, moux, mouy)) {
-			*inf->sv = SinhVien(Sma, Sho, Sten, Spassword, Trai);
-			
-			
-			outtextxy(password.left + 20, password.bottom + 60, "                                            ");
-			
+		} else if (IsClickRec(apply, moux, mouy)) {
+			bool test=true;
+			if(Sma.size()!=0) {
+				for(int i=0; i<inf->GetSoLop(); i++) {
+					test=inf->TestSV(inf->lop[i],Sma);
+					if(!test) {
+						test=false;
+						break;
+					}
+				}
+			}
+
+			if(test || (!test && Sma==sv->maSV)) {
+				//string Sma, Sho, Sten, Spassword,SLop
+				if(Sma.size()==0) Sma=sv->maSV;
+				if(Sho.size()==0) Sho=sv->Ho;
+				if(Sten.size()==0) Sten=sv->Ten;
+				if(Spassword.size()==0) Spassword=sv->PassWord;
+				if(Smalop.size()==0) Smalop=malop;
+				if(Stenlop.size()==0) Stenlop=tenlop;
+				
+				if(Stenlop.size()==0){
+					int index=-1;
+					index=inf->TestLop(Smalop);
+					if(index!=-1) Stenlop=inf->lop[index]->tenLop;
+				}
+				
+				inf->DeleteSV(sv->maSV);
+				*inf->sv=SinhVien(Sma,Sho,Sten,Spassword,Trai);
+				*inf->lopTemp = Lop(Smalop,Stenlop);
+
+				int ad;
+				ad = inf->AddSv(inf->sv,inf->lopTemp);
+
+				if(ad!=-1)	outtextxy(apply.left , apply.top -30, " Sua Thanh Cong !");
+				else  {
+					*inf->lopTemp = Lop(malop,tenlop);
+					inf->AddSv(sv,inf->lopTemp);
+					outtextxy(apply.left , apply.top -30, " Sua That Bai !");	
+				}
+			} 
+			else {
+				outtextxy(apply.left , apply.top -30, "Trung MSSV! ");
+			}
+			outtextxy(apply.left , apply.top -30, "                                            ");
+
 			moux = -1;
 			mouy = -1;
-		}
+		} 
 		else if (IsClickRec(cancel, moux, mouy)) {
-
-			putimage(0, 0, arrow, COPY_PUT);
 			return;
 		}
 		//cc
@@ -1528,8 +1534,7 @@ bool WindowThongBaoYN(string s) {
 			putimage(0, 0, screen, COPY_PUT);
 			IsYes = true;
 			break;
-		}
-		else if (IsClickRec(No, xx, yy)) {
+		} else if (IsClickRec(No, xx, yy)) {
 			putimage(0, 0, screen, COPY_PUT);
 			IsYes = false;
 			break;
@@ -1600,7 +1605,7 @@ void WindowGV() {
 
 	//tha.dai=30;
 	//tha.rong=choose.rong;
-	//-----------------------------------------------------------------------------------	
+	//-----------------------------------------------------------------------------------
 
 
 	tamX = 30 + choose.dai / 2;
@@ -1669,28 +1674,23 @@ void WindowGV() {
 		}
 		if (IsClickRec(maLop, moux, mouy)) {
 			HieuUngNhap(maLop, currentMaLop, indexXMaLop, indexYMaLop, moux, mouy, disChar, maxS, 2);
-		}
-		else if (IsClickRec(tenLop, moux, mouy)) {
+		} else if (IsClickRec(tenLop, moux, mouy)) {
 			HieuUngNhap(tenLop, currentTenLop, indexXTenLop, indexYTenLop, moux, mouy, disChar, maxS, 2);
-		}
-		else if (IsClickRec(Maxcau, moux, mouy)) {
+		} else if (IsClickRec(Maxcau, moux, mouy)) {
 			outtextxy(exit.left - 15, exit.top - 25, "                                                        ");
 			HieuUngNhap(Maxcau, socau, indexXCau, indexYCau, moux, mouy, 15, 3, 1);
 
 			if (socau.size() != 0)
 				SOCAU = atoi((char*)socau.c_str());
-		}
-		else if (IsClickRec(Maxtime, moux, mouy)) {
+		} else if (IsClickRec(Maxtime, moux, mouy)) {
 			outtextxy(exit.left - 15, exit.top - 25, "                                                        ");
 			HieuUngNhap(Maxtime, sophut, indexXTime, indexYTime, moux, mouy, 15, 3, 1);
 
 			if (sophut.size() != 0)
 				TIME = atoi((char*)sophut.c_str());
-		}
-		else if (IsClickRec(exit, moux, mouy)) {
+		} else if (IsClickRec(exit, moux, mouy)) {
 			return;
-		}
-		else {//cc
+		} else { //cc
 
 			int chooseX = choose.left + 10, chooseY = choose.top + 20;
 			string xoa = "                                      ";
@@ -1704,12 +1704,10 @@ void WindowGV() {
 
 				if (inf->TestLop(currentMaLop) != -1) {
 					InDS(currentMaLop, inf->monHoc[0]->maMH, 10, 100);
-				}
-				else {// khong co lop
+				} else { // khong co lop
 					WindowThongBao("Lop khong ton tai");
 				}
-			}
-			else if (IsClickRec(SV, moux, mouy)) {
+			} else if (IsClickRec(SV, moux, mouy)) {
 				if (currentMaLop == "") {
 					WindowThongBao("Chua Nhap Lop!");
 					moux = -1, mouy = -1;
@@ -1741,8 +1739,7 @@ void WindowGV() {
 							ThemSINHVIEN(currentTenLop, currentMaLop, THEMSV, SV.right + 400);
 							xx = -1, yy = -1;
 							break;
-						}
-						else if (IsClickRec(xoaSv, xx, yy)) {
+						} else if (IsClickRec(xoaSv, xx, yy)) {
 							if (inf->TestLop(currentMaLop) == -1) {
 								putimage(0, 0, screen, COPY_PUT);
 								WindowThongBao("Lop Khong Ton Tai !");
@@ -1768,17 +1765,16 @@ void WindowGV() {
 								break;
 							}
 							int type = 0;
-	
+
 							while (1) {
-								type = SuaSinhVien(currentMaLop, 10,100);
+								type = SuaSinhVien(currentMaLop,currentTenLop, 10,100);
 								if (type == 0) break;
 							}
 							xx = -1, yy = -1;
 							break;
 
-						}
-						else {//click ra ngoai
-							  //clearmouseclick(WM_LBUTTONDOWN);
+						} else { //click ra ngoai
+							//clearmouseclick(WM_LBUTTONDOWN);
 							break;
 						}
 					}
@@ -1786,8 +1782,7 @@ void WindowGV() {
 				moux = -1, mouy = -1;
 				putimage(0, 0, screen, COPY_PUT);
 
-			}
-			else if (IsClickRec(NhapMon, moux, mouy)) {
+			} else if (IsClickRec(NhapMon, moux, mouy)) {
 				//		outtextxy(0,10,"  ");
 				//		outtextxy(0,10,"3");
 				outtextxy(exit.left - 15, exit.top - 25, "                                                        ");
