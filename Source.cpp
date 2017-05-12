@@ -427,9 +427,14 @@ void InitQuestion(int realQues) {
 
 	int numQues;
 	file.read((char*)&numQues, sizeof(int));
+	
+	if(realQues>numQues){
+		realQues=numQues;
+	}
+	
 
 	CircleClick **click = new CircleClick*[numQues];
-	QuesAndAns CauHoi[20];
+	QuesAndAns *CauHoi = new QuesAndAns[realQues];
 
 	char **ques = new char*[numQues];
 	for (int i = 0; i < numQues; i++) {
@@ -453,21 +458,19 @@ void InitQuestion(int realQues) {
 		int k;
 		file.read((char*)&k, sizeof(int));
 		file.read(ques[i], k + 1);
-	}
-	for (int i = 0; i < numQues; i++) {
 		for (int j = 0; j < 4; j++) {
-			int k;
 			file.read((char*)&k, sizeof(int));
 			file.read(ansSentence[i][j], k + 1);
 		}
-	}
-	for (int i = 0; i < numQues; i++) {
+		
 		file.read((char*)&ans[i], sizeof(int));
 	}
 	//file.read(reinterpret_cast<char*>(&s), sizeof(s));
 	srand(time(0));
 	for (int i = 1; i <= realQues; i++) {
-		int k = rand() % (numQues - i);
+		int k;
+		if(i!=numQues) k = rand() % (numQues - i);
+		else k=0;
 		Swap(ques[k], ques[numQues - i]);
 		//Swap(ansSentence[k], ansSentence[numQues - i]);
 		for (int kk = 0; kk < 4; kk++) {
@@ -493,6 +496,7 @@ void InitQuestion(int realQues) {
 		strcat(c, "./  ");
 		strcat(c, CauHoi[i].cauhoi);
 		strcpy(CauHoi[i].cauhoi, c);
+		/*
 		for (int j = 0; j < 4; j++) {
 			for (int k = strlen(CauHoi[i].traloi[j]) + 3; k >= 3; k--) {
 				CauHoi[i].traloi[j][k] = CauHoi[i].traloi[j][k - 3];
@@ -502,7 +506,9 @@ void InitQuestion(int realQues) {
 			CauHoi[i].traloi[j][2] = ' ';
 
 		}
+		*/
 	}
+
 	Login next, previous, soCau, clock, ketThuc;
 	next.dai = previous.dai = 90;
 	next.rong = previous.rong = ketThuc.rong = 30;
@@ -633,26 +639,28 @@ void InitQuestion(int realQues) {
 }
 
 void DrawTracNghiem(QuesAndAns CauHoi, CircleClick *click, int type) {
-	const int disToTop = 100;
+	const int disToTop = 20; //khoang cach tu dong dau tien
 
 	Login cauhoi, traloi[4];
 	//CircleClick click[4];
 	const int tamX = getmaxx() / 2;
 	const int cDai = getmaxx() / 2 - 100;
-	int crongQues = (int)(strlen(CauHoi.cauhoi)) * 5 / cDai;
-	crongQues += 3;
-	crongQues *= 15;
+	int crongQues = (int)(strlen(CauHoi.cauhoi)) / ((cDai-10)/12);
+	crongQues+=1;
+	cout<<crongQues<<endl;
+	crongQues *= 30;
 	int tamY = disToTop + crongQues / 2;
 	cauhoi.dai = cDai;
 	cauhoi.rong = crongQues;
 
 	InitRec(cauhoi, tamX, tamY);
-	Write(CauHoi.cauhoi, cauhoi.left + 5, cauhoi.top + 5, cDai);
+	Write(CauHoi.cauhoi, cauhoi.left + 5, cauhoi.top + 5, (cDai-10)/12);
 	for (int i = 1; i <= 4; i++) {
 		traloi[i - 1].dai = cDai;
-		traloi[i - 1].rong = (strlen(CauHoi.traloi[i - 1])) * 5 / cDai;
-		traloi[i - 1].rong += 3;
-		traloi[i - 1].rong *= 10;
+		traloi[i - 1].rong = (int)(strlen(CauHoi.traloi[i - 1])) / ((cDai-10)/12);
+		traloi[i-1].rong+=1;
+		traloi[i-1].rong*=30;
+
 		if (i == 1) {
 			tamY = cauhoi.bottom + 30 + traloi[i - 1].rong / 2;
 		} else {
@@ -660,7 +668,7 @@ void DrawTracNghiem(QuesAndAns CauHoi, CircleClick *click, int type) {
 		}
 		InitRec(traloi[i - 1], tamX, tamY);
 
-		Write(CauHoi.traloi[i - 1], traloi[i - 1].left + 5, traloi[i - 1].top + 5, cDai);
+		Write(CauHoi.traloi[i - 1], traloi[i - 1].left + 5, traloi[i - 1].top + 5, (cDai-10)/12);
 		click[i - 1].bk = 10;
 		click[i - 1].y = tamY;
 		click[i - 1].x = cauhoi.left - 30;
@@ -683,18 +691,18 @@ void Write(char *s, int x, int y, int dai) {
 	int vtriX, vtriY;
 	vtriX = x;
 	vtriY = y;
-	outtextxy(x, y, &s[0]);
-	return;
+//	outtextxy(x, y, &s[0]);
+//	return;
 	//	/*
-	for (int i = 0; i < strlen(s); i++) {
+for (int i = 0; i < strlen(s); i++) {
 		//if (s[i] == '\0') return;
-		if (vtriX + 5 >= dai) {
+		if (vtriX + 5 >= dai*12 + x) {
 			vtriX = x;
-			vtriY += 10;
+			vtriY += 30;
 		}
 		ss.push_back(s[i]);
 		outtextxy(vtriX, vtriY, &ss[ss.size() - 1]);
-		vtriX += 10;
+		vtriX += 12;
 	}
 	//	*/
 }
@@ -1680,14 +1688,20 @@ void WindowGV() {
 			outtextxy(exit.left - 15, exit.top - 25, "                                                        ");
 			HieuUngNhap(Maxcau, socau, indexXCau, indexYCau, moux, mouy, 15, 3, 1);
 
-			if (socau.size() != 0)
-				SOCAU = atoi((char*)socau.c_str());
+			if (socau.size() != 0){
+				int temp;
+				temp = atoi((char*)socau.c_str());
+				if(temp>0) SOCAU=temp;
+			}
 		} else if (IsClickRec(Maxtime, moux, mouy)) {
 			outtextxy(exit.left - 15, exit.top - 25, "                                                        ");
 			HieuUngNhap(Maxtime, sophut, indexXTime, indexYTime, moux, mouy, 15, 3, 1);
 
-			if (sophut.size() != 0)
-				TIME = atoi((char*)sophut.c_str());
+			if (sophut.size() != 0){
+				int temp;
+				temp = atoi((char*)sophut.c_str());
+				if(temp>0) TIME=temp;
+			}
 		} else if (IsClickRec(exit, moux, mouy)) {
 			return;
 		} else { //cc
