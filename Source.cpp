@@ -65,12 +65,29 @@ class Login {
 		int dai, rong;
 		int left, right, top, bottom;
 };
+
 class QuesAndAns {
 	public:
 		//string cauhoi, traloi[4];
 		char cauhoi[1000];
 		char traloi[4][1000];
 		int dapan;
+};
+class DSMON{
+public:
+	DSMON(int n){
+		numSentence = n;
+		Ques=new QuesAndAns*[n];
+		for(int i=0;i<n;i++){
+			Ques[i]=new QuesAndAns();
+		}
+	}
+	int GetCountMon(){
+		return numSentence;
+	}
+	QuesAndAns **Ques;
+private:	
+	int numSentence;
 };
 class CircleClick {
 	public:
@@ -89,11 +106,12 @@ bool IsClickCircle(CircleClick click, int x, int y);
 void Swap(char *s1, char *s2);
 void BFS(int x, int y, int x1, int y1, int R);
 
+void DocCauHoi();
 void InitSoCau(Login &soCau, Login clock, int cauDaLam, int realQues);
 void DrawLogin(Login &login, Login &id, Login &pass);
 int DangNhap(Login login, Login id, Login pass);
 int TestId(string id, string pass);
-void InitQuestion(int realQues);
+void InitQuestion(int realQues,DSMON *ds);
 void DrawTracNghiem(QuesAndAns Infor, CircleClick *click, int type);
 void Write(char *s, int x, int y, int dai);
 
@@ -113,15 +131,20 @@ Infor *inf;
 string currentId;
 float currentDiem;
 int TIME = 45, SOCAU = 20;
+int MON_HIEN_TAI=1;
+const int SOMON =2;
 bool OVERTIME = false;
+
+DSMON **dsmon;
 int main() {
-	inf = new Infor(2, 2);
-	int bg = 0, bm = 0;
+
+
 	//initgraph(&bg, &bm, " ");
-	initwindow(1200, 550);
+	initwindow(1200, 680);
 	//------------------------------------------------------------//
 
-
+	inf = new Infor(SOMON, 2);
+	DocCauHoi();
 
 	Login login, id, pass;
 	int typeSign;
@@ -139,8 +162,8 @@ int main() {
 		}
 		if (typeSign >= 0) {
 			//cout<<"sdfg";
-			InitQuestion(SOCAU);
-			inf->UpdateDiem(inf->lop[typeSign]->maLop, currentId, "a", currentDiem);
+			InitQuestion(SOCAU,dsmon[MON_HIEN_TAI]);
+			inf->UpdateDiem(inf->lop[typeSign]->maLop, currentId, inf->monHoc[MON_HIEN_TAI]->maMH, currentDiem);
 		}
 	}
 
@@ -415,18 +438,45 @@ void InitSoCau(Login &soCau, Login clock, int cauDaLam, int realQues) {
 	itoa(cauDaLam, temp, 10);
 	outtextxy(soCau.left + 30, soCau.top + soCau.rong / 2, &temp[0]);
 }
-
-void InitQuestion(int realQues) {
+void DocCauHoi(){
+	fstream file;
+	dsmon=new DSMON*[SOMON];
+	string tenFile[SOMON]={"Ques.inp","SQLbin.txt"};
+	string tenMon[SOMON]={"Ngon ngu C++","Co so du lieu SQL"};
+	string maMon[SOMON]={"C++","SQL"};
+	for(int i=0;i<SOMON;i++){
+		inf->AddMh(maMon[i],tenMon[i]);
+		file.open((char*)tenFile[i].c_str(),ios::in|ios::binary);
+		
+		int n, k;
+		file.read((char*)&n,sizeof(int));
+		dsmon[i] = new DSMON(n);
+		for(int j=0;j<n;j++){
+			file.read((char*)&k,sizeof(int));
+			file.read(dsmon[i]->Ques[j]->cauhoi,k+1);
+			for(int m=0;m<4;m++){
+				file.read((char*)&k,sizeof(int));
+				file.read(dsmon[i]->Ques[j]->traloi[m],k+1);
+			}
+			file.read((char*)&k,sizeof(int));
+			dsmon[i]->Ques[j]->dapan=k;
+		}
+		
+		file.close();
+	}
+	
+}
+void InitQuestion(int realQues, DSMON *dsm) {
 	void *screen;
 	int size = imagesize(0, 0, getmaxx(), getmaxy());
 	screen = malloc(size);
 
-	inf->AddMh("ma", "ten");
-	fstream file;
-	file.open("Ques.inp", ios::in | ios::binary);
+	//inf->AddMh("ma", "ten");
+	//fstream file;
+	//file.open("Ques.inp", ios::in | ios::binary);
 
-	int numQues;
-	file.read((char*)&numQues, sizeof(int));
+	int numQues = dsm->GetCountMon();
+	//file.read((char*)&numQues, sizeof(int));
 	
 	if(realQues>numQues){
 		realQues=numQues;
@@ -455,15 +505,18 @@ void InitQuestion(int realQues) {
 	int *ans = new int[numQues];
 
 	for (int i = 0; i < numQues; i++) {
-		int k;
-		file.read((char*)&k, sizeof(int));
-		file.read(ques[i], k + 1);
+	//	int k;
+	//	file.read((char*)&k, sizeof(int));
+	//	file.read(ques[i], k + 1);
+		ques[i]=dsm->Ques[i]->cauhoi;
 		for (int j = 0; j < 4; j++) {
-			file.read((char*)&k, sizeof(int));
-			file.read(ansSentence[i][j], k + 1);
+			//file.read((char*)&k, sizeof(int));
+			//file.read(ansSentence[i][j], k + 1);
+			ansSentence[i][j]=dsm->Ques[i]->traloi[j];
 		}
 		
-		file.read((char*)&ans[i], sizeof(int));
+		//file.read((char*)&ans[i], sizeof(int));
+		ans[i]=dsm->Ques[i]->dapan;
 	}
 	//file.read(reinterpret_cast<char*>(&s), sizeof(s));
 	srand(time(0));
@@ -635,7 +688,7 @@ void InitQuestion(int realQues) {
 		if (choose[i] == CauHoi[i].dapan) socaudung++;
 	}
 	currentDiem = (socaudung * 10) / ((float)realQues);
-	file.close();
+	//file.close();
 }
 
 void DrawTracNghiem(QuesAndAns CauHoi, CircleClick *click, int type) {
@@ -1811,7 +1864,7 @@ void WindowGV() {
 
 }
 void LoadDSSV() {
-	inf->AddMh("a", "b");
+
 	fstream file;
 	file.open("DSSVbin.inp", ios::in | ios::binary);
 	int n;
