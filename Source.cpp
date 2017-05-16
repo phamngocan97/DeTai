@@ -117,6 +117,7 @@ void Write(char *s, int x, int y, int dai);
 
 void ThemSINHVIEN(string lop, string malop, int type, int toadoX);
 void HieuUngNhap(Login log, string &s, int &indexX, int &indexY, int &moux, int &mouy, int disChar, int maxS, int type = -1);
+void HieuUngNhaps(Login log, string &s, int &indexX, int &indexY, int &moux, int &mouy, int disChar, int maxS);
 void InDS(string malop, string maMH, int maxInPage, int X);
 int DeleteSV(string malop, int maxInPage, int X);
 int SuaSinhVien(string malop, int maxInPage, int X);
@@ -125,6 +126,7 @@ void WindowGV();
 void WindowThongBao(string s);
 bool WindowThongBaoYN(string s);
 void WindowBeforeThi();
+void WindowThemCauHoi();
 
 void LoadDSSV();
 void DocCauHoi();
@@ -890,7 +892,62 @@ void HieuUngNhap(Login log, string &s, int &indexX, int &indexY, int &moux, int 
 	}
 
 }
+void HieuUngNhaps(Login log, string &s, int &indexX, int &indexY, int &moux, int &mouy, int disChar, int maxS){
+	
+	char c;
+	bool flag = false, out = false;
+	while (!kbhit()) {
+//		if(indexY>=log.bottom-10) break;
+		if (ismouseclick(WM_LBUTTONDOWN)) {
+			int xx, yy;
+			xx = mousex(), yy = mousey();
+			if (!IsClickRec(log, xx, yy)) {
+				out = true;
+				moux = mousex(), mouy = mousey();
+				outtextxy(indexX, indexY, " ");
+				return;
+			}
+			clearmouseclick(WM_LBUTTONDOWN);
+		}
 
+		if (flag) outtextxy(indexX, indexY, "|");
+		else outtextxy(indexX, indexY, " ");
+
+		flag = !flag;
+		delay(400);
+	}
+
+	outtextxy(indexX, indexY, " ");
+	
+	if (out) return;
+	c = getch();
+	if ( ((ll)s.size() > 0 && c == BACKSPACE)) {
+		//mk.pop_back();
+		s.erase(s.size() - 1);
+		if(indexX==log.left+10){
+			indexY-=30;
+			indexX=log.right-disChar -5;
+		}
+		else indexX -= disChar;
+		outtextxy(indexX, indexY, "         ");
+	} else {
+		if (c == BACKSPACE || (ll)s.size() >= maxS) return;
+		if (c == ENTER) return;
+		if (!isprint(c)) {
+			c = getch();
+			return;
+		}
+		s.push_back(c);
+		outtextxy(indexX, indexY, &s[s.size() - 1]);
+		indexX += disChar;
+		if(indexX + disChar + 5 >=log.right){
+			indexX=log.left+10;
+			indexY+=30;
+		}
+	}
+
+	
+}
 void ThemSINHVIEN(string tenlop, string malop, int type, int toadoX) {
 
 	void *arrow;
@@ -1945,6 +2002,7 @@ void WindowGV() {
 				outtextxy(exit.left - 15, exit.top - 25, "                                                        ");
 				outtextxy(chooseX, chooseY, &xoa[0]);
 				outtextxy(chooseX, chooseY, &addMh[0]);
+				WindowThemCauHoi();
 			}
 			moux = -1, mouy = -1;
 		}
@@ -1952,6 +2010,85 @@ void WindowGV() {
 
 	}
 
+}
+
+void WindowThemCauHoi(){
+	
+	void *screen;
+	int size = imagesize(0,0,getmaxx(),getmaxy());
+	screen = malloc(size);
+	getimage(0,0,getmaxx(),getmaxy(),screen);
+	cleardevice();
+	
+	string Scauhoi="",SdapanA="",SdapanB="",SdapanC="",SdapanD="";
+	Login cauHoi,dapanA,dapanB,dapanC,dapanD,ok;
+	
+	cauHoi.dai = dapanA.dai = dapanB.dai = dapanC.dai = dapanD.dai = getmaxx()/2-100;
+	cauHoi.rong = dapanA.rong = dapanB.rong = dapanC.rong = dapanD.rong = 30*3 + 10;//30:kcach  3: so dong toi da
+	ok.dai=80;
+	ok.rong=50;
+	
+	const int maxS = (cauHoi.dai -10)/25 *3 + 10;
+	
+	InitRec(cauHoi,getmaxx()/2,cauHoi.rong/2 + 50);
+	
+	InitRec(dapanA,getmaxx()/2,cauHoi.bottom+dapanA.rong/2+30);
+	InitRec(dapanB,getmaxx()/2,dapanA.bottom+dapanB.rong/2+20);
+	InitRec(dapanC,getmaxx()/2,dapanB.bottom+dapanC.rong/2+20);
+	InitRec(dapanD,getmaxx()/2,dapanC.bottom+dapanD.rong/2+20);
+	
+	InitRec(ok,getmaxx()-ok.dai/2-30,getmaxy()-ok.rong/2-30);
+	outtextxy(ok.left+10,ok.top+5,"Luu");
+	
+	outtextxy(cauHoi.left-100,cauHoi.top+10,"Cau Hoi");
+	outtextxy(dapanA.left-40,dapanA.top+10,"A");
+	outtextxy(dapanB.left-40,dapanB.top+10,"B");
+	outtextxy(dapanC.left-40,dapanC.top+10,"C");
+	outtextxy(dapanD.left-40,dapanD.top+10,"D");
+	
+	int indexXQues,indexXA,indexXB,indexXC,indexXD,indexYQues,indexYA,indexYB,indexYC,indexYD;
+	
+	indexXQues = cauHoi.left+10;
+	indexXA = dapanA.left+10;
+	indexXB = dapanC.left+10;
+	indexXC = dapanC.left+10;
+	indexXD = dapanD.left+10;
+	
+	indexYQues = cauHoi.top+10;
+	indexYA = dapanA.top+10;
+	indexYB = dapanB.top+10;
+	indexYC = dapanC.top+10;
+	indexYD = dapanD.top+10;
+	
+	int moux=-1,mouy=-1;
+	int disChar=20;
+	while(1){
+		delay(0.000001);
+		if(ismouseclick(WM_LBUTTONDOWN)){
+			moux=mousex();
+			mouy=mousey();
+			clearmouseclick(WM_LBUTTONDOWN);
+		}
+		if(IsClickRec(cauHoi,moux,mouy)){
+			HieuUngNhaps(cauHoi,Scauhoi,indexXQues,indexYQues,moux,mouy,disChar,maxS);
+		}
+		else if(IsClickRec(dapanA,moux,mouy)){
+			cout<<"a"<<endl;
+			HieuUngNhaps(dapanA,SdapanA,indexXA,indexYA,moux,mouy,disChar,maxS);
+		}
+		else if(IsClickRec(dapanB,moux,mouy)){
+			cout<<"b"<<endl;
+			HieuUngNhaps(dapanB,SdapanB,indexXB,indexYB,moux,mouy,disChar,maxS);
+		}
+		else if(IsClickRec(dapanC,moux,mouy)){
+			cout<<"c"<<endl;
+			HieuUngNhaps(dapanC,SdapanC,indexXC,indexYC,moux,mouy,disChar,maxS);
+		}
+		else if(IsClickRec(dapanD,moux,mouy)){
+			cout<<"d"<<endl;
+			HieuUngNhaps(dapanD,SdapanD,indexXD,indexYD,moux,mouy,disChar,maxS);
+		}
+	}
 }
 void LoadDSSV() {
 
