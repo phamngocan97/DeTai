@@ -1,12 +1,15 @@
 //#include"graphics.h"
 #include"winbgim.h"
 #include"Infor.h"
+#include"AVLtree.h"
+
 using namespace std;
 
 typedef long long ll;
 class SinhVien;
 class DSSV;
 class DSDiemThi;
+class QuesAndAns;
 enum {
     BLACK = 0,
     BLUE = 1,
@@ -66,13 +69,7 @@ class Login {
 		int left, right, top, bottom;
 };
 
-class QuesAndAns {
-	public:
-		//string cauhoi, traloi[4];
-		char cauhoi[1000];
-		char traloi[4][1000];
-		int dapan;
-};
+
 class DSMON {
 	public:
 		DSMON(int n) {
@@ -1677,7 +1674,8 @@ void WindowThongBao(string s) {
 	int size = imagesize(0, 0, getmaxx(), getmaxy());
 	screen = malloc(size);
 	getimage(0, 0, getmaxx(), getmaxy(), screen);
-
+	cleardevice();
+	
 	int moux = -1, mouy = -1;
 	Login ThongBao, Ok;
 	ThongBao.dai = 300;
@@ -2019,14 +2017,84 @@ void WindowThemCauHoi(){
 	screen = malloc(size);
 	getimage(0,0,getmaxx(),getmaxy(),screen);
 	cleardevice();
+
+	int monHienTai=0;
+////--------------------------------------------------------------------------------------------
+	Login big, ok , Maxtime, Maxcau;
+	big.dai=getmaxx()/4;
+	big.rong=50*SOMON+20*SOMON;
+	ok.dai=80;
+	ok.rong=30;
+
+	Maxcau.dai = Maxtime.dai = 90;
+	Maxcau.rong = Maxtime.rong = 40;
+
+
+	InitRec(big,getmaxx()/2,getmaxy()/2);
+	InitRec(ok,big.right-ok.dai/2,big.bottom+ok.rong/2);
+	outtextxy(ok.left+5,ok.top+5,"Ok");
+	
+	CircleClick *clk = new CircleClick[SOMON];
+	for(int i=0; i<SOMON; i++) {
+		clk[i].bk=10;
+		clk[i].x=big.left+10;
+	}
+	int indexY=big.top+20;
+	for(int i=0; i<SOMON; i++) {
+		clk[i].y=indexY + 5;
+		outtextxy(big.left+30,indexY,&inf->monHoc[i]->tenMH[0]);
+		indexY+=30;
+	}
+
+	for(int i=0; i<SOMON; i++) {
+		if(i==MON_HIEN_TAI) {
+			InitCircle(clk[i],WHITE);
+		} else InitCircle(clk[i],-1);
+	}
+	int xx=-1,yy=-1;
+	while(1){
+		delay(0.00001);
+		if(ismouseclick(WM_LBUTTONDOWN)){
+			xx=mousex(),yy=mousey();
+			clearmouseclick(WM_LBUTTONDOWN);
+			bool chon=false;
+			for(int i=0;i<SOMON;i++){
+				if(IsClickCircle(clk[i],xx,yy)){
+					monHienTai=i;
+					chon=true;
+					break;
+				}
+			}
+			if(chon){
+				for(int i=0;i<SOMON;i++){
+					if(monHienTai==i){
+						InitCircle(clk[i],WHITE);
+					}
+					else InitCircle(clk[i],-1);
+				}
+			}
+			
+			if(IsClickRec(ok,xx,yy)){
+				break;
+			}
+		}
+	}
+
+	cleardevice();
+	/////////------------------------------------------------------------------//////
 	
 	string Scauhoi="",SdapanA="",SdapanB="",SdapanC="",SdapanD="";
-	Login cauHoi,dapanA,dapanB,dapanC,dapanD,ok;
+	Login cauHoi,dapanA,dapanB,dapanC,dapanD,them,cancel;
+	CircleClick click[4];
 	
+	for(int i=0;i<4;i++){
+		click[i].bk=15;
+	}
+		
 	cauHoi.dai = dapanA.dai = dapanB.dai = dapanC.dai = dapanD.dai = getmaxx()/2-100;
 	cauHoi.rong = dapanA.rong = dapanB.rong = dapanC.rong = dapanD.rong = 30*3 + 10;//30:kcach  3: so dong toi da
-	ok.dai=80;
-	ok.rong=50;
+	them.dai = cancel.dai = 80;
+	them.rong = cancel.rong =50;
 	
 	const int maxS = (cauHoi.dai -10)/25 *3 + 10;
 	
@@ -2037,14 +2105,27 @@ void WindowThemCauHoi(){
 	InitRec(dapanC,getmaxx()/2,dapanB.bottom+dapanC.rong/2+20);
 	InitRec(dapanD,getmaxx()/2,dapanC.bottom+dapanD.rong/2+20);
 	
-	InitRec(ok,getmaxx()-ok.dai/2-30,getmaxy()-ok.rong/2-30);
-	outtextxy(ok.left+10,ok.top+5,"Luu");
+	InitRec(cancel,getmaxx()-cancel.dai/2-30,getmaxy()-cancel.rong/2-30);
+	InitRec(them,cancel.left-them.dai/2,cancel.top+them.rong/2);
+	outtextxy(them.left+10,them.top+5,"Them");
+	outtextxy(cancel.left+10,cancel.top+5,"Huy bo");
 	
 	outtextxy(cauHoi.left-100,cauHoi.top+10,"Cau Hoi");
 	outtextxy(dapanA.left-40,dapanA.top+10,"A");
+	click[0].x = dapanA.left-60;
+	click[0].y = dapanA.top+15;
+	
 	outtextxy(dapanB.left-40,dapanB.top+10,"B");
+	click[1].x = dapanB.left-60;
+	click[1].y = dapanB.top+15;
+	
 	outtextxy(dapanC.left-40,dapanC.top+10,"C");
+	click[2].x = dapanC.left-60;
+	click[2].y = dapanC.top+15;
+	
 	outtextxy(dapanD.left-40,dapanD.top+10,"D");
+	click[3].x = dapanD.left-60;
+	click[3].y = dapanD.top+15;
 	
 	int indexXQues,indexXA,indexXB,indexXC,indexXD,indexYQues,indexYA,indexYB,indexYC,indexYD;
 	
@@ -2062,6 +2143,10 @@ void WindowThemCauHoi(){
 	
 	int moux=-1,mouy=-1;
 	int disChar=20;
+	int dapan = -1;
+	for(int i=0;i<4;i++){
+		InitCircle(click[i],-1);
+	}
 	while(1){
 		delay(0.000001);
 		if(ismouseclick(WM_LBUTTONDOWN)){
@@ -2088,6 +2173,26 @@ void WindowThemCauHoi(){
 			cout<<"d"<<endl;
 			HieuUngNhaps(dapanD,SdapanD,indexXD,indexYD,moux,mouy,disChar,maxS);
 		}
+		bool isclick = false;
+		for(int i=0;i<4;i++){
+			if(IsClickCircle(click[i],moux,mouy)){
+				isclick = true;
+				dapan=i;
+				moux=-1,mouy=-1;
+				break;
+			}
+		}
+		if(isclick){
+			for(int i=0;i<4;i++){
+				if(dapan == i){
+					InitCircle(click[i],WHITE);
+				}
+				else{
+					InitCircle(click[i],-1);
+				}
+			}
+		}
+		
 	}
 }
 void LoadDSSV() {
