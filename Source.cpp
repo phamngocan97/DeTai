@@ -1111,18 +1111,19 @@ void InDS(string malop, string maMH, int maxInPage, int X) {
 		InitRec(exit, getmaxx() - exit.dai - 50, getmaxy() - exit.rong - 20);
 		outtextxy(exit.left + 10, exit.top + 5, "Thoat");
 		int indexY = 60;
-		outtextxy(X, indexY - 40, "Ma SV");
-		outtextxy(X + 200, indexY - 40, "Ho");
-		outtextxy(X + 400, indexY - 40, "Ten");
-		outtextxy(X + 630, indexY - 40, "Diem");
+		outtextxy(X, indexY - 40, "Ma SV");//400
+		outtextxy(X + 350, indexY - 40, "Ho");//150
+		outtextxy(X + 500, indexY - 40, "Ten");//400
+		outtextxy(X + 950, indexY - 40, "Diem");//100
 
-		line(0, indexY - 10, X + 750, indexY - 10);
+		line(0, indexY - 10, getmaxx(), indexY - 10);
 
-		line(X + 170, 0, X + 170, getmaxy());
-		line(X + 370, 0, X + 370, getmaxy());
+		
+		line(X + 320, 0, X + 320, indexY + 40*(maxInPage+1));
+		line(X + 470, 0, X + 470, indexY + 40*(maxInPage+1));
 
-		line(X + 600, 0, X + 600, getmaxy());
-		line(X + 750, 0, X + 750, getmaxy());
+		line(X + 920, 0, X + 920, indexY + 40*(maxInPage+1));
+		line(0, indexY +40*(maxInPage + 1),getmaxx(),indexY + 40*(maxInPage+1));
 
 		char cDiem[10];
 		for (int i = index; i < sosv && i < index + maxInPage; i++) {
@@ -1131,12 +1132,12 @@ void InDS(string malop, string maMH, int maxInPage, int X) {
 			itoa(sv[i]->diem[indexMH]->diemThi, cDiem, 10);
 
 			outtextxy(X, indexY, &sv[i]->maSV[0]);
-			outtextxy(X + 200, indexY, &sv[i]->Ho[0]);
-			outtextxy(X + 400, indexY, &sv[i]->Ten[0]);
+			outtextxy(X + 350, indexY, &sv[i]->Ho[0]);
+			outtextxy(X + 500, indexY, &sv[i]->Ten[0]);
 			if (sv[i]->diem[indexMH]->diemThi != -1) {
-				outtextxy(X + 630, indexY, cDiem);
+				outtextxy(X + 950, indexY, cDiem);
 			} else {
-				outtextxy(X + 610, indexY, "Chua Thi");
+				outtextxy(X + 950, indexY, "Chua Thi");
 			}
 
 			indexY += 40;
@@ -1223,18 +1224,19 @@ int DeleteSV(string malop, int maxInPage, int X) {
 		outtextxy(del.left + 10, del.top + 5, "Xoa");
 
 		int indexY = 60;
-		outtextxy(X, indexY - 40, "Ma SV");
-		outtextxy(X + 200, indexY - 40, "Ho");
-		outtextxy(X + 400, indexY - 40, "Ten");
-		outtextxy(X + 630, indexY - 40, "Diem");
+		outtextxy(X, indexY - 40, "Ma SV");//400
+		outtextxy(X + 350, indexY - 40, "Ho");//150
+		outtextxy(X + 500, indexY - 40, "Ten");//400
+		outtextxy(X + 950, indexY - 40, "Gioi Tinh");//100
 
-		line(0, indexY - 10, X + 700, indexY - 10);
+		line(0, indexY - 10, getmaxx(), indexY - 10);
 
-		line(X + 170, 0, X + 170, getmaxy());
-		line(X + 370, 0, X + 370, getmaxy());
+		
+		line(X + 320, 0, X + 320, indexY + 40*(maxInPage+1));
+		line(X + 470, 0, X + 470, indexY + 40*(maxInPage+1));
 
-		line(X + 600, 0, X + 600, getmaxy());
-		line(X + 700, 0, X + 700, getmaxy());
+		line(X + 920, 0, X + 920, indexY + 40*(maxInPage+1));
+		line(0, indexY +40*(maxInPage + 1),getmaxx(),indexY + 40*(maxInPage+1));
 
 		for (int i = index; i < sosv && i < index + maxInPage; i++) {
 			//	cout<<i<<endl;
@@ -1243,12 +1245,12 @@ int DeleteSV(string malop, int maxInPage, int X) {
 			InitCircle(click[i], mark[i]);
 
 			outtextxy(X, indexY, &sv[i]->maSV[0]);
-			outtextxy(X + 200, indexY, &sv[i]->Ho[0]);
-			outtextxy(X + 400, indexY, &sv[i]->Ten[0]);
+			outtextxy(X + 350, indexY, &sv[i]->Ho[0]);
+			outtextxy(X + 500, indexY, &sv[i]->Ten[0]);
 			if(sv[i]->Nam) {
-				outtextxy(X + 610, indexY, "Nam");
+				outtextxy(X + 950, indexY, "Nam");
 			} else {
-				outtextxy(X + 610, indexY, "Nu");
+				outtextxy(X + 950, indexY, "Nu");
 			}
 
 			indexY += 40;
@@ -1360,18 +1362,20 @@ int SuaSinhVien(string malop,string tenlop, int maxInPage, int X) {
 		outtextxy(fix.left + 10, fix.top + 5, "Sua");
 
 		int indexY = 60;
-		outtextxy(X, indexY - 40, "Ma SV");
-		outtextxy(X + 200, indexY - 40, "Ho");
-		outtextxy(X + 400, indexY - 40, "Ten");
-		outtextxy(X + 630, indexY - 40, "Diem");
+		outtextxy(X, indexY - 40, "Ma SV");//400
+		outtextxy(X + 350, indexY - 40, "Ho");//150
+		outtextxy(X + 500, indexY - 40, "Ten");//400
+		outtextxy(X + 950, indexY - 40, "Gioi Tinh");//100
 
-		line(0, indexY - 10, X + 700, indexY - 10);
+		line(0, indexY - 10, getmaxx(), indexY - 10);
 
-		line(X + 170, 0, X + 170, getmaxy());
-		line(X + 370, 0, X + 370, getmaxy());
+		
+		line(X + 320, 0, X + 320, indexY + 40*(maxInPage+1));
+		line(X + 470, 0, X + 470, indexY + 40*(maxInPage+1));
 
-		line(X + 600, 0, X + 600, getmaxy());
-		line(X + 700, 0, X + 700, getmaxy());
+		line(X + 920, 0, X + 920, indexY + 40*(maxInPage+1));
+		line(0, indexY +40*(maxInPage + 1),getmaxx(),indexY + 40*(maxInPage+1));
+
 
 		for (int i = index; i < sosv && i < index + maxInPage; i++) {
 			//	cout<<i<<endl;
@@ -1381,12 +1385,12 @@ int SuaSinhVien(string malop,string tenlop, int maxInPage, int X) {
 			else InitCircle(click[i],-1);
 
 			outtextxy(X, indexY, &sv[i]->maSV[0]);
-			outtextxy(X + 200, indexY, &sv[i]->Ho[0]);
-			outtextxy(X + 400, indexY, &sv[i]->Ten[0]);
+			outtextxy(X + 350, indexY, &sv[i]->Ho[0]);
+			outtextxy(X + 500, indexY, &sv[i]->Ten[0]);
 			if(sv[i]->Nam) {
-				outtextxy(X + 610, indexY, "Nam");
+				outtextxy(X + 950, indexY, "Nam");
 			} else {
-				outtextxy(X + 610, indexY, "Nu");
+				outtextxy(X + 950, indexY, "Nu");
 			}
 
 			indexY += 40;
@@ -1595,7 +1599,12 @@ void WindowSuaSV(string malop,string tenlop, SinhVien *sv, int toadoX) {
 					index=inf->TestLop(Smalop);
 					if(index!=-1) Stenlop=inf->lop[index]->tenLop;
 				}
-
+				
+				float *diem = new float[SOMON];
+				DSDiemThi **dsd=sv->diem;
+				for(int i=0;i<SOMON;i++){
+					diem[i]=dsd[i]->diemThi;
+				}
 				inf->DeleteSV(sv->maSV);
 				*inf->sv=SinhVien(Sma,Sho,Sten,Spassword,Trai);
 				*inf->lopTemp = Lop(Smalop,Stenlop);
@@ -1603,16 +1612,39 @@ void WindowSuaSV(string malop,string tenlop, SinhVien *sv, int toadoX) {
 				int ad;
 				ad = inf->AddSv(inf->sv,inf->lopTemp);
 
-				if(ad!=-1)	outtextxy(apply.left , apply.top -30, " Sua Thanh Cong !");
+				if(ad!=-1)	{
+					//outtextxy(apply.left , apply.top -30, " Sua Thanh Cong !");	
+					WindowThongBao("Sua Thanh Cong !");
+				}
 				else  {
 					*inf->lopTemp = Lop(malop,tenlop);
 					inf->AddSv(sv,inf->lopTemp);
-					outtextxy(apply.left , apply.top -30, " Sua That Bai !");
+					//outtextxy(apply.left , apply.top -30, " Sua That Bai !");
+					WindowThongBao("Sua That Bai !");
 				}
+				
+				for(int i=0;i<inf->GetSoLop();i++){
+					DSSV *ds=inf->lop[i]->dssv;
+					bool flag=false;
+					while(ds!=NULL){
+						if(ds->sv->maSV==Sma){
+							flag=true;
+							for(int j=0;j<SOMON;j++){
+								ds->sv->diem[j]->diemThi=diem[j];
+							}
+							break;
+						}
+						ds=ds->next;
+					}
+					if(flag) break;
+					
+				}
+				
 			} else {
-				outtextxy(apply.left , apply.top -30, "Trung MSSV! ");
+				//outtextxy(apply.left , apply.top -30, "Trung MSSV! ");
+				WindowThongBao("Trung MSSV !");
 			}
-			outtextxy(apply.left , apply.top -30, "                                            ");
+			//outtextxy(apply.left , apply.top -30, "                                            ");
 
 			moux = -1;
 			mouy = -1;
