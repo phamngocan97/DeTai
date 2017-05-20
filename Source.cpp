@@ -69,7 +69,6 @@ class Login {
 		int left, right, top, bottom;
 };
 
-
 class DSMON {
 	public:
 		DSMON(int n) {
@@ -124,7 +123,7 @@ void Write(char *s, int x, int y, int dai);
 void ThemSINHVIEN(string lop, string malop, int type, int toadoX);
 void HieuUngNhap(Login log, string &s, int &indexX, int &indexY, int &moux, int &mouy, int disChar, int maxS, int type = -1);
 void HieuUngNhaps(Login log, string &s, int &indexX, int &indexY, int &moux, int &mouy, int disChar, int maxS);
-void InDS(string malop, string maMH, int maxInPage, int X);
+void InDSDiem(string malop, string maMH, int maxInPage, int X);
 int DeleteSV(string malop, int maxInPage, int X);
 int SuaSinhVien(string malop, int maxInPage, int X);
 void WindowSuaSV(string malop,string tenlop, SinhVien *sv, int toadoX);
@@ -132,6 +131,7 @@ void WindowGV();
 void WindowThongBao(string s);
 bool WindowThongBaoYN(string s);
 void WindowBeforeThi();
+void WindowAfterThi(QuesAndAns *CauHoi,CircleClick **click, int *chon,int n);
 void WindowThemCauHoi();
 
 void LoadDSSV();
@@ -419,10 +419,10 @@ void InitCircle(CircleClick click, int mau) {
 		circle(click.x, click.y, click.bk);
 
 	} else {
-		//	setcolor(WHITE);
+			setcolor(mau);
 		circle(click.x, click.y, click.bk);
-		setfillstyle(12, WHITE);
-		floodfill(click.x, click.y, WHITE);
+		setfillstyle(12, mau);
+		floodfill(click.x, click.y, mau);
 	}
 
 	setcolor(k);
@@ -485,7 +485,7 @@ void DocCauHoi() {
 				file.read(dsmon[i]->Ques[j]->traloi[m],k+1);
 			}
 			file.read((char*)&k,sizeof(int));
-			dsmon[i]->Ques[j]->dapan=k;
+			dsmon[i]->Ques[j]->dapan=k-1;
 
 			QuesAndAns *temp=new QuesAndAns;
 			strcpy(temp->cauhoi,dsmon[i]->Ques[j]->cauhoi);
@@ -624,6 +624,7 @@ void InitQuestion(int realQues, DSMON *dsm) {
 	getimage(0, 0, getmaxx(), getmaxy(), screen);
 	InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
 	InitRec(previous, next.left - 50 - previous.rong / 2, getmaxy() - previous.rong - 50);
+	
 	putimage(0, 0, screen, COPY_PUT);
 
 	bool out=false;
@@ -634,11 +635,14 @@ void InitQuestion(int realQues, DSMON *dsm) {
 		}
 		isClick = false;
 		cleardevice();
-
-		DrawTracNghiem(CauHoi[i - 1], click[i - 1], choose[i - 1]);
-
+		
+		
+		InitRec(ketThuc, 40, getmaxy() - ketThuc.rong / 2 - 50);	
+		outtextxy(ketThuc.left + 40, ketThuc.top + 5, "Ket Thuc");
 		InitRec(clock, getmaxx() - 30 - clock.dai / 2, 30 + clock.rong / 2);
 		InitSoCau(soCau, clock, cauDaLam, realQues);
+
+		DrawTracNghiem(CauHoi[i - 1], click[i - 1], choose[i - 1]);
 
 		if (i < realQues) {
 			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
@@ -648,8 +652,6 @@ void InitQuestion(int realQues, DSMON *dsm) {
 			InitRec(previous, next.left - 50 - previous.rong / 2, getmaxy() - previous.rong - 50);
 			outtextxy(previous.left + 20, previous.top + 5, "PREV");
 		}
-		InitRec(ketThuc, 40, getmaxy() - ketThuc.rong / 2 - 50);
-		outtextxy(ketThuc.left + 40, ketThuc.top + 5, "Ket Thuc");
 
 		while (1) {
 			delay(0.00001);
@@ -715,7 +717,7 @@ void InitQuestion(int realQues, DSMON *dsm) {
 							cauDaLam++;
 							//InitSoCau(soCau,clock,cauDaLam,realQues);
 						}
-						InitCircle(click[i - 1][j], 1);
+						InitCircle(click[i - 1][j], WHITE);
 						choose[i - 1] = j + 1;
 
 					} else {
@@ -734,6 +736,8 @@ void InitQuestion(int realQues, DSMON *dsm) {
 		if (choose[i] == CauHoi[i].dapan) socaudung++;
 	}
 	currentDiem = (socaudung * 10) / ((float)realQues);
+
+	WindowAfterThi(CauHoi, click, choose, realQues);
 	//file.close();
 }
 
@@ -778,7 +782,7 @@ void DrawTracNghiem(QuesAndAns CauHoi, CircleClick *click, int type) {
 		if (type != i) {
 			InitCircle(click[i - 1], -1);
 		} else {
-			InitCircle(click[i - 1], 1);
+			InitCircle(click[i - 1], WHITE);
 		}
 	}
 
@@ -883,6 +887,7 @@ void HieuUngNhap(Login log, string &s, int &indexX, int &indexY, int &moux, int 
 				out = true;
 				moux = mousex(), mouy = mousey();
 				outtextxy(indexX, indexY, " ");
+				clearmouseclick(WM_LBUTTONDOWN);
 				return;
 			}
 			clearmouseclick(WM_LBUTTONDOWN);
@@ -1100,7 +1105,7 @@ void ThemSINHVIEN(string tenlop, string malop, int type, int toadoX) {
 		}
 
 }
-void InDS(string malop, string maMH, int maxInPage, int X) {
+void InDSDiem(string malop, string maMH, int maxInPage, int X) {
 	void *arrow;
 	unsigned int size;
 	size = imagesize(0, 0, getmaxx(), getmaxy());//trai-tren: 0-0....phai-duoi: maxx,maxy
@@ -1329,7 +1334,7 @@ int DeleteSV(string malop, int maxInPage, int X) {
 						chon--;
 					} else {
 						chon++;
-						mark[t] = 1;
+						mark[t] = WHITE;
 						InitCircle(click[t], mark[t]);
 					}
 				}
@@ -1415,7 +1420,7 @@ int SuaSinhVien(string malop,string tenlop, int maxInPage, int X) {
 			//	cout<<i<<endl;
 
 			click[i].y = indexY + 5;
-			if(choose==i) InitCircle(click[i], 1);
+			if(choose==i) InitCircle(click[i], WHITE);
 			else InitCircle(click[i],-1);
 
 			outtextxy(X, indexY, &sv[i]->maSV[0]);
@@ -1476,7 +1481,7 @@ int SuaSinhVien(string malop,string tenlop, int maxInPage, int X) {
 			if(isClick)
 				for (int t = index; t < sosv && t < index + maxInPage; t++) {
 					if(choose==t) {
-						InitCircle(click[t],1);
+						InitCircle(click[t],WHITE);
 					} else {
 						InitCircle(click[t],-1);
 					}
@@ -1827,10 +1832,10 @@ void WindowBeforeThi() {
 		if(IsClickRec(ok,moux,mouy)) {
 			if(TIME<=0 || SOCAU<=0) {
 				WindowThongBao("Thoi gian/So cau khong hop le");
-			} else{
+			} else {
 				MON_HIEN_TAI = chon;
-				return;	
-			} 
+				return;
+			}
 			moux=mouy=-1;
 			continue;
 		} else if (IsClickRec(Maxcau, moux, mouy)) {
@@ -1866,6 +1871,104 @@ void WindowBeforeThi() {
 			moux=mouy=-1;
 		}
 
+	}
+
+}
+void WindowAfterThi(QuesAndAns *CauHoi,CircleClick **click, int *chon,int n) {
+	void *screen;
+	int size = imagesize(0,0,getmaxx(),getmaxy());
+	screen = malloc(size);
+	cleardevice();
+	
+	Login next, previous, ketThuc;
+
+	next.dai = previous.dai = 90;
+	next.rong = previous.rong = ketThuc.rong = 30;
+	ketThuc.dai = 120;
+
+	InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
+	InitRec(previous, next.left - 50 - previous.rong / 2, getmaxy() - previous.rong - 50);
+	
+	int i=1;
+	
+	bool out=false;
+	while(1) {
+		delay(0.00001);
+		cleardevice();
+		
+		InitRec(ketThuc, 40, getmaxy() - ketThuc.rong / 2 - 50);
+		outtextxy(ketThuc.left + 40, ketThuc.top + 5, "Ket Thuc");
+
+		DrawTracNghiem(CauHoi[i - 1], click[i - 1], chon[i - 1]);
+		cout<<chon[i-1]<<" "<<CauHoi[i-1].dapan<<endl;
+		if(chon[i - 1] != CauHoi[i-1].dapan) {
+			CircleClick temp;
+			int ans=CauHoi[i-1].dapan;
+			temp.bk=click[i-1][ans].bk;
+			temp.x=click[i-1][ans].x;
+			temp.y=click[i-1][ans].y;
+			InitCircle(temp,RED);
+		}
+		if (i < n) {
+			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
+			outtextxy(next.left + 20, next.top + 5, "NEXT");
+		}
+		if (i > 1) {
+			InitRec(previous, next.left - 50 - previous.rong / 2, getmaxy() - previous.rong - 50);
+			outtextxy(previous.left + 20, previous.top + 5, "PREV");
+		}
+		while(1) {
+			delay(0.000001);
+			if (ismouseclick(WM_LBUTTONDOWN)) {
+				int moux = mousex(), mouy = mousey();
+				clearmouseclick(WM_LBUTTONDOWN);
+				//outtextxy(mousex(), mousey(), "x");
+				if (i < n&&IsClickRec(next, moux, mouy)) {
+					//isClick = true;
+					i++;
+					break;
+				} else if (i > 1 && IsClickRec(previous, moux, mouy)) {
+					//	isClick = true;
+					i--;
+					break;
+				} else if (IsClickRec(ketThuc, moux, mouy)) {
+					getimage(0, 0, getmaxx(), getmaxy(), screen);
+					Login Big, yes, no;
+					Big = Login(70, 230);
+					yes = Login(30, 50);
+					no = Login(30, 50);
+
+
+					InitRec(Big, ketThuc.right + Big.dai / 2 + 30, getmaxy() - 30 - Big.rong / 2);
+					InitRec(yes, Big.left + 130, Big.top + 50);
+					InitRec(no, yes.right + 20 + no.dai / 2, Big.top + 50);
+					outtextxy(Big.left + 20, Big.top + 5, "Ban co muon ket thuc?");
+					outtextxy(yes.left + 10, yes.top + 5, "Yes");
+					outtextxy(no.left + 10, no.top + 5, "No");
+					bool clickNo = false;
+					int  _moux = -1, _mouy = -1;
+					while (1) {
+						delay(0.00001);
+						if (ismouseclick(WM_LBUTTONDOWN)) {
+							_moux = mousex();
+							_mouy = mousey();
+							clearmouseclick(WM_LBUTTONDOWN);
+						}
+						if (IsClickRec(yes, _moux, _mouy)) {
+							out = TRUE;
+							return;
+							break;
+						} else if (IsClickRec(no, _moux, _mouy)) {
+							clickNo = true;
+							break;
+						}
+					}
+					if (clickNo) putimage(0, 0, screen, COPY_PUT);
+				}
+
+			}
+
+		}
 	}
 
 }
@@ -1983,7 +2086,7 @@ void WindowGV() {
 
 
 				if (inf->TestLop(currentMaLop) != -1) {
-					InDS(currentMaLop, inf->monHoc[0]->maMH, 10, 100);
+					InDSDiem(currentMaLop, inf->monHoc[0]->maMH, 10, 100);
 				} else { // khong co lop
 					WindowThongBao("Lop khong ton tai");
 				}
