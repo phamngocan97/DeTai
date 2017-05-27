@@ -1,4 +1,10 @@
+#include<bits/stdc++.h>
+#include <cstdlib>
+#include<Windows.h>
 #include<ctime>
+#include<iomanip>
+#include<thread>
+
 #include"winbgim.h"
 #include"Infor.h"
 #include"AVLtree.h"
@@ -136,6 +142,9 @@ void WindowAfterThi(QuesAndAns *CauHoi,CircleClick **click, int *chon,int n);
 void WindowThemCauHoi();
 int WindowChonMon();
 
+void InitThread();
+void CountDown(int time);
+
 void LoadDSSV();
 void DocCauHoi();
 
@@ -145,14 +154,14 @@ float currentDiem;
 int TIME = -1, SOCAU = -1;
 int MON_HIEN_TAI=0;
 const int SOMON =2;
-bool OVERTIME = false;
+bool OVERTIME = false,stopThread = false;
 
 DSMON **dsmon;
 
 AVL **CayCB;
 AVLtree *TREE;
 int IdArr[SOMON][1000];
-
+int topClock,leftClock;
 int main() {
 
 	//initgraph(&bg, &bm, " ");
@@ -185,11 +194,10 @@ int main() {
 			WindowGV();
 		}
 		if (typeSign >= 0) {
-			//cout<<"sdfg";
 			TIME=SOCAU=-1;
 			WindowBeforeThi();
-			cout<<dsmon[MON_HIEN_TAI]->GetCountMon()<<endl;
 			InitQuestion(SOCAU,dsmon[MON_HIEN_TAI]);
+			//	InitThread();
 			inf->UpdateDiem(inf->lop[typeSign]->maLop, currentId, inf->monHoc[MON_HIEN_TAI]->maMH, currentDiem);
 		}
 	}
@@ -203,6 +211,83 @@ int main() {
 	return 0;
 }
 
+void InitThread() {
+	thread tracNghiem(InitQuestion,SOCAU,dsmon[MON_HIEN_TAI]);;
+	//thread demnguoc(CountDown,TIME);
+	tracNghiem.detach();
+	//demnguoc.detach();
+	if(tracNghiem.joinable()) {
+		//tracNghiem = thread(InitQuestion,SOCAU,dsmon[MON_HIEN_TAI]);
+		//tracNghiem.join();
+	}
+	//if(demnguoc.joinable()) demnguoc.join();
+}
+
+void InTime(int &phut,int &giay,int x,int y) {
+	char MIN[4],SEC[3];
+	MIN[3]=SEC[2]='\0';
+	int m,s;
+	m=phut,s=giay;
+	for(int i=2; i>=0; i--) {
+		MIN[i]=m%10 + '0';
+		m/=10;
+	}
+	for(int i=1; i>=0; i--) {
+		SEC[i]=s%10 + '0';
+		s/=10;
+	}
+	Sleep(100);
+	char in[15];
+	memset(in,0,sizeof in);
+	strcat(in,MIN);
+	strcat(in," : ");
+	strcat(in,SEC);
+	outtextxy(x,y,in);
+	if(giay>0) giay--;
+	else {
+		giay=59;
+		phut--;
+	}
+}
+
+void CountDown(int time) {
+	OVERTIME = true;
+
+	char MIN[4],SEC[3];
+	MIN[3]=SEC[2]='\0';
+	int phut,giay;
+	phut=time;
+	giay=0;
+	stopThread = false;
+	do {
+		if(stopThread) return;
+		if(giay>0) giay--;
+		else {
+			giay=59;
+			phut--;
+		}
+		int m,s;
+		m=phut,s=giay;
+		for(int i=2; i>=0; i--) {
+			MIN[i]=m%10 + '0';
+			m/=10;
+		}
+		for(int i=1; i>=0; i--) {
+			SEC[i]=s%10 + '0';
+			s/=10;
+		}
+		Sleep(100);
+		char in[15];
+		memset(in,0,sizeof in);
+		strcat(in,MIN);
+		strcat(in," : ");
+		strcat(in,SEC);
+		outtextxy(leftClock+10,topClock+5,in);
+
+	} while(phut!=0 || giay!=0);
+
+	OVERTIME = false;
+}
 
 void DrawLogin(Login &login, Login &id, Login &pass) {
 	int disRong, disIdPass;
@@ -455,6 +540,10 @@ int TestId(string id, string pass) {
 
 void InitSoCau(Login &soCau, Login clock, int cauDaLam, int realQues) {
 	InitRec(soCau, getmaxx() - 30 - soCau.dai / 2, clock.bottom + soCau.rong / 2 + 10 + soCau.rong / 2);
+
+	leftClock = clock.left;
+	topClock = clock.top;
+
 	char temp[1000], sumCau[1000];
 	memset(temp, 0, sizeof temp);
 	memset(sumCau, 0, sizeof sumCau);
@@ -630,23 +719,43 @@ void InitQuestion(int realQues, DSMON *dsm) {
 
 	putimage(0, 0, screen, COPY_PUT);
 
+	int phut=TIME,giay=0;
+	float timeDelay=0;
 	bool out=false;
+	const float tDelay=0.02;
 	while (1) {
+	//	cout<<"K\n";
+		//Sleep(0.00001);
 		delay(0.00001);
+
 		if (OVERTIME || out) {
 			break;
 		}
 		isClick = false;
 		cleardevice();
-
+	//	cout<<"K1\n";
 
 		InitRec(ketThuc, 40, getmaxy() - ketThuc.rong / 2 - 50);
 		outtextxy(ketThuc.left + 40, ketThuc.top + 5, "Ket Thuc");
 		InitRec(clock, getmaxx() - 30 - clock.dai / 2, 30 + clock.rong / 2);
 		InitSoCau(soCau, clock, cauDaLam, realQues);
 
-		DrawTracNghiem(CauHoi[i - 1], click[i - 1], choose[i - 1]);
 
+		/////-------------------TIME--------------------
+		timeDelay+=tDelay;
+		if((int)timeDelay==(int)1) {
+			
+			timeDelay=0;
+			InTime(phut,giay,clock.left+5,clock.top+5);
+			if(giay==0 && phut==0) {
+				OVERTIME=true;
+				break;
+			}
+		}
+		////-----------TIME-----------------------------
+
+		DrawTracNghiem(CauHoi[i - 1], click[i - 1], choose[i - 1]);
+	//	cout<<"K2\n";
 		if (i < realQues) {
 			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
 			outtextxy(next.left + 20, next.top + 5, "NEXT");
@@ -657,15 +766,37 @@ void InitQuestion(int realQues, DSMON *dsm) {
 		}
 
 		while (1) {
+	//		cout<<"K3\n";
+//			Sleep(0.00001);
+	//		cout<<"x\n";
 			delay(0.00001);
+
+			/////-------------------TIME--------------------
+//			system("cls");
+			cout<<timeDelay<<" ____________";
+			timeDelay+=tDelay;
+			if((int)timeDelay==(int)1) {
+				timeDelay=0;
+				InTime(phut,giay,clock.left+5,clock.top+5);
+				if(giay==0 && phut==0) {
+					OVERTIME=true;
+					break;
+				}
+			}
+			////-----------TIME-----------------------------
+
+
+	//		cout<<"xx\n";
 			if (OVERTIME || out) {
 				break;
 			}
+	//		cout<<"K4\n";
 			if (ismouseclick(WM_LBUTTONDOWN)) {
 				int moux = mousex(), mouy = mousey();
 				clearmouseclick(WM_LBUTTONDOWN);
 				//outtextxy(mousex(), mousey(), "x");
 				if (i < realQues&&IsClickRec(next, moux, mouy)) {
+	//				cout<<"next\n";
 					//isClick = true;
 					i++;
 					break;
@@ -690,7 +821,22 @@ void InitQuestion(int realQues, DSMON *dsm) {
 					bool clickNo = false;
 					int  _moux = -1, _mouy = -1;
 					while (1) {
+						//Sleep(0.00001);
 						delay(0.00001);
+
+						/////-------------------TIME--------------------
+						timeDelay+=tDelay;
+						if((int)timeDelay==(int)1) {
+							timeDelay=0;
+							InTime(phut,giay,clock.left+5,clock.top+5);
+							if(giay==0 && phut==0) {
+								OVERTIME=true;
+								break;
+							}
+						}
+						////-----------TIME-----------------------------
+
+
 						if (ismouseclick(WM_LBUTTONDOWN)) {
 							_moux = mousex();
 							_mouy = mousey();
@@ -698,6 +844,8 @@ void InitQuestion(int realQues, DSMON *dsm) {
 						}
 						if (IsClickRec(yes, _moux, _mouy)) {
 							out = TRUE;
+							stopThread = true;
+//							cout<<"end\n";
 							break;
 						} else if (IsClickRec(no, _moux, _mouy)) {
 							clickNo = true;
@@ -740,7 +888,7 @@ void InitQuestion(int realQues, DSMON *dsm) {
 	}
 	if(socaudung==realQues) currentDiem=10.0;
 	else currentDiem = (socaudung * 10) / ((float)realQues);
-
+//	cout<"update\n";
 	WindowAfterThi(CauHoi, click, choose, realQues);
 	//file.close();
 }
