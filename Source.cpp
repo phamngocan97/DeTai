@@ -1315,7 +1315,12 @@ void InDSDiem(string malop, string maMH, int maxInPage, int X) {
 
 		line(X + 920, 0, X + 920, indexY + 40*(maxInPage+1));
 		line(0, indexY +40*(maxInPage + 1),getmaxx(),indexY + 40*(maxInPage+1));
-
+		
+		outtextxy(10,indexY +40*(maxInPage + 1) + 20,"Lop: ");
+		outtextxy(70,indexY +40*(maxInPage + 1) + 20,&inf->lop[indexLop]->maLop[0]);
+		outtextxy(10,indexY +40*(maxInPage + 1) + 70,"Mon: ");
+		outtextxy(70,indexY +40*(maxInPage + 1) + 70,&inf->monHoc[indexMH]->tenMH[0]);
+		
 		char cDiem[10];
 		for (int i = index; i < sosv && i < index + maxInPage; i++) {
 			//	cout<<i<<endl;
@@ -1434,7 +1439,10 @@ void InDSLop(string malop, int maxInPage, int X) {
 
 		line(X + 920, 0, X + 920, indexY + 40*(maxInPage+1));
 		line(0, indexY +40*(maxInPage + 1),getmaxx(),indexY + 40*(maxInPage+1));
-
+		
+		outtextxy(10,indexY +40*(maxInPage + 1) + 20,"Lop: ");
+		outtextxy(70,indexY +40*(maxInPage + 1) + 20,&inf->lop[indexLop]->maLop[0]);
+		
 		char cDiem[10];
 		for (int i = index; i < sosv && i < index + maxInPage; i++) {
 			//	cout<<i<<endl;
@@ -1545,7 +1553,10 @@ int DeleteSV(string malop, int maxInPage, int X) {
 
 		line(X + 920, 0, X + 920, indexY + 40*(maxInPage+1));
 		line(0, indexY +40*(maxInPage + 1),getmaxx(),indexY + 40*(maxInPage+1));
-
+		
+		outtextxy(10,indexY +40*(maxInPage + 1) + 20,"Lop: ");
+		outtextxy(70,indexY +40*(maxInPage + 1) + 20,&inf->lop[indexLop]->maLop[0]);
+		
 		for (int i = index; i < sosv && i < index + maxInPage; i++) {
 			//	cout<<i<<endl;
 
@@ -1683,7 +1694,9 @@ int SuaSinhVien(string malop,string tenlop, int maxInPage, int X) {
 
 		line(X + 920, 0, X + 920, indexY + 40*(maxInPage+1));
 		line(0, indexY +40*(maxInPage + 1),getmaxx(),indexY + 40*(maxInPage+1));
-
+		
+		outtextxy(10,indexY +40*(maxInPage + 1) + 20,"Lop: ");
+		outtextxy(70,indexY +40*(maxInPage + 1) + 20,&inf->lop[indexLop]->maLop[0]);
 
 		for (int i = index; i < sosv && i < index + maxInPage; i++) {
 			//	cout<<i<<endl;
