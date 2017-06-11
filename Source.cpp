@@ -152,12 +152,13 @@ void DocCauHoi();
 
 
 string currentId;
+int currentLop;
 float currentDiem;
 int TIME = -1, SOCAU = -1;
 int MON_HIEN_TAI=0;
 const int SOMON =2;
 bool OVERTIME = false,stopThread = false;
-
+bool isBack=false;
 
 DSMON **dsmon;
 Infor *inf;
@@ -183,19 +184,17 @@ int main() {
 
 
 	DocFile();
-		
+
 	Login login, id, pass, cancel;
 	int typeSign;
 
-	//InitQuestion();
 
-//	inf->AddMh("a", "b");
 	while (1) {
 		cleardevice();
 		DrawLogin(login, id, pass,cancel);
 		typeSign = DangNhap(login, id, pass,cancel);
 
-		//cout<<typeSign<<endl;
+
 		if(typeSign == -2) {
 			break;
 		}
@@ -204,7 +203,10 @@ int main() {
 		}
 		if (typeSign >= 0) {
 			TIME=SOCAU=-1;
+			
+			isBack=false;
 			WindowBeforeThi();
+			if(isBack) continue;
 			InitQuestion(SOCAU,dsmon[MON_HIEN_TAI]);
 			//	InitThread();
 			inf->UpdateDiem(inf->lop[typeSign]->maLop, currentId, inf->monHoc[MON_HIEN_TAI]->maMH, currentDiem);
@@ -545,7 +547,7 @@ int TestId(string id, string pass) {
 			test = inf->TestSV(inf->lop[i], id);
 			if (!test) {
 				//	cout<<i;
-
+				currentLop = i;
 				return i;
 			}
 
@@ -575,8 +577,8 @@ void DocCauHoi() {
 	fstream file;
 	dsmon=new DSMON*[SOMON];
 
-//	string tenFile[SOMON] = {"Ngon Ngu Lap Trinh C++.inp","Co So Du Lieu SQL.inp"};
-	string tenFile[SOMON]= {"Ques.inp","SQLbin.txt"};
+	string tenFile[SOMON] = {"Ngon Ngu Lap Trinh C++.inp","Co So Du Lieu SQL.inp"};
+//	string tenFile[SOMON]= {"Ques.inp","SQLbin.txt"};
 	string tenMon[SOMON]= {"Ngon ngu C++","Co so du lieu SQL"};
 	string maMon[SOMON]= {"C++","SQL"};
 	for(int i=0; i<SOMON; i++) {
@@ -589,12 +591,12 @@ void DocCauHoi() {
 		for(int j=0; j<n; j++) {
 			file.read((char*)&k,sizeof(int));
 			file.read(dsmon[i]->Ques[j]->cauhoi,k+1);
-			
+
 			for(int m=0; m<4; m++) {
 				file.read((char*)&k,sizeof(int));
 				file.read(dsmon[i]->Ques[j]->traloi[m],k+1);
-				if(i==0){
-					cout<<dsmon[i]->Ques[j]->traloi[m]<<endl;
+				if(i==0) {
+					//	cout<<dsmon[i]->Ques[j]->traloi[m]<<endl;
 				}
 			}
 			file.read((char*)&k,sizeof(int));
@@ -2115,11 +2117,11 @@ void WindowThongBao(string s) {
 void WindowBeforeThi() {
 	cleardevice();
 	string  socau = "", sophut = "";
-	Login big, ok , Maxtime, Maxcau;
+	Login big, ok , Maxtime, Maxcau,back;
 	big.dai=getmaxx()/4;
 	big.rong=50*SOMON+20*SOMON;
-	ok.dai=80;
-	ok.rong=50;
+	back.dai=ok.dai=80;
+	back.rong=ok.rong=50;
 
 	Maxcau.dai = Maxtime.dai = 90;
 	Maxcau.rong = Maxtime.rong = 40;
@@ -2127,6 +2129,7 @@ void WindowBeforeThi() {
 
 	InitRec(big,getmaxx()/2,getmaxy()/2);
 	InitRec(ok,getmaxx() - ok.dai/2 - 30,getmaxy() - ok.rong/2 -30);
+	InitRec(back,ok.left-back.dai/2,ok.top+back.rong/2);
 
 	InitRec(Maxcau, big.right + Maxcau.dai/2 + 140, big.top + Maxcau.rong/2);
 	outtextxy(Maxcau.left - 70, Maxcau.top + 5, "So Cau");
@@ -2135,7 +2138,7 @@ void WindowBeforeThi() {
 	outtextxy(Maxtime.left - 90, Maxtime.top + 5, "Thoi Gian");
 
 	outtextxy(ok.left+5,ok.top + 7,"OK");
-
+	outtextxy(back.left+5,back.top+7,"BACK");
 	CircleClick *click = new CircleClick[SOMON];
 	for(int i=0; i<SOMON; i++) {
 		click[i].bk=10;
@@ -2175,11 +2178,25 @@ void WindowBeforeThi() {
 				WindowThongBao("Thoi gian/So cau khong hop le");
 			} else {
 				MON_HIEN_TAI = chon;
+				
+				DSSV *ds = inf->lop[currentLop]->dssv;
+				while(ds->sv->maSV!=currentId) ds=ds->next;
+				if(ds->sv->diem[MON_HIEN_TAI]->diemThi != (float)-1){
+					WindowThongBao("Da Thi Mon Nay !");
+					moux=mouy=-1;
+					continue;
+				}
+				
 				return;
 			}
 			moux=mouy=-1;
 			continue;
-		} else if (IsClickRec(Maxcau, moux, mouy)) {
+		} 
+		else if(IsClickRec(back,moux,mouy)){
+			isBack=true;
+			return;
+		}
+		else if (IsClickRec(Maxcau, moux, mouy)) {
 			HieuUngNhap(Maxcau, socau, indexXCau, indexYCau, moux, mouy, 15, 3, 1);
 			if (socau.size() != 0) {
 				int temp;
@@ -2887,7 +2904,7 @@ void LoadDSSV() {
 
 	for (int i = 0; i < n; i++) {
 		*inf->sv = SinhVien(masv[i], ho[i], ten[i], masv[i], true);
-		*inf->lopTemp = Lop("CC", "CNTT");
+		*inf->lopTemp = Lop("CN2", "CNTT");
 		inf->AddSv(inf->sv, inf->lopTemp);
 	}
 }
@@ -2902,14 +2919,14 @@ void GhiFile() {
 		file.write((char*)&n,sizeof(int));
 		for(int j=0; j<n; j++) {
 			int k=strlen(dsmon[i]->Ques[j]->cauhoi);
-			
+
 			file.write((char*)&k,sizeof(int));
 			file.write(dsmon[i]->Ques[j]->cauhoi,k+1);
 			for(int m=0; m<4; m++) {
 				k=strlen(dsmon[i]->Ques[j]->traloi[m]);
 				file.write((char*)&k,sizeof(int));
 				file.write(dsmon[i]->Ques[j]->traloi[m],k+1);
-				
+
 			}
 			k=dsmon[i]->Ques[j]->dapan;
 			k++;
@@ -2925,10 +2942,10 @@ void GhiFile() {
 	file.open("DSSV2",ios::out|ios::binary);
 	int temp=inf->GetSoLop();
 	file.write((char*)&temp,sizeof(int));
-	
+
 	char tenLop[100],maLop[100],ho[100],ten[100],pass[100],maSV[100];
 	for(int i=0; i<inf->GetSoLop(); i++) {
-		
+
 		bool nam=false;
 		int k;
 		memset(tenLop,0,sizeof tenLop);
@@ -2938,17 +2955,17 @@ void GhiFile() {
 
 		k=inf->lop[i]->soSv;
 		file.write((char*)&k,sizeof(int));
-		
+
 		k=strlen(maLop);
-		file.write((char*)&k,sizeof(int));		
+		file.write((char*)&k,sizeof(int));
 		file.write(maLop,strlen(maLop)+1);
-		
+
 		k=strlen(tenLop);
 		file.write((char*)&k,sizeof(int));
 		file.write(tenLop,strlen(tenLop)+1);
 
 		DSSV *ds=inf->lop[i]->dssv;
-		while(ds!=NULL) {
+		while(ds!=NULL) {			
 			memset(ho,0,sizeof ho);
 			memset(ten,0,sizeof ten);
 			memset(pass,0,sizeof pass);
@@ -2959,31 +2976,32 @@ void GhiFile() {
 			strcpy(pass,ds->sv->PassWord.c_str());
 			strcpy(maSV,ds->sv->maSV.c_str());
 			nam=ds->sv->Nam;
-			
-			
+
+
 			k=strlen(maSV);
 			file.write((char*)&k,sizeof(int));
 			file.write(maSV,strlen(maSV)+1);
-			
+
 			k=strlen(ho);
 			file.write((char*)&k,sizeof(int));
 			file.write(ho,strlen(ho)+1);
-			
+
 			k=strlen(ten);
 			file.write((char*)&k,sizeof(int));
 			file.write(ten,strlen(ten)+1);
-			
+
 			k=strlen(pass);
 			file.write((char*)&k,sizeof(int));
-			file.write(pass,strlen(pass)+1);			
-			
+			file.write(pass,strlen(pass)+1);
+
 			if(nam) k=1;
 			else k=0;
 			file.write((char*)&k,sizeof(int));
-			for(int j=0;j<SOMON;j++){
-				file.write((char*)&(ds->sv->diem[j]->diemThi),sizeof(float));
+			for(int j=0; j<SOMON; j++) {
+				float diem = ds->sv->diem[j]->diemThi;
+				file.write((char*)&diem,sizeof(float));
 			}
-			
+
 			ds=ds->next;
 		}
 	}
@@ -2993,46 +3011,46 @@ void GhiFile() {
 }
 void DocFile() {
 	fstream file;
-	
+
 	DocCauHoi();
-	
+
 	file.open("DSSV2",ios::in|ios::binary);
 	int soLop;
 	file.read((char*)&soLop,sizeof(int));
-	
+
 	char tenLop[100],maLop[100],ho[100],ten[100],pass[100],maSV[100];
 	bool nam=false;
 	string *StenLop,*SmaLop;
 	StenLop=new string[soLop];
 	SmaLop=new string[soLop];
-	
-	
-	for(int i=0;i<soLop;i++){
-		
+
+
+	for(int i=0; i<soLop; i++) {
+
 		StenLop[i].resize(100);
 		SmaLop[i].resize(100);
-		
+
 		memset(tenLop,0,sizeof tenLop);
 		memset(maLop,0,sizeof maLop);
 		int k,soSv;
 		file.read((char*)&soSv,sizeof(int));
-		
+
 		file.read((char*)&k,sizeof(int));
 		file.read(maLop,k+1);
-		
+
 		file.read((char*)&k,sizeof(int));
-		file.read(tenLop,k+1);		
-		
-		
+		file.read(tenLop,k+1);
+
+
 		StenLop[i] = tenLop;
 		SmaLop[i] = maLop;
 
-		string *Sma=new string[soSv];		
+		string *Sma=new string[soSv];
 		string *Sten=new string[soSv];
 		string *Sho=new string[soSv];
 		string *Spass=new string[soSv];
-		
-		for(int j=0;j<soSv;j++){
+
+		for(int j=0; j<soSv; j++) {
 			memset(ho,0,sizeof ho);
 			memset(ten,0,sizeof ten);
 			memset(pass,0,sizeof pass);
@@ -3041,7 +3059,7 @@ void DocFile() {
 			Sho[j].resize(100);
 			Sten[j].resize(100);
 			Spass[j].resize(100);
-			
+
 			file.read((char*)&k,sizeof(int));
 			file.read(maSV,k+1);
 			file.read((char*)&k,sizeof(int));
@@ -3049,29 +3067,32 @@ void DocFile() {
 			file.read((char*)&k,sizeof(int));
 			file.read(ten,k+1);
 			file.read((char*)&k,sizeof(int));
-			file.read(pass,k+1);			
+			file.read(pass,k+1);
 			
+
 			Sma[j]=maSV;
 			Sho[j]=ho;
 			Sten[j]=ten;
 			Spass[j]=pass;
-			
+
 			file.read((char*)&k,sizeof(int));
 			if(k==1) nam=true;
 			else nam=false;
-			
+
 			*inf->sv = SinhVien(Sma[j],Sho[j],Sten[j],Spass[j],nam);
 			*inf->lopTemp=Lop(SmaLop[i],StenLop[i]);
 			inf->AddSv(inf->sv,inf->lopTemp);
-						
+
 			float diem;
-			for(int j=0;j<SOMON;j++){
+			for(int indexMon=0; indexMon<SOMON; indexMon++) {
 				file.read((char*)&diem,sizeof(float));
-				inf->UpdateDiem(SmaLop[i],Sma[j],inf->monHoc[j]->maMH,diem);
+				inf->UpdateDiem(SmaLop[i],Sma[j],inf->monHoc[indexMon]->maMH,diem);
+				
+//				cout<<SmaLop[i]<<" "<<Sma[j]<<" "<<inf->monHoc[j]->maMH<<" "<<diem<<endl;
 			}
-			
+
 		}
 	}
-	
+
 	file.close();
 }
