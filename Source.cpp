@@ -143,6 +143,7 @@ void WindowBeforeThi();
 void WindowAfterThi(QuesAndAns *CauHoi,CircleClick **click, int *chon,int n);
 void WindowThemCauHoi();
 int WindowChonMon();
+bool WindowNhapTenLop(string &s)
 
 void InitThread();
 void CountDown(int time);
@@ -2329,6 +2330,60 @@ void WindowAfterThi(QuesAndAns *CauHoi,CircleClick **click, int *chon,int n) {
 	}
 
 }
+bool WindowNhapTenLop(string &s){
+	s.clear();
+	string s1;
+	Login tenLop,ok,back;
+	tenLop.dai = 220;
+	tenLop.rong = 60;
+	
+	ok.dai=back.dai=90;
+	ok.rong=back.rong=30;
+	
+	void *screen;
+	int size = imagesize(0,0,getmaxx(),getmaxy());
+	screen = malloc(size);
+	getimage(0,0,getmaxx(),getmaxy(),screen);
+	
+	cleardevice();
+	
+	InitRec(tenLop,getmaxx()/2,getmaxy()/2);
+	InitRec(ok,getmaxx()-ok.dai/2-30,getmaxy() - ok.rong/2-30);
+	InitRec(back,ok.left-back.dai/2,ok.top+back.rong/2);
+	
+	outtextxy(tenLop.left-90,tenLop.top+5,"Ten Lop ");
+	outtextxy(ok.left+10,ok.top+5,"OK");
+	outtextxy(back.left+10,back.top+5,"Back");
+	
+	int disChar = 15,maxS=13;
+	int moux=-1,mouy=-1;
+	int indexXTenLop,indexYTenLop;
+	indexXTenLop = tenLop.left + 10;
+	indexYTenLop = tenLop.top + tenLop.rong / 2 - 10;
+
+	while(1){
+		delay(0.00001);
+		if(ismouseclick(WM_LBUTTONDOWN)){
+			moux=mousex();
+			mouy=mousey();
+		}
+		if(IsClickRec(tenLop,moux,mouy)){
+			HieuUngNhap(tenLop, s1, indexXTenLop, indexYTenLop, moux, mouy, disChar, maxS, 2);
+		}
+		else if(IsClickRec(back,moux,mouy)){
+			putimage(0,0,screen,COPY_PUT);
+			return false;
+		}
+		else if(IsClickRec(ok,moux,mouy)){
+			for(int i=0;i<s1.size();i++){
+				s.push_back(s1[i]);
+			}
+			return true;
+		}
+		
+	}
+	
+}
 void WindowGV() {
 	cleardevice();
 	Login maLop, tenLop;
@@ -2366,8 +2421,8 @@ void WindowGV() {
 	tamX = 30 + choose.dai / 2;
 	InitRec(maLop, tamX + 50, maLop.rong / 2 + 10);
 	outtextxy(maLop.left - 70, maLop.top + 5, "Ma Lop");
-	InitRec(tenLop, maLop.right + tenLop.dai / 2 + 100, maLop.top + tenLop.rong / 2);
-	outtextxy(maLop.right + 10, maLop.top + 5, "Ten Lop");
+//	InitRec(tenLop, maLop.right + tenLop.dai / 2 + 100, maLop.top + tenLop.rong / 2);
+//	outtextxy(maLop.right + 10, maLop.top + 5, "Ten Lop");
 
 	InitRec(choose, tamX, maLop.bottom + 60);
 	int dis = inDsLop.rong / 2;
@@ -2428,8 +2483,6 @@ void WindowGV() {
 		}
 		if (IsClickRec(maLop, moux, mouy)) {
 			HieuUngNhap(maLop, currentMaLop, indexXMaLop, indexYMaLop, moux, mouy, disChar, maxS, 2);
-		} else if (IsClickRec(tenLop, moux, mouy)) {
-			HieuUngNhap(tenLop, currentTenLop, indexXTenLop, indexYTenLop, moux, mouy, disChar, maxS, 2);
 		} else if (IsClickRec(exit, moux, mouy)) {
 			return;
 		} else { //cc
@@ -2517,6 +2570,14 @@ void WindowGV() {
 						clearmouseclick(WM_LBUTTONDOWN);
 
 						if (IsClickRec(themSv, xx, yy)) {
+							int temp = inf->TestLop(currentMaLop);
+							if(temp==-1){
+								bool flag=WindowNhapTenLop(currentTenLop);
+								if(!flag){//back
+									xx=-1,yy=-1;
+									break;
+								}
+							}
 							ThemSINHVIEN(currentTenLop, currentMaLop, THEMSV, SV.right + 400);
 							xx = -1, yy = -1;
 							break;
