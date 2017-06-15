@@ -127,6 +127,7 @@ int TestId(string id, string pass);
 void InitQuestion(int realQues,DSMON *ds);
 void DrawTracNghiem(QuesAndAns Infor, CircleClick *click, int type);
 void Write(char *s, int x, int y, int dai);
+void WriteColorWord(int x,int y,string s,int mau,int);
 
 void ThemSINHVIEN(string lop, string malop, int type, int toadoX);
 void HieuUngNhap(Login log, string &s, int &indexX, int &indexY, int &moux, int &mouy, int disChar, int maxS, int type = -1);
@@ -157,7 +158,7 @@ int currentLop;
 float currentDiem;
 int TIME = -1, SOCAU = -1;
 int MON_HIEN_TAI=0;
-const int SOMON =2;
+const int SOMON =2, MAUCHU = BLACK,MAUNEN = 0 | 9,BUTTON = 10 | 0,WORDBUTTON = BLACK;
 bool OVERTIME = false,stopThread = false;
 bool isBack=false;
 
@@ -188,9 +189,10 @@ int main() {
 
 	Login login, id, pass, cancel;
 	int typeSign;
-
-
+	
+	setcolor(MAUCHU);
 	while (1) {
+		setbkcolor(MAUNEN);
 		cleardevice();
 		DrawLogin(login, id, pass,cancel);
 		typeSign = DangNhap(login, id, pass,cancel);
@@ -312,10 +314,10 @@ void DrawLogin(Login &login, Login &id, Login &pass,Login &cancel) {
 
 	//setfillstyle(5, WHITE);
 
-	InitRec(login, getmaxx() / 2, getmaxy() / 2);
-	InitRec(id, getmaxx() / 2, getmaxy() / 2 - id.rong / 2 - disIdPass / 2);
-	InitRec(pass, getmaxx() / 2, getmaxy() / 2 + id.rong / 2 + disIdPass / 2);
-	InitRec(cancel, getmaxx() - cancel.dai / 2 - 50, getmaxy() - cancel.rong / 2 - 50);
+	InitRec(login, getmaxx() / 2, getmaxy() / 2,5 | 0);
+	InitRec(id, getmaxx() / 2, getmaxy() / 2 - id.rong / 2 - disIdPass / 2,0 | 9);
+	InitRec(pass, getmaxx() / 2, getmaxy() / 2 + id.rong / 2 + disIdPass / 2,0 | 9);
+	InitRec(cancel, getmaxx() - cancel.dai / 2 - 50, getmaxy() - cancel.rong / 2 - 50,BUTTON);
 //	outtextxy(cancel.left + 20, cancel.top + 5, "Cancel");
 
 
@@ -327,11 +329,16 @@ void DrawLogin(Login &login, Login &id, Login &pass,Login &cancel) {
 	settextstyle(4, HORIZ_DIR, 3);
 	outtextxy(login.left + 90, login.top - 40, "Dang Nhap");
 
+	setbkcolor(5|0);
 	settextstyle(3, HORIZ_DIR, 1);
-	outtextxy(cancel.left+10,cancel.top+5,"Thoat");
 	outtextxy(login.left + 10, id.top + 15, "Tai Khoan");
 	outtextxy(login.left + 10, pass.top + 15, "Mat Khau");
-
+	
+	
+	WriteColorWord(cancel.left+10,cancel.top+5,"Thoat",WORDBUTTON,BUTTON);
+	
+	
+	//outtextxy(cancel.left+10,cancel.top+5,"Thoat");
 }
 
 int DangNhap(Login login, Login id, Login pass, Login cancel) {
@@ -394,7 +401,7 @@ int DangNhap(Login login, Login id, Login pass, Login cancel) {
 						currentId = tk;
 						break;
 					} else {
-						outtextxy(login.bottom + 20, login.left + 50, "Sai ID/PassWord");
+						outtextxy(login.left + 20, login.bottom + 50, "Sai ID/PassWord");
 					}
 				} else if ((ll)tk.size() > 0 && c == BACKSPACE) {
 					//tk.pop_back();
@@ -510,22 +517,35 @@ void InitRec(Login &log, int tamX, int tamY, int mau) {
 	rectangle(log.left, log.top, log.right, log.bottom);
 	setfillstyle(12, mau);
 	floodfill(tamX, tamY, mau);
-
-	setcolor(k);
+	
+	/*
+	setfillstyle(12,mau);
+	bar(log.left, log.top, log.right, log.bottom);
+	*/
+	
+	setcolor(BLACK);
 	setfillstyle(0, k);
-
+	rectangle(log.left, log.top, log.right, log.bottom);
+	setcolor(k);
 }
-
+void WriteColorWord(int x,int y,string s,int mauChu,int buttonColor){
+	setbkcolor(buttonColor);
+	int k=getcolor();
+	setcolor(mauChu);
+	outtextxy(x,y,&s[0]);
+	setcolor(k);
+	setbkcolor(MAUNEN);
+}
 void InitCircle(CircleClick click, int mau) {
 	int k = getcolor();
 
 	if (mau == -1) {
-		setcolor(BLACK);
+		setcolor(MAUNEN);
 		circle(click.x, click.y, click.bk);
-		setfillstyle(12, BLACK);
-		floodfill(click.x, click.y, BLACK);
+		setfillstyle(12, MAUNEN);
+		floodfill(click.x, click.y, MAUNEN);
 
-		setcolor(WHITE);
+		setcolor(BLACK);
 		circle(click.x, click.y, click.bk);
 
 	} else {
@@ -762,8 +782,9 @@ void InitQuestion(int realQues, DSMON *dsm) {
 		cleardevice();
 		//	cout<<"K1\n";
 
-		InitRec(ketThuc, 40, getmaxy() - ketThuc.rong / 2 - 50);
-		outtextxy(ketThuc.left + 40, ketThuc.top + 5, "Ket Thuc");
+		InitRec(ketThuc, 40, getmaxy() - ketThuc.rong / 2 - 50,BUTTON);
+		//outtextxy(ketThuc.left + 40, ketThuc.top + 5, "Ket Thuc");
+		WriteColorWord(ketThuc.left + 40, ketThuc.top + 5, "Ket Thuc",WORDBUTTON,BUTTON);
 		InitRec(clock, getmaxx() - 30 - clock.dai / 2, 30 + clock.rong / 2);
 		InitSoCau(soCau, clock, cauDaLam, realQues);
 
@@ -784,12 +805,14 @@ void InitQuestion(int realQues, DSMON *dsm) {
 		DrawTracNghiem(CauHoi[i - 1], click[i - 1], choose[i - 1]);
 		//	cout<<"K2\n";
 		if (i < realQues) {
-			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
-			outtextxy(next.left + 20, next.top + 5, "NEXT");
+			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50,BUTTON);
+			//outtextxy(next.left + 20, next.top + 5, "NEXT");
+			WriteColorWord(next.left + 20, next.top + 5, "NEXT",WORDBUTTON,BUTTON);
 		}
 		if (i > 1) {
-			InitRec(previous, next.left - 50 - previous.rong / 2, getmaxy() - previous.rong - 50);
-			outtextxy(previous.left + 20, previous.top + 5, "PREV");
+			InitRec(previous, next.left - 50 - previous.rong / 2, getmaxy() - previous.rong - 50,BUTTON);
+			//outtextxy(previous.left + 20, previous.top + 5, "PREV");
+			WriteColorWord(previous.left + 20, previous.top + 5, "PREV",WORDBUTTON,BUTTON);
 		}
 
 		while (1) {
@@ -839,12 +862,15 @@ void InitQuestion(int realQues, DSMON *dsm) {
 					no = Login(30, 50);
 
 
-					InitRec(Big, ketThuc.right + Big.dai / 2 + 30, getmaxy() - 30 - Big.rong / 2);
-					InitRec(yes, Big.left + 130, Big.top + 50);
-					InitRec(no, yes.right + 20 + no.dai / 2, Big.top + 50);
-					outtextxy(Big.left + 20, Big.top + 5, "Ban co muon ket thuc?");
-					outtextxy(yes.left + 10, yes.top + 5, "Yes");
-					outtextxy(no.left + 10, no.top + 5, "No");
+					InitRec(Big, ketThuc.right + Big.dai / 2 + 30, getmaxy() - 30 - Big.rong / 2,RED);
+					InitRec(yes, Big.left + 130, Big.top + 50,BUTTON);
+					InitRec(no, yes.right + 20 + no.dai / 2, Big.top + 50,BUTTON);
+					//outtextxy(Big.left + 20, Big.top + 5, "Ban co muon ket thuc?");
+					//outtextxy(yes.left + 10, yes.top + 5, "Yes");
+					//outtextxy(no.left + 10, no.top + 5, "No");
+					WriteColorWord(Big.left + 20, Big.top + 5, "Ban co muon ket thuc?",WHITE,RED);
+					WriteColorWord(yes.left + 10, yes.top + 5, "Yes",WORDBUTTON,BUTTON);
+					WriteColorWord(no.left + 10, no.top + 5, "No",WORDBUTTON,BUTTON);
 					bool clickNo = false;
 					int  _moux = -1, _mouy = -1;
 					while (1) {
@@ -895,7 +921,7 @@ void InitQuestion(int realQues, DSMON *dsm) {
 							cauDaLam++;
 							//InitSoCau(soCau,clock,cauDaLam,realQues);
 						}
-						InitCircle(click[i - 1][j], WHITE);
+						InitCircle(click[i - 1][j], BLACK);
 						choose[i - 1] = j;
 
 					} else {
@@ -973,7 +999,7 @@ void DrawTracNghiem(QuesAndAns CauHoi, CircleClick *click, int type) {
 	cauhoi.rong = crongQues;
 	cauhoi.dai +=20;
 	
-	InitRec(cauhoi, tamX, tamY);
+	InitRec(cauhoi, tamX, tamY,WHITE);
 	Write(CauHoi.cauhoi, cauhoi.left + 5, cauhoi.top + 5, (cDai-10)/12);
 	for (int i = 1; i <= 4; i++) {
 		traloi[i - 1].dai = cDai;
@@ -986,7 +1012,7 @@ void DrawTracNghiem(QuesAndAns CauHoi, CircleClick *click, int type) {
 		} else {
 			tamY = traloi[i - 2].bottom + 30 + traloi[i - 1].rong / 2;
 		}
-		InitRec(traloi[i - 1], tamX, tamY);
+		InitRec(traloi[i - 1], tamX, tamY,WHITE);
 
 		Write(CauHoi.traloi[i - 1], traloi[i - 1].left + 5, traloi[i - 1].top + 5, (cDai-10)/12);
 		click[i - 1].bk = 10;
@@ -1000,7 +1026,7 @@ void DrawTracNghiem(QuesAndAns CauHoi, CircleClick *click, int type) {
 		if (type != i) {
 			InitCircle(click[i], -1);
 		} else {
-			InitCircle(click[i], WHITE);
+			InitCircle(click[i], BLACK);
 		}
 	}
 
@@ -1040,6 +1066,7 @@ void Write(char *s, int x, int y, int dai) {
 		cout<<s1<<endl;
 	
 		outtextxy(vtriX,vtriY,&s1[0]);
+		WriteColorWord(vtriX,vtriY,&s1[0],MAUCHU,WHITE);
 		vtriY+=30;
 	}
 //	*/
@@ -1271,7 +1298,7 @@ void ThemSINHVIEN(string tenlop, string malop, int type, int toadoX) {
 	outtextxy(nam.x - nam.bk - 40, nam.y - 15, "Nam");
 	outtextxy(nu.x - nu.bk - 30, nu.y - 15, "Nu");
 
-	InitCircle(nam, WHITE);
+	InitCircle(nam, BLACK);
 	InitCircle(nu, -1);
 
 
@@ -1314,7 +1341,7 @@ void ThemSINHVIEN(string tenlop, string malop, int type, int toadoX) {
 					InitCircle(nu, -1);
 					Trai = !Trai;
 				} else if (IsClickCircle(nu, moux, mouy) || Trai == true) {
-					InitCircle(nu, WHITE);
+					InitCircle(nu, BLACK);
 					InitCircle(nam, -1);
 					Trai = !Trai;
 				}
@@ -1376,15 +1403,18 @@ void InDSDiem(string malop, string maMH, int maxInPage, int X) {
 		delay(0.00001);
 		cleardevice();
 		if (index + maxInPage < sosv) {
-			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
-			outtextxy(next.left + 20, next.top + 5, "NEXT");
+			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50,BUTTON);
+			//outtextxy(next.left + 20, next.top + 5, "NEXT");
+			WriteColorWord(next.left + 20, next.top + 5, "NEXT",WORDBUTTON,BUTTON);
 		}
 		if (index >= maxInPage) {
-			InitRec(previous, next.left - previous.dai / 2, getmaxy() - previous.rong - 50);
-			outtextxy(previous.left + 20, previous.top + 5, "PREV");
+			InitRec(previous, next.left - previous.dai / 2, getmaxy() - previous.rong - 50,BUTTON);
+			//outtextxy(previous.left + 20, previous.top + 5, "PREV");
+			WriteColorWord(previous.left + 20, previous.top + 5, "PREV",WORDBUTTON,BUTTON);
 		}
-		InitRec(exit, getmaxx() - exit.dai - 50, getmaxy() - exit.rong - 20);
-		outtextxy(exit.left + 10, exit.top + 5, "Thoat");
+		InitRec(exit, getmaxx() - exit.dai - 50, getmaxy() - exit.rong - 20,BUTTON);
+		//outtextxy(exit.left + 10, exit.top + 5, "Thoat");
+		WriteColorWord(exit.left + 10, exit.top + 5, "Thoat",WORDBUTTON,BUTTON);
 		int indexY = 60;
 		outtextxy(X, indexY - 40, "Ma SV");//400
 		outtextxy(X + 350, indexY - 40, "Ho");//150
@@ -1500,15 +1530,19 @@ void InDSLop(string malop, int maxInPage, int X) {
 		delay(0.00001);
 		cleardevice();
 		if (index + maxInPage < sosv) {
-			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
-			outtextxy(next.left + 20, next.top + 5, "NEXT");
+			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50,BUTTON);
+			//outtextxy(next.left + 20, next.top + 5, "NEXT");
+			WriteColorWord(next.left + 20, next.top + 5, "NEXT",WORDBUTTON,BUTTON);
 		}
 		if (index >= maxInPage) {
-			InitRec(previous, next.left - previous.dai / 2, getmaxy() - previous.rong - 50);
-			outtextxy(previous.left + 20, previous.top + 5, "PREV");
+			InitRec(previous, next.left - previous.dai / 2, getmaxy() - previous.rong - 50,BUTTON);
+			//outtextxy(previous.left + 20, previous.top + 5, "PREV");
+			WriteColorWord(previous.left + 20, previous.top + 5, "PREV",WORDBUTTON,BUTTON);
 		}
-		InitRec(exit, getmaxx() - exit.dai - 50, getmaxy() - exit.rong - 20);
-		outtextxy(exit.left + 10, exit.top + 5, "Thoat");
+		InitRec(exit, getmaxx() - exit.dai - 50, getmaxy() - exit.rong - 20,BUTTON);
+		//outtextxy(exit.left + 10, exit.top + 5, "Thoat");
+		WriteColorWord(exit.left + 10, exit.top + 5, "Thoat",WORDBUTTON,BUTTON);
+		
 		int indexY = 60;
 		outtextxy(X, indexY - 40, "Ma SV");//400
 		outtextxy(X + 350, indexY - 40, "Ho");//150
@@ -1610,18 +1644,25 @@ int DeleteSV(string malop, int maxInPage, int X) {
 	while (1) {
 		delay(0.00001);
 		cleardevice();
+		
 		if (index + maxInPage < sosv) {
-			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
-			outtextxy(next.left + 20, next.top + 5, "NEXT");
+			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50,BUTTON);
+			//outtextxy(next.left + 20, next.top + 5, "NEXT");
+			WriteColorWord(next.left + 20, next.top + 5, "NEXT",WORDBUTTON,BUTTON);
 		}
 		if (index >= maxInPage) {
-			InitRec(previous, next.left - previous.dai / 2, getmaxy() - previous.rong - 50);
-			outtextxy(previous.left + 20, previous.top + 5, "PREV");
+			InitRec(previous, next.left - previous.dai / 2, getmaxy() - previous.rong - 50,BUTTON);
+			//outtextxy(previous.left + 20, previous.top + 5, "PREV");
+			WriteColorWord(previous.left + 20, previous.top + 5, "PREV",WORDBUTTON,BUTTON);
 		}
-		InitRec(exit, getmaxx() - exit.dai - 50, getmaxy() - exit.rong - 20);
-		outtextxy(exit.left + 10, exit.top + 5, "Thoat");
-		InitRec(del, exit.left - del.dai / 2, exit.top + del.rong / 2);
-		outtextxy(del.left + 10, del.top + 5, "Xoa");
+		InitRec(exit, getmaxx() - exit.dai - 50, getmaxy() - exit.rong - 20,BUTTON);
+		//outtextxy(exit.left + 10, exit.top + 5, "Thoat");
+		WriteColorWord(exit.left + 10, exit.top + 5, "Thoat",WORDBUTTON,BUTTON);
+		InitRec(del, exit.left - del.dai / 2, exit.top + del.rong / 2,BUTTON);
+		//outtextxy(fix.left + 10, fix.top + 5, "Sua");
+		WriteColorWord(del.left + 10, del.top + 5, "Xoa",WORDBUTTON,BUTTON);
+		
+		
 
 		int indexY = 60;
 		outtextxy(X, indexY - 40, "Ma SV");//400
@@ -1698,7 +1739,7 @@ int DeleteSV(string malop, int maxInPage, int X) {
 						chon--;
 					} else {
 						chon++;
-						mark[t] = WHITE;
+						mark[t] = BLACK;
 						InitCircle(click[t], mark[t]);
 					}
 				}
@@ -1752,17 +1793,21 @@ int SuaSinhVien(string malop,string tenlop, int maxInPage, int X) {
 		delay(0.00001);
 		cleardevice();
 		if (index + maxInPage < sosv) {
-			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
-			outtextxy(next.left + 20, next.top + 5, "NEXT");
+			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50,BUTTON);
+			//outtextxy(next.left + 20, next.top + 5, "NEXT");
+			WriteColorWord(next.left + 20, next.top + 5, "NEXT",WORDBUTTON,BUTTON);
 		}
 		if (index >= maxInPage) {
-			InitRec(previous, next.left - previous.dai / 2, getmaxy() - previous.rong - 50);
-			outtextxy(previous.left + 20, previous.top + 5, "PREV");
+			InitRec(previous, next.left - previous.dai / 2, getmaxy() - previous.rong - 50,BUTTON);
+			//outtextxy(previous.left + 20, previous.top + 5, "PREV");
+			WriteColorWord(previous.left + 20, previous.top + 5, "PREV",WORDBUTTON,BUTTON);
 		}
-		InitRec(exit, getmaxx() - exit.dai - 50, getmaxy() - exit.rong - 20);
-		outtextxy(exit.left + 10, exit.top + 5, "Thoat");
-		InitRec(fix, exit.left - fix.dai / 2, exit.top + fix.rong / 2);
-		outtextxy(fix.left + 10, fix.top + 5, "Sua");
+		InitRec(exit, getmaxx() - exit.dai - 50, getmaxy() - exit.rong - 20,BUTTON);
+		//outtextxy(exit.left + 10, exit.top + 5, "Thoat");
+		WriteColorWord(exit.left + 10, exit.top + 5, "Thoat",WORDBUTTON,BUTTON);
+		InitRec(fix, exit.left - fix.dai / 2, exit.top + fix.rong / 2,BUTTON);
+		//outtextxy(fix.left + 10, fix.top + 5, "Sua");
+		WriteColorWord(fix.left + 10, fix.top + 5, "Sua",WORDBUTTON,BUTTON);
 
 		int indexY = 60;
 		outtextxy(X, indexY - 40, "Ma SV");//400
@@ -1786,7 +1831,7 @@ int SuaSinhVien(string malop,string tenlop, int maxInPage, int X) {
 			//	cout<<i<<endl;
 
 			click[i].y = indexY + 5;
-			if(choose==i) InitCircle(click[i], WHITE);
+			if(choose==i) InitCircle(click[i], BLACK);
 			else InitCircle(click[i],-1);
 
 			outtextxy(X, indexY, &sv[i]->maSV[0]);
@@ -1847,7 +1892,7 @@ int SuaSinhVien(string malop,string tenlop, int maxInPage, int X) {
 			if(isClick)
 				for (int t = index; t < sosv && t < index + maxInPage; t++) {
 					if(choose==t) {
-						InitCircle(click[t],WHITE);
+						InitCircle(click[t],BLACK);
 					} else {
 						InitCircle(click[t],-1);
 					}
@@ -1925,7 +1970,7 @@ void WindowSuaSV(string malop,string tenlop, SinhVien *sv, int toadoX) {
 	outtextxy(nam.x - nam.bk - 40, nam.y - 15, "Nam");
 	outtextxy(nu.x - nu.bk - 30, nu.y - 15, "Nu");
 
-	InitCircle(nam, WHITE);
+	InitCircle(nam, BLACK);
 	InitCircle(nu, -1);
 
 
@@ -1969,11 +2014,11 @@ void WindowSuaSV(string malop,string tenlop, SinhVien *sv, int toadoX) {
 			HieuUngNhap(password, Spassword, indexXPass, indexYPass, moux, mouy, 15, 18);
 		} else if (IsClickCircle(nam, moux, mouy) || IsClickCircle(nu, moux, mouy)) {
 			if (IsClickCircle(nam, moux, mouy) || Trai == false) {
-				InitCircle(nam, WHITE);
+				InitCircle(nam, BLACK);
 				InitCircle(nu, -1);
 				Trai = !Trai;
 			} else if (IsClickCircle(nu, moux, mouy) || Trai == true) {
-				InitCircle(nu, WHITE);
+				InitCircle(nu, BLACK);
 				InitCircle(nam, -1);
 				Trai = !Trai;
 			}
@@ -2075,13 +2120,17 @@ bool WindowThongBaoYN(string s) {
 	ThongBao.rong = 100;
 	Yes.dai = No.dai = 80;
 	Yes.rong = No.rong = 30;
-	InitRec(ThongBao, getmaxx() / 2, getmaxy() / 2);
-	InitRec(Yes, ThongBao.left + 70, ThongBao.bottom - Yes.rong - 10);
-	InitRec(No, ThongBao.right - 70, ThongBao.bottom - Yes.rong - 10);
+	InitRec(ThongBao, getmaxx() / 2, getmaxy() / 2,RED);
+	InitRec(Yes, ThongBao.left + 70, ThongBao.bottom - Yes.rong - 10,BUTTON);
+	InitRec(No, ThongBao.right - 70, ThongBao.bottom - Yes.rong - 10,BUTTON);
 
-	outtextxy(ThongBao.left + 10, ThongBao.top + 10, &s[0]);
-	outtextxy(Yes.left + 10, Yes.top + 5, "Yes");
-	outtextxy(No.left + 10, No.top + 5, "No");
+	//outtextxy(ThongBao.left + 10, ThongBao.top + 10, &s[0]);
+	//outtextxy(Yes.left + 10, Yes.top + 5, "Yes");
+	//outtextxy(No.left + 10, No.top + 5, "No");
+	WriteColorWord(ThongBao.left + 10, ThongBao.top + 10, &s[0],WORDBUTTON,RED);
+	WriteColorWord(Yes.left + 10, Yes.top + 5, "Yes",WORDBUTTON,BUTTON);
+	WriteColorWord(No.left + 10, No.top + 5, "No",WORDBUTTON,BUTTON);
+	
 	int xx = -1, yy = -1;
 	bool IsYes = false;
 	while (1) {
@@ -2118,10 +2167,12 @@ void WindowThongBao(string s) {
 	ThongBao.rong = 100;
 	Ok.dai = 50;
 	Ok.rong = 30;
-	InitRec(ThongBao, getmaxx() / 2, getmaxy() / 2);
-	InitRec(Ok, getmaxx() / 2, ThongBao.bottom - Ok.rong - 20);
-	outtextxy(ThongBao.left + 10, ThongBao.top + 10, &s[0]);
-	outtextxy(Ok.left + 10, Ok.top + 5, "OK");
+	InitRec(ThongBao, getmaxx() / 2, getmaxy() / 2,RED);
+	InitRec(Ok, getmaxx() / 2, ThongBao.bottom - Ok.rong - 20,GREEN);
+	//outtextxy(ThongBao.left + 10, ThongBao.top + 10, &s[0]);
+	//outtextxy(Ok.left + 10, Ok.top + 5, "OK");
+	WriteColorWord(ThongBao.left + 10, ThongBao.top + 10, &s[0],WORDBUTTON,RED);
+	WriteColorWord(Ok.left + 10, Ok.top + 5, "OK",WORDBUTTON,GREEN);
 	int xx = -1, yy = -1;
 	while (1) {
 		delay(0.00001);
@@ -2150,9 +2201,9 @@ void WindowBeforeThi() {
 	Maxcau.rong = Maxtime.rong = 40;
 
 
-	InitRec(big,getmaxx()/2,getmaxy()/2);
-	InitRec(ok,getmaxx() - ok.dai/2 - 30,getmaxy() - ok.rong/2 -30);
-	InitRec(back,ok.left-back.dai/2,ok.top+back.rong/2);
+	InitRec(big,getmaxx()/2,getmaxy()/2,13 | 0);
+	InitRec(ok,getmaxx() - ok.dai/2 - 30,getmaxy() - ok.rong/2 -30,BUTTON);
+	InitRec(back,ok.left-back.dai/2,ok.top+back.rong/2,BUTTON);
 
 	InitRec(Maxcau, big.right + Maxcau.dai/2 + 140, big.top + Maxcau.rong/2);
 	outtextxy(Maxcau.left - 70, Maxcau.top + 5, "So Cau");
@@ -2160,8 +2211,11 @@ void WindowBeforeThi() {
 	InitRec(Maxtime, big.right + Maxtime.dai/2  + 140, Maxcau.bottom + 30);
 	outtextxy(Maxtime.left - 90, Maxtime.top + 5, "Thoi Gian");
 
-	outtextxy(ok.left+5,ok.top + 7,"OK");
-	outtextxy(back.left+5,back.top+7,"BACK");
+	//outtextxy(ok.left+5,ok.top + 7,"OK");
+	//outtextxy(back.left+5,back.top+7,"BACK");
+	WriteColorWord(ok.left+5,ok.top + 7,"OK",WORDBUTTON,BUTTON);
+	WriteColorWord(back.left+5,back.top+7,"BACK",WORDBUTTON,BUTTON);
+	
 	CircleClick *click = new CircleClick[SOMON];
 	for(int i=0; i<SOMON; i++) {
 		click[i].bk=10;
@@ -2169,14 +2223,15 @@ void WindowBeforeThi() {
 	}
 	int indexY=big.top+20;
 	for(int i=0; i<SOMON; i++) {
-		click[i].y=indexY + 5;
-		outtextxy(big.left+30,indexY,&inf->monHoc[i]->tenMH[0]);
+		click[i].y=indexY + 12;
+		//outtextxy(big.left+30,indexY,&inf->monHoc[i]->tenMH[0]);
+		WriteColorWord(big.left+30,indexY,&inf->monHoc[i]->tenMH[0],MAUCHU,13 | 0);
 		indexY+=30;
 	}
 
 	for(int i=0; i<SOMON; i++) {
 		if(i==MON_HIEN_TAI) {
-			InitCircle(click[i],WHITE);
+			InitCircle(click[i],BLACK);
 		} else InitCircle(click[i],-1);
 	}
 	int indexXCau,indexYCau,indexXTime,indexYTime;
@@ -2246,7 +2301,7 @@ void WindowBeforeThi() {
 		if(isClick) {
 			isClick=true;
 			for(int i=0; i<SOMON; i++) {
-				if(chon==i) InitCircle(click[i],WHITE);
+				if(chon==i) InitCircle(click[i],BLACK);
 				else InitCircle(click[i],-1);
 			}
 			moux=mouy=-1;
@@ -2277,8 +2332,9 @@ void WindowAfterThi(QuesAndAns *CauHoi,CircleClick **click, int *chon,int n) {
 		delay(0.00001);
 		cleardevice();
 
-		InitRec(ketThuc, 40, getmaxy() - ketThuc.rong / 2 - 50);
-		outtextxy(ketThuc.left + 40, ketThuc.top + 5, "Ket Thuc");
+		InitRec(ketThuc, 40, getmaxy() - ketThuc.rong / 2 - 50,BUTTON);
+		//outtextxy(ketThuc.left + 40, ketThuc.top + 5, "Ket Thuc");
+		WriteColorWord(ketThuc.left + 40, ketThuc.top + 5, "Ket Thuc",WORDBUTTON,BUTTON);
 
 		DrawTracNghiem(CauHoi[i - 1], click[i - 1], chon[i - 1]);
 		if(chon[i - 1] != CauHoi[i-1].dapan) {
@@ -2290,12 +2346,14 @@ void WindowAfterThi(QuesAndAns *CauHoi,CircleClick **click, int *chon,int n) {
 			InitCircle(temp,RED);
 		}
 		if (i < n) {
-			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50);
-			outtextxy(next.left + 20, next.top + 5, "NEXT");
+			InitRec(next, getmaxx() - next.dai - 50, getmaxy() - next.rong - 50,BUTTON);
+			//outtextxy(next.left + 20, next.top + 5, "NEXT");
+			WriteColorWord(next.left + 20, next.top + 5, "NEXT",WORDBUTTON,BUTTON);
 		}
 		if (i > 1) {
-			InitRec(previous, next.left - 50 - previous.rong / 2, getmaxy() - previous.rong - 50);
-			outtextxy(previous.left + 20, previous.top + 5, "PREV");
+			InitRec(previous, next.left - 50 - previous.rong / 2, getmaxy() - previous.rong - 50,BUTTON);
+			//outtextxy(previous.left + 20, previous.top + 5, "PREV");
+			WriteColorWord(previous.left + 20, previous.top + 5, "PREV",WORDBUTTON,BUTTON);
 		}
 		while(1) {
 			delay(0.000001);
@@ -2319,12 +2377,15 @@ void WindowAfterThi(QuesAndAns *CauHoi,CircleClick **click, int *chon,int n) {
 					no = Login(30, 50);
 
 
-					InitRec(Big, ketThuc.right + Big.dai / 2 + 30, getmaxy() - 30 - Big.rong / 2);
-					InitRec(yes, Big.left + 130, Big.top + 50);
-					InitRec(no, yes.right + 20 + no.dai / 2, Big.top + 50);
-					outtextxy(Big.left + 20, Big.top + 5, "Ban co muon ket thuc?");
-					outtextxy(yes.left + 10, yes.top + 5, "Yes");
-					outtextxy(no.left + 10, no.top + 5, "No");
+					InitRec(Big, ketThuc.right + Big.dai / 2 + 30, getmaxy() - 30 - Big.rong / 2,RED);
+					InitRec(yes, Big.left + 130, Big.top + 50,BUTTON);
+					InitRec(no, yes.right + 20 + no.dai / 2, Big.top + 50,BUTTON);
+				//	outtextxy(Big.left + 20, Big.top + 5, "Ban co muon ket thuc?");
+				//	outtextxy(yes.left + 10, yes.top + 5, "Yes");
+				//	outtextxy(no.left + 10, no.top + 5, "No");
+					WriteColorWord(Big.left + 20, Big.top + 5, "Ban co muon ket thuc?",WHITE,RED);
+					WriteColorWord(yes.left + 10, yes.top + 5, "Yes",WORDBUTTON,BUTTON);
+					WriteColorWord(no.left + 10, no.top + 5, "No",WORDBUTTON,BUTTON);
 					bool clickNo = false;
 					int  _moux = -1, _mouy = -1;
 					while (1) {
@@ -2450,17 +2511,20 @@ void WindowGV() {
 	int dis = inDsLop.rong / 2;
 	int tamY = choose.bottom + 20;
 	tamY += dis;
-	InitRec(inDs, tamX, tamY);
-	outtextxy(inDs.left + 20, inDs.top + 10, &SinDs[0]);
+	InitRec(inDs, tamX, tamY, 7 | 0);
+	//outtextxy(inDs.left + 20, inDs.top + 10, &SinDs[0]);
+	WriteColorWord(inDs.left + 20, inDs.top + 10, &SinDs[0],WHITE,7 | 0);
 
 
 	tamY = dis + inDs.bottom;
-	InitRec(SV, tamX, tamY);
-	outtextxy(SV.left + 20, SV.top + 10, &SinhVien[0]);
+	InitRec(SV, tamX, tamY , 7 | 0);
+	//outtextxy(SV.left + 20, SV.top + 10, &SinhVien[0]);
+	WriteColorWord(SV.left + 20, SV.top + 10, &SinhVien[0],WHITE,7 | 0);
 
 	tamY = dis + SV.bottom;
-	InitRec(NhapMon, tamX, tamY);
-	outtextxy(NhapMon.left + 20, NhapMon.top + 10, &addMh[0]);
+	InitRec(NhapMon, tamX, tamY,7 | 0);
+	//outtextxy(NhapMon.left + 20, NhapMon.top + 10, &addMh[0]);
+	WriteColorWord(NhapMon.left + 20, NhapMon.top + 10, &addMh[0],WHITE,7 | 0);
 
 //	InitRec(Maxcau, tamX + 40, NhapMon.bottom + 30);
 //	outtextxy(Maxcau.left - 70, Maxcau.top + 5, "So Cau");
@@ -2468,8 +2532,10 @@ void WindowGV() {
 //	InitRec(Maxtime, tamX + 40, Maxcau.bottom + 30);
 //	outtextxy(Maxtime.left - 90, Maxtime.top + 5, "Thoi Gian");
 
-	InitRec(exit, getmaxx() - exit.dai - 50, getmaxy() - exit.rong - 40);
-	outtextxy(exit.left + 5, exit.top + 5, "Thoat");
+	InitRec(exit, getmaxx() - exit.dai - 50, getmaxy() - exit.rong - 40,BUTTON);
+	//outtextxy(exit.left + 5, exit.top + 5, "Thoat");
+	WriteColorWord(exit.left + 5, exit.top + 5, "Thoat",WORDBUTTON,BUTTON);
+	
 	//------------------------------------------------------------------
 
 	int maxS = 13;
@@ -2531,12 +2597,14 @@ void WindowGV() {
 				outtextxy(chooseX, chooseY, &xoa[0]);
 				outtextxy(chooseX, chooseY, &SinDs[0]);
 
-				InitRec(inDsLop, inDs.right + inDsLop.dai / 2, inDs.top + inDsLop.rong / 2);
-				InitRec(inDsDiem, inDsLop.right + inDsDiem.dai / 2, inDsLop.top + inDsDiem.rong / 2);
+				InitRec(inDsLop, inDs.right + inDsLop.dai / 2, inDs.top + inDsLop.rong / 2, 7 | 0);
+				InitRec(inDsDiem, inDsLop.right + inDsDiem.dai / 2, inDsLop.top + inDsDiem.rong / 2, 7 | 0);
 
-				outtextxy(inDsLop.left + 10, inDsLop.top + 5, &SinDsLop[0]);
-				outtextxy(inDsDiem.left + 10, inDsDiem.top + 5, &SinDsDiem[0]);
-
+				//outtextxy(inDsLop.left + 10, inDsLop.top + 5, &SinDsLop[0]);
+				//outtextxy(inDsDiem.left + 10, inDsDiem.top + 5, &SinDsDiem[0]);
+				WriteColorWord(inDsLop.left + 10, inDsLop.top + 5, &SinDsLop[0],WHITE,7 | 0);
+				WriteColorWord(inDsDiem.left + 10, inDsDiem.top + 5, &SinDsDiem[0],WHITE,7 | 0);
+				
 				int xx = -1, yy = -1;
 				while (1) {
 					delay(0.0001);
@@ -2576,14 +2644,18 @@ void WindowGV() {
 				outtextxy(chooseX, chooseY, &xoa[0]);
 				outtextxy(chooseX, chooseY, &SinhVien[0]);
 
-				InitRec(themSv, SV.right + themSv.dai / 2, SV.top + SV.rong / 2);
-				InitRec(xoaSv, themSv.right + xoaSv.dai / 2, themSv.top + xoaSv.rong / 2);
-				InitRec(suaSv, xoaSv.right + suaSv.dai / 2, xoaSv.top + suaSv.rong / 2);
+				InitRec(themSv, SV.right + themSv.dai / 2, SV.top + SV.rong / 2,7 | 0);
+				InitRec(xoaSv, themSv.right + xoaSv.dai / 2, themSv.top + xoaSv.rong / 2,7 | 0);
+				InitRec(suaSv, xoaSv.right + suaSv.dai / 2, xoaSv.top + suaSv.rong / 2, 7 | 0);
 
 				outtextxy(themSv.left + 10, themSv.top + 5, &ThemSV[0]);
 				outtextxy(xoaSv.left + 10, xoaSv.top + 5, &XoaSV[0]);
 				outtextxy(suaSv.left + 10, suaSv.top + 5, &SuaSV[0]);
-
+				
+				WriteColorWord(themSv.left + 10, themSv.top + 5, &ThemSV[0],WHITE,7 | 0);
+				WriteColorWord(xoaSv.left + 10, xoaSv.top + 5, &XoaSV[0],WHITE,7 | 0);
+				WriteColorWord(suaSv.left + 10, suaSv.top + 5, &SuaSV[0],WHITE,7 | 0);
+				
 				int xx = -1, yy = -1;
 				while (1) {
 					delay(0.0001);
@@ -2675,9 +2747,11 @@ int WindowChonMon() {
 	Maxcau.rong = Maxtime.rong = 40;
 
 
-	InitRec(big,getmaxx()/2,getmaxy()/2);
-	InitRec(ok,big.right-ok.dai/2,big.bottom+ok.rong/2);
-	outtextxy(ok.left+5,ok.top+5,"Ok");
+	InitRec(big,getmaxx()/2,getmaxy()/2,13 | 0);
+	InitRec(ok,big.right-ok.dai/2,big.bottom+ok.rong/2,BUTTON);
+	
+	//outtextxy(ok.left+5,ok.top+5,"Ok");
+	WriteColorWord(ok.left+5,ok.top+5,"Ok",WORDBUTTON,BUTTON);
 
 	CircleClick *clk = new CircleClick[SOMON];
 	for(int i=0; i<SOMON; i++) {
@@ -2686,8 +2760,9 @@ int WindowChonMon() {
 	}
 	int indexY=big.top+20;
 	for(int i=0; i<SOMON; i++) {
-		clk[i].y=indexY + 5;
-		outtextxy(big.left+30,indexY,&inf->monHoc[i]->tenMH[0]);
+		clk[i].y=indexY + 12;
+		//outtextxy(big.left+30,indexY,&inf->monHoc[i]->tenMH[0]);
+		WriteColorWord(big.left+30,indexY,&inf->monHoc[i]->tenMH[0],WORDBUTTON,13 | 0);
 		indexY+=30;
 	}
 
@@ -2713,7 +2788,7 @@ int WindowChonMon() {
 			if(chon) {
 				for(int i=0; i<SOMON; i++) {
 					if(monHienTai==i) {
-						InitCircle(clk[i],WHITE);
+						InitCircle(clk[i],BLACK);
 					} else InitCircle(clk[i],-1);
 				}
 			}
@@ -2746,9 +2821,10 @@ void WindowThemCauHoi() {
 	Maxcau.rong = Maxtime.rong = 40;
 
 
-	InitRec(big,getmaxx()/2,getmaxy()/2);
-	InitRec(ok,big.right-ok.dai/2,big.bottom+ok.rong/2);
-	outtextxy(ok.left+5,ok.top+5,"Ok");
+	InitRec(big,getmaxx()/2,getmaxy()/2,13 | 0);
+	InitRec(ok,big.right-ok.dai/2,big.bottom+ok.rong/2,BUTTON);
+	//outtextxy(ok.left+5,ok.top+5,"Ok");
+	WriteColorWord(ok.left+5,ok.top+5,"Ok",WORDBUTTON,BUTTON);
 
 	CircleClick *clk = new CircleClick[SOMON];
 	for(int i=0; i<SOMON; i++) {
@@ -2759,12 +2835,13 @@ void WindowThemCauHoi() {
 	for(int i=0; i<SOMON; i++) {
 		clk[i].y=indexY + 5;
 		outtextxy(big.left+30,indexY,&inf->monHoc[i]->tenMH[0]);
+		WriteColorWord(big.left+30,indexY,&inf->monHoc[i]->tenMH[0],WORDBUTTON,13 | 0);
 		indexY+=30;
 	}
 
 	for(int i=0; i<SOMON; i++) {
 		if(i==monHienTai) {
-			InitCircle(clk[i],WHITE);
+			InitCircle(clk[i],BLACK);
 		} else InitCircle(clk[i],-1);
 	}
 	int xx=-1,yy=-1;
@@ -2784,7 +2861,7 @@ void WindowThemCauHoi() {
 			if(chon) {
 				for(int i=0; i<SOMON; i++) {
 					if(monHienTai==i) {
-						InitCircle(clk[i],WHITE);
+						InitCircle(clk[i],BLACK);
 					} else InitCircle(clk[i],-1);
 				}
 			}
