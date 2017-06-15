@@ -143,7 +143,7 @@ void WindowBeforeThi();
 void WindowAfterThi(QuesAndAns *CauHoi,CircleClick **click, int *chon,int n);
 void WindowThemCauHoi();
 int WindowChonMon();
-bool WindowNhapTenLop(string &s)
+bool WindowNhapTenLop(string &s);
 
 void InitThread();
 void CountDown(int time);
@@ -180,11 +180,11 @@ int main() {
 		CayCB[i]=NULL;
 	}
 	inf = new Infor(SOMON, 5);
-//	DocCauHoi();
-//	LoadDSSV();
+	DocCauHoi();
+	LoadDSSV();
 
 
-	DocFile();
+//	DocFile();
 
 	Login login, id, pass, cancel;
 	int typeSign;
@@ -364,13 +364,15 @@ int DangNhap(Login login, Login id, Login pass, Login cancel) {
 			char c;
 			bool flag = false;
 			bool outId = false;
+				int xx=-1, yy=-1;
 			while (!kbhit()) {
 				if (ismouseclick(WM_LBUTTONDOWN)) {
-					int xx, yy;
+				
 					xx = mousex(), yy = mousey();
-					if (IsClickRec(pass, xx, yy)) {
+					if (!IsClickRec(id, xx, yy)) {
 						moux = xx;
 						mouy = yy;
+						taikhoan=false;
 						outId = true;
 						break;
 					}
@@ -421,9 +423,10 @@ int DangNhap(Login login, Login id, Login pass, Login cancel) {
 				if (ismouseclick(WM_LBUTTONDOWN)) {
 					int xx, yy;
 					xx = mousex(), yy = mousey();
-					if (IsClickRec(id, xx, yy)) {
+					if (!IsClickRec(pass, xx, yy)) {
 						moux = xx;
 						mouy = yy;
+						matkhau=false;
 						outPass = true;
 						break;
 					}
@@ -578,8 +581,8 @@ void DocCauHoi() {
 	fstream file;
 	dsmon=new DSMON*[SOMON];
 
-	string tenFile[SOMON] = {"Ngon Ngu Lap Trinh C++.inp","Co So Du Lieu SQL.inp"};
-//	string tenFile[SOMON]= {"Ques.inp","SQLbin.txt"};
+//	string tenFile[SOMON] = {"Ngon Ngu Lap Trinh C++.inp","Co So Du Lieu SQL.inp"};
+	string tenFile[SOMON]= {"Ques.inp","SQLbin.txt"};
 	string tenMon[SOMON]= {"Ngon ngu C++","Co so du lieu SQL"};
 	string maMon[SOMON]= {"C++","SQL"};
 	for(int i=0; i<SOMON; i++) {
@@ -968,7 +971,8 @@ void DrawTracNghiem(QuesAndAns CauHoi, CircleClick *click, int type) {
 	int tamY = disToTop + crongQues / 2;
 	cauhoi.dai = cDai;
 	cauhoi.rong = crongQues;
-
+	cauhoi.dai +=20;
+	
 	InitRec(cauhoi, tamX, tamY);
 	Write(CauHoi.cauhoi, cauhoi.left + 5, cauhoi.top + 5, (cDai-10)/12);
 	for (int i = 1; i <= 4; i++) {
@@ -976,7 +980,7 @@ void DrawTracNghiem(QuesAndAns CauHoi, CircleClick *click, int type) {
 		traloi[i - 1].rong = (int)(strlen(CauHoi.traloi[i - 1])) / ((cDai-10)/12);
 		traloi[i-1].rong+=1;
 		traloi[i-1].rong*=30;
-
+		traloi[i-1].dai+=20;
 		if (i == 1) {
 			tamY = cauhoi.bottom + 30 + traloi[i - 1].rong / 2;
 		} else {
@@ -1009,7 +1013,7 @@ void Write(char *s, int x, int y, int dai) {
 	vtriY = y;
 //	outtextxy(x, y, &s[0]);
 //	return;
-	//	/*
+		/*
 	for (int i = 0; i < strlen(s); i++) {
 		//if (s[i] == '\0') return;
 		if (vtriX + 5 >= dai*12 + x) {
@@ -1020,7 +1024,25 @@ void Write(char *s, int x, int y, int dai) {
 		outtextxy(vtriX, vtriY, &ss[ss.size() - 1]);
 		vtriX += 12;
 	}
-	//	*/
+		*/
+//		/*
+	int maxInLine = 55;
+	int line = strlen(s)/maxInLine;
+	if(strlen(s)%maxInLine!=0) line++;
+	
+	for(int i=0;i<line;i++){
+		string s1;
+		s1.resize(100);
+		if(strlen(s)%maxInLine!=0 && i==line-1){
+			strncpy((char*)s1.c_str(),&s[i*maxInLine],strlen(s)%maxInLine);
+		}
+		else strncpy((char*)s1.c_str(),&s[i*maxInLine],maxInLine);
+		cout<<s1<<endl;
+	
+		outtextxy(vtriX,vtriY,&s1[0]);
+		vtriY+=30;
+	}
+//	*/
 }
 
 void BFS(int x, int y, int x1, int y1, int R) {
