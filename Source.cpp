@@ -363,6 +363,9 @@ int DangNhap(Login login, Login id, Login pass, Login cancel) {
 			moux = mousex(), mouy = mousey();
 			clearmouseclick(WM_LBUTTONDOWN);
 		}
+		if(!taikhoan && !matkhau){
+			if(kbhit()) getch();
+		}
 		if(IsClickRec(cancel,moux,mouy)) {
 			return -2;
 		} else if (taikhoan || IsClickRec(id, moux, mouy)) {
@@ -1165,6 +1168,7 @@ void HieuUngNhap(Login log, string &s, int &indexX, int &indexY, int &moux, int 
 
 	outtextxy(indexX, indexY, " ");
 	if (out) return;
+	
 	c = getch();
 	if ((ll)s.size() > 0 && c == BACKSPACE) {
 		//mk.pop_back();
@@ -1208,6 +1212,7 @@ void HieuUngNhaps(Login log, string &s, int &indexX, int &indexY, int &moux, int
 				return;
 			}
 			clearmouseclick(WM_LBUTTONDOWN);
+			
 		}
 
 		if (flag) outtextxy(indexX, indexY, "|");
@@ -1218,9 +1223,9 @@ void HieuUngNhaps(Login log, string &s, int &indexX, int &indexY, int &moux, int
 	}
 
 	outtextxy(indexX, indexY, " ");
-
+	
 	if (out) return;
-	c = getch();
+	c=getch();
 	if ( ((ll)s.size() > 0 && c == BACKSPACE)) {
 		//mk.pop_back();
 		s.erase(s.size() - 1);
@@ -1364,6 +1369,7 @@ void ThemSINHVIEN(string tenlop, string malop, int type, int toadoX) {
 				putimage(0, 0, arrow, COPY_PUT);
 				return;
 			}
+			if(kbhit()) getch();
 			//cc
 		}
 
@@ -2101,6 +2107,7 @@ void WindowSuaSV(string malop,string tenlop, SinhVien *sv, int toadoX) {
 			return;
 		}
 		//cc
+		if(kbhit()) getch();
 	}
 
 }
@@ -2306,7 +2313,7 @@ void WindowBeforeThi() {
 			}
 			moux=mouy=-1;
 		}
-
+		if(kbhit()) getch();
 	}
 
 }
@@ -2463,7 +2470,7 @@ bool WindowNhapTenLop(string &s){
 			}
 			return true;
 		}
-		
+		if(kbhit()) getch();
 	}
 	
 }
@@ -2479,7 +2486,7 @@ void WindowGV() {
 	const string SinDsLop = "Danh sach lop";
 	const string SinDsDiem = "Danh sach diem";
 	const string SinhVien = "Sinh vien";
-	const string addMh = "Them mon hoc";
+	const string addMh = "Them cau hoi";
 	const string addCauHoi = "Them cau hoi";
 	const string ThemSV = "Them sinh vien";
 	const string XoaSV = "Xoa sinh vien";
@@ -2729,7 +2736,7 @@ void WindowGV() {
 			moux = -1, mouy = -1;
 		}
 
-
+		if(kbhit()) getch();
 	}
 
 }
@@ -2833,7 +2840,7 @@ void WindowThemCauHoi() {
 	}
 	int indexY=big.top+20;
 	for(int i=0; i<SOMON; i++) {
-		clk[i].y=indexY + 5;
+		clk[i].y=indexY + 15;
 		outtextxy(big.left+30,indexY,&inf->monHoc[i]->tenMH[0]);
 		WriteColorWord(big.left+30,indexY,&inf->monHoc[i]->tenMH[0],WORDBUTTON,13 | 0);
 		indexY+=30;
@@ -2897,10 +2904,12 @@ void WindowThemCauHoi() {
 	InitRec(dapanC,getmaxx()/2,dapanB.bottom+dapanC.rong/2+20);
 	InitRec(dapanD,getmaxx()/2,dapanC.bottom+dapanD.rong/2+20);
 
-	InitRec(cancel,getmaxx()-cancel.dai/2-30,getmaxy()-cancel.rong/2-30);
-	InitRec(them,cancel.left-them.dai/2,cancel.top+them.rong/2);
-	outtextxy(them.left+10,them.top+5,"Them");
-	outtextxy(cancel.left+10,cancel.top+5,"Huy bo");
+	InitRec(cancel,getmaxx()-cancel.dai/2-30,getmaxy()-cancel.rong/2-30,BUTTON);
+	InitRec(them,cancel.left-them.dai/2,cancel.top+them.rong/2,BUTTON);
+	//outtextxy(them.left+10,them.top+5,"Them");
+	//outtextxy(cancel.left+10,cancel.top+5,"Huy bo");
+	WriteColorWord(them.left+10,them.top+5,"Them",WORDBUTTON,BUTTON);
+	WriteColorWord(cancel.left+10,cancel.top+5,"Huy bo",WORDBUTTON,BUTTON);
 
 	outtextxy(cauHoi.left-100,cauHoi.top+10,"Cau Hoi");
 	outtextxy(dapanA.left-40,dapanA.top+10,"A");
@@ -3002,6 +3011,7 @@ void WindowThemCauHoi() {
 			//	cout<<"d"<<endl;
 			HieuUngNhaps(dapanD,SdapanD,indexXD,indexYD,moux,mouy,disChar,maxS);
 		}
+		else if(kbhit()) getch();
 		bool isclick = false;
 		for(int i=0; i<4; i++) {
 			if(IsClickCircle(click[i],moux,mouy)) {
@@ -3014,7 +3024,7 @@ void WindowThemCauHoi() {
 		if(isclick) {
 			for(int i=0; i<4; i++) {
 				if(dapan == i) {
-					InitCircle(click[i],WHITE);
+					InitCircle(click[i],BLACK);
 				} else {
 					InitCircle(click[i],-1);
 				}
