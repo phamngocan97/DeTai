@@ -158,7 +158,7 @@ int currentLop;
 float currentDiem;
 int TIME = -1, SOCAU = -1;
 int MON_HIEN_TAI=0;
-const int SOMON =2, MAUCHU = BLACK,MAUNEN = 0 | 9,BUTTON = 10 | 0,WORDBUTTON = BLACK;
+const int SOMON =2, MAUCHU = BLACK,MAUNEN = COLOR(238,241,126),BUTTON = 10 | 0,WORDBUTTON = BLACK;
 bool OVERTIME = false,stopThread = false;
 bool isBack=false;
 
@@ -314,9 +314,9 @@ void DrawLogin(Login &login, Login &id, Login &pass,Login &cancel) {
 
 	//setfillstyle(5, WHITE);
 
-	InitRec(login, getmaxx() / 2, getmaxy() / 2,5 | 0);
-	InitRec(id, getmaxx() / 2, getmaxy() / 2 - id.rong / 2 - disIdPass / 2,0 | 9);
-	InitRec(pass, getmaxx() / 2, getmaxy() / 2 + id.rong / 2 + disIdPass / 2,0 | 9);
+	InitRec(login, getmaxx() / 2, getmaxy() / 2,COLOR(135,221,231));
+	InitRec(id, getmaxx() / 2, getmaxy() / 2 - id.rong / 2 - disIdPass / 2,MAUNEN);
+	InitRec(pass, getmaxx() / 2, getmaxy() / 2 + id.rong / 2 + disIdPass / 2,MAUNEN);
 	InitRec(cancel, getmaxx() - cancel.dai / 2 - 50, getmaxy() - cancel.rong / 2 - 50,BUTTON);
 //	outtextxy(cancel.left + 20, cancel.top + 5, "Cancel");
 
@@ -329,7 +329,7 @@ void DrawLogin(Login &login, Login &id, Login &pass,Login &cancel) {
 	settextstyle(4, HORIZ_DIR, 3);
 	outtextxy(login.left + 90, login.top - 40, "Dang Nhap");
 
-	setbkcolor(5|0);
+	setbkcolor(COLOR(135,221,231));
 	settextstyle(3, HORIZ_DIR, 1);
 	outtextxy(login.left + 10, id.top + 15, "Tai Khoan");
 	outtextxy(login.left + 10, pass.top + 15, "Mat Khau");
@@ -2127,14 +2127,14 @@ bool WindowThongBaoYN(string s) {
 	ThongBao.rong = 100;
 	Yes.dai = No.dai = 80;
 	Yes.rong = No.rong = 30;
-	InitRec(ThongBao, getmaxx() / 2, getmaxy() / 2,RED);
+	InitRec(ThongBao, getmaxx() / 2, getmaxy() / 2,COLOR(234,132,198));
 	InitRec(Yes, ThongBao.left + 70, ThongBao.bottom - Yes.rong - 10,BUTTON);
 	InitRec(No, ThongBao.right - 70, ThongBao.bottom - Yes.rong - 10,BUTTON);
 
 	//outtextxy(ThongBao.left + 10, ThongBao.top + 10, &s[0]);
 	//outtextxy(Yes.left + 10, Yes.top + 5, "Yes");
 	//outtextxy(No.left + 10, No.top + 5, "No");
-	WriteColorWord(ThongBao.left + 10, ThongBao.top + 10, &s[0],WORDBUTTON,RED);
+	WriteColorWord(ThongBao.left + 10, ThongBao.top + 10, &s[0],WORDBUTTON,COLOR(234,132,198));
 	WriteColorWord(Yes.left + 10, Yes.top + 5, "Yes",WORDBUTTON,BUTTON);
 	WriteColorWord(No.left + 10, No.top + 5, "No",WORDBUTTON,BUTTON);
 
@@ -2174,11 +2174,11 @@ void WindowThongBao(string s) {
 	ThongBao.rong = 100;
 	Ok.dai = 50;
 	Ok.rong = 30;
-	InitRec(ThongBao, getmaxx() / 2, getmaxy() / 2,RED);
-	InitRec(Ok, getmaxx() / 2, ThongBao.bottom - Ok.rong - 20,GREEN);
+	InitRec(ThongBao, getmaxx() / 2, getmaxy() / 2,COLOR(234,132,198));
+	InitRec(Ok, getmaxx() / 2, ThongBao.bottom - Ok.rong - 10,GREEN);
 	//outtextxy(ThongBao.left + 10, ThongBao.top + 10, &s[0]);
 	//outtextxy(Ok.left + 10, Ok.top + 5, "OK");
-	WriteColorWord(ThongBao.left + 10, ThongBao.top + 10, &s[0],WORDBUTTON,RED);
+	WriteColorWord(ThongBao.left + 10, ThongBao.top + 10, &s[0],WORDBUTTON,COLOR(234,132,198));
 	WriteColorWord(Ok.left + 10, Ok.top + 5, "OK",WORDBUTTON,GREEN);
 	int xx = -1, yy = -1;
 	while (1) {
@@ -2553,20 +2553,20 @@ void WindowGV() {
 	int dis = inDsLop.rong / 2;
 	int tamY = choose.bottom + 20;
 	tamY += dis;
-	InitRec(inDs, tamX, tamY, 7 | 0);
+	InitRec(inDs, tamX, tamY, COLOR(67,116,231));
 	//outtextxy(inDs.left + 20, inDs.top + 10, &SinDs[0]);
-	WriteColorWord(inDs.left + 20, inDs.top + 10, &SinDs[0],WHITE,7 | 0);
+	WriteColorWord(inDs.left + 20, inDs.top + 10, &SinDs[0],WHITE,COLOR(67,116,231));
 
 
 	tamY = dis + inDs.bottom;
-	InitRec(SV, tamX, tamY , 7 | 0);
+	InitRec(SV, tamX, tamY , COLOR(67,116,231));
 	//outtextxy(SV.left + 20, SV.top + 10, &SinhVien[0]);
-	WriteColorWord(SV.left + 20, SV.top + 10, &SinhVien[0],WHITE,7 | 0);
+	WriteColorWord(SV.left + 20, SV.top + 10, &SinhVien[0],WHITE,COLOR(67,116,231));
 
 	tamY = dis + SV.bottom;
-	InitRec(NhapMon, tamX, tamY,7 | 0);
+	InitRec(NhapMon, tamX, tamY,COLOR(67,116,231));
 	//outtextxy(NhapMon.left + 20, NhapMon.top + 10, &addMh[0]);
-	WriteColorWord(NhapMon.left + 20, NhapMon.top + 10, &addMh[0],WHITE,7 | 0);
+	WriteColorWord(NhapMon.left + 20, NhapMon.top + 10, &addMh[0],WHITE,COLOR(67,116,231));
 
 //	InitRec(Maxcau, tamX + 40, NhapMon.bottom + 30);
 //	outtextxy(Maxcau.left - 70, Maxcau.top + 5, "So Cau");
@@ -2639,13 +2639,13 @@ void WindowGV() {
 				outtextxy(chooseX, chooseY, &xoa[0]);
 				outtextxy(chooseX, chooseY, &SinDs[0]);
 
-				InitRec(inDsLop, inDs.right + inDsLop.dai / 2, inDs.top + inDsLop.rong / 2, 7 | 0);
-				InitRec(inDsDiem, inDsLop.right + inDsDiem.dai / 2, inDsLop.top + inDsDiem.rong / 2, 7 | 0);
+				InitRec(inDsLop, inDs.right + inDsLop.dai / 2, inDs.top + inDsLop.rong / 2, COLOR(67,116,231));
+				InitRec(inDsDiem, inDsLop.right + inDsDiem.dai / 2, inDsLop.top + inDsDiem.rong / 2, COLOR(67,116,231));
 
 				//outtextxy(inDsLop.left + 10, inDsLop.top + 5, &SinDsLop[0]);
 				//outtextxy(inDsDiem.left + 10, inDsDiem.top + 5, &SinDsDiem[0]);
-				WriteColorWord(inDsLop.left + 10, inDsLop.top + 5, &SinDsLop[0],WHITE,7 | 0);
-				WriteColorWord(inDsDiem.left + 10, inDsDiem.top + 5, &SinDsDiem[0],WHITE,7 | 0);
+				WriteColorWord(inDsLop.left + 10, inDsLop.top + 5, &SinDsLop[0],WHITE,COLOR(67,116,231));
+				WriteColorWord(inDsDiem.left + 10, inDsDiem.top + 5, &SinDsDiem[0],WHITE,COLOR(67,116,231));
 
 				int xx = -1, yy = -1;
 				while (1) {
@@ -2686,17 +2686,17 @@ void WindowGV() {
 				outtextxy(chooseX, chooseY, &xoa[0]);
 				outtextxy(chooseX, chooseY, &SinhVien[0]);
 
-				InitRec(themSv, SV.right + themSv.dai / 2, SV.top + SV.rong / 2,7 | 0);
-				InitRec(xoaSv, themSv.right + xoaSv.dai / 2, themSv.top + xoaSv.rong / 2,7 | 0);
-				InitRec(suaSv, xoaSv.right + suaSv.dai / 2, xoaSv.top + suaSv.rong / 2, 7 | 0);
+				InitRec(themSv, SV.right + themSv.dai / 2, SV.top + SV.rong / 2,COLOR(67,116,231));
+				InitRec(xoaSv, themSv.right + xoaSv.dai / 2, themSv.top + xoaSv.rong / 2,COLOR(67,116,231));
+				InitRec(suaSv, xoaSv.right + suaSv.dai / 2, xoaSv.top + suaSv.rong / 2, COLOR(67,116,231));
 
 				outtextxy(themSv.left + 10, themSv.top + 5, &ThemSV[0]);
 				outtextxy(xoaSv.left + 10, xoaSv.top + 5, &XoaSV[0]);
 				outtextxy(suaSv.left + 10, suaSv.top + 5, &SuaSV[0]);
 
-				WriteColorWord(themSv.left + 10, themSv.top + 5, &ThemSV[0],WHITE,7 | 0);
-				WriteColorWord(xoaSv.left + 10, xoaSv.top + 5, &XoaSV[0],WHITE,7 | 0);
-				WriteColorWord(suaSv.left + 10, suaSv.top + 5, &SuaSV[0],WHITE,7 | 0);
+				WriteColorWord(themSv.left + 10, themSv.top + 5, &ThemSV[0],WHITE,COLOR(67,116,231));
+				WriteColorWord(xoaSv.left + 10, xoaSv.top + 5, &XoaSV[0],WHITE,COLOR(67,116,231));
+				WriteColorWord(suaSv.left + 10, suaSv.top + 5, &SuaSV[0],WHITE,COLOR(67,116,231));
 
 				int xx = -1, yy = -1;
 				while (1) {
@@ -2810,7 +2810,7 @@ int WindowChonMon() {
 
 	for(int i=0; i<SOMON; i++) {
 		if(i==monHienTai) {
-			InitCircle(clk[i],WHITE);
+			InitCircle(clk[i],BLACK);
 		} else InitCircle(clk[i],-1);
 	}
 	int xx=-1,yy=-1;
