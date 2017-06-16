@@ -1341,14 +1341,14 @@ void ThemSINHVIEN(string tenlop, string malop, int type, int toadoX) {
 			} else if (IsClickRec(password, moux, mouy)) {
 				HieuUngNhap(password, Spassword, indexXPass, indexYPass, moux, mouy, 15, 18);
 			} else if (IsClickCircle(nam, moux, mouy) || IsClickCircle(nu, moux, mouy)) {
-				if (IsClickCircle(nam, moux, mouy) || Trai == false) {
-					InitCircle(nam, WHITE);
+				if (IsClickCircle(nam, moux, mouy)) {
+					InitCircle(nam, BLACK);
 					InitCircle(nu, -1);
-					Trai = !Trai;
-				} else if (IsClickCircle(nu, moux, mouy) || Trai == true) {
+					Trai = true;
+				} else if (IsClickCircle(nu, moux, mouy)) {
 					InitCircle(nu, BLACK);
 					InitCircle(nam, -1);
-					Trai = !Trai;
+					Trai = false;
 				}
 				moux = -1, mouy = -1;
 			} else if (IsClickRec(apply, moux, mouy)) {
@@ -1358,9 +1358,11 @@ void ThemSINHVIEN(string tenlop, string malop, int type, int toadoX) {
 
 				outtextxy(password.left + 20, password.bottom + 60, "                                            ");
 				if (isAdd == 1) {
-					outtextxy(password.left + 20, password.bottom + 60, "Them thanh cong");
+					//outtextxy(password.left + 20, password.bottom + 60, "Them thanh cong");
+					WindowThongBao("Them thanh cong");
 				} else {
-					outtextxy(password.left + 20, password.bottom + 60, "Them that bai");
+					//outtextxy(password.left + 20, password.bottom + 60, "Them that bai");
+					WindowThongBao("Them that bai");
 				}
 				moux = -1;
 				mouy = -1;
@@ -2714,6 +2716,7 @@ void WindowGV() {
 									break;
 								}
 							}
+							else currentTenLop = inf->lop[temp]->tenLop;
 							ThemSINHVIEN(currentTenLop, currentMaLop, THEMSV, SV.right + 400);
 							xx = -1, yy = -1;
 							break;
