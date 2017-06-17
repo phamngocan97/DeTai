@@ -627,6 +627,7 @@ void DocCauHoi() {
 				}
 			}
 			file.read((char*)&k,sizeof(int));
+			if(!(k<=4&&k>=1)) k=2;
 			dsmon[i]->Ques[j]->dapan=k-1;
 
 			QuesAndAns *temp=new QuesAndAns;
@@ -3129,6 +3130,9 @@ void GhiFile() {
 
 			file.write((char*)&k,sizeof(int));
 			file.write(dsmon[i]->Ques[j]->cauhoi,k+1);
+			
+		//	cout<<dsmon[i]->Ques[j]->cauhoi<<endl;
+			
 			for(int m=0; m<4; m++) {
 				k=strlen(dsmon[i]->Ques[j]->traloi[m]);
 				file.write((char*)&k,sizeof(int));
@@ -3136,6 +3140,7 @@ void GhiFile() {
 
 			}
 			k=dsmon[i]->Ques[j]->dapan;
+			cout<<k<<endl;
 			k++;
 			file.write((char*)&k,sizeof(int));
 		}
