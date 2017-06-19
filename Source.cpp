@@ -121,8 +121,8 @@ void DocFile();
 void GhiFile();
 
 void InitSoCau(Login &soCau, Login clock, int cauDaLam, int realQues);
-void DrawLogin(Login &login, Login &id, Login &pass,Login &cancel);
-int DangNhap(Login login, Login id, Login pass, Login cancel);
+void DrawLogin(Login &login, Login &id, Login &pass,Login &cancel, Login &signIn);
+int DangNhap(Login login, Login id, Login pass, Login cancel,Login signIn);
 int TestId(string id, string pass);
 void InitQuestion(int realQues,DSMON *ds);
 void DrawTracNghiem(QuesAndAns Infor, CircleClick *click, int type);
@@ -189,15 +189,15 @@ int main() {
 
 //	DocFile();
 
-	Login login, id, pass, cancel;
+	Login login, id, pass, cancel,signIn;
 	int typeSign;
 
 	setcolor(MAUCHU);
 	while (1) {
 		setbkcolor(MAUNEN);
 		cleardevice();
-		DrawLogin(login, id, pass,cancel);
-		typeSign = DangNhap(login, id, pass,cancel);
+		DrawLogin(login, id, pass,cancel,signIn);
+		typeSign = DangNhap(login, id, pass,cancel,signIn);
 
 
 		if(typeSign == -2) {
@@ -301,14 +301,17 @@ void CountDown(int time) {
 	OVERTIME = false;
 }
 
-void DrawLogin(Login &login, Login &id, Login &pass,Login &cancel) {
+void DrawLogin(Login &login, Login &id, Login &pass,Login &cancel,Login &signIn) {
 	int disRong, disIdPass;
-	disRong = 30;
+	disRong = 30; 
 	disIdPass = 30;
 
 	cancel.dai = 90;
 	cancel.rong = 30;
-
+	
+	signIn.dai = 120;
+	signIn.rong = 40;
+	
 	login = Login(150, 400);
 
 	id = Login(login.rong / 2 - disRong, login.dai / 2);
@@ -320,13 +323,12 @@ void DrawLogin(Login &login, Login &id, Login &pass,Login &cancel) {
 	InitRec(id, getmaxx() / 2, getmaxy() / 2 - id.rong / 2 - disIdPass / 2,MAUNEN);
 	InitRec(pass, getmaxx() / 2, getmaxy() / 2 + id.rong / 2 + disIdPass / 2,MAUNEN);
 	InitRec(cancel, getmaxx() - cancel.dai / 2 - 50, getmaxy() - cancel.rong / 2 - 50,BUTTON);
+	InitRec(signIn,getmaxx()/2,login.bottom+signIn.rong/2,BUTTON);
 //	outtextxy(cancel.left + 20, cancel.top + 5, "Cancel");
 
 
 	//floodfill(id.bottom - 5, id.right - 5, WHITE);
 	//floodfill(pass.bottom - 1, pass.right - 1, WHITE);
-
-
 
 	settextstyle(4, HORIZ_DIR, 3);
 	outtextxy(login.left + 90, login.top - 40, "Dang Nhap");
@@ -338,12 +340,12 @@ void DrawLogin(Login &login, Login &id, Login &pass,Login &cancel) {
 
 
 	WriteColorWord(cancel.left+10,cancel.top+5,"Thoat",WORDBUTTON,BUTTON);
-
+	WriteColorWord(signIn.left+10,signIn.top+5,"Dang Nhap",WORDBUTTON,BUTTON);
 
 	//outtextxy(cancel.left+10,cancel.top+5,"Thoat");
 }
 
-int DangNhap(Login login, Login id, Login pass, Login cancel) {
+int DangNhap(Login login, Login id, Login pass, Login cancel,Login ok) {
 	int maxId = 12, maxPass = 24;
 	int typeSign;
 	bool signIn = false, taikhoan = false, matkhau = false;
@@ -370,6 +372,18 @@ int DangNhap(Login login, Login id, Login pass, Login cancel) {
 		}
 		if(IsClickRec(cancel,moux,mouy)) {
 			return -2;
+		}
+		else if(IsClickRec(ok,moux,mouy)){
+			typeSign = TestId(tk, mk);
+				if (typeSign != -2) {
+						signIn = true;
+						currentId = tk;
+						break;
+					} else {
+						//outtextxy(login.left + 20, login.bottom + 50, "Sai ID/PassWord");
+						WindowThongBao("Sai ID/PassWord!");
+					}
+			
 		} else if (taikhoan || IsClickRec(id, moux, mouy)) {
 			taikhoan = true;
 			matkhau = false;
@@ -406,7 +420,8 @@ int DangNhap(Login login, Login id, Login pass, Login cancel) {
 						currentId = tk;
 						break;
 					} else {
-						outtextxy(login.left + 20, login.bottom + 50, "Sai ID/PassWord");
+						//outtextxy(login.left + 20, login.bottom + 50, "Sai ID/PassWord");
+						WindowThongBao("Sai ID/PassWord!");
 					}
 				} else if ((ll)tk.size() > 0 && c == BACKSPACE) {
 					//tk.pop_back();
@@ -460,7 +475,8 @@ int DangNhap(Login login, Login id, Login pass, Login cancel) {
 						currentId = tk;
 						break;
 					} else {
-						outtextxy(login.left + 20, login.bottom + 50, "Sai ID/PassWord");
+						//outtextxy(login.left + 20, login.bottom + 50, "Sai ID/PassWord");
+						WindowThongBao("Sai ID/PassWord!");
 					}
 				}
 
@@ -1202,7 +1218,7 @@ void HieuUngNhap1(Login log, string &s, int &indexX, int &indexY, int &moux, int
 void HieuUngNhap(Login log, string &s, int &indexX, int &indexY, int &moux, int &mouy, int disChar, int maxS, int type) {
 	char c;
 	bool flag = false, out = false;
-
+	cout<<s<<endl;
 	s.push_back(' ');
 	s.push_back('|');
 	while (!kbhit()) {
@@ -1356,7 +1372,7 @@ void HieuUngNhaps2(Login log, string &s, int &indexX, int &indexY, int &moux, in
 
 	char c;
 	bool flag = false, out = false;
-	s.push_back(' ');
+	//s.push_back(' ');
 	s.push_back('|');
 	while (!kbhit()) {
 //		if(indexY>=log.bottom-10) break;
@@ -1371,7 +1387,7 @@ void HieuUngNhaps2(Login log, string &s, int &indexX, int &indexY, int &moux, in
 					s.erase(s.size() - 1);
 					s.push_back(' ');
 						Write((char*)s.c_str(),indexX,indexY,maxPerLine,MAUNEN);
-					s.erase(s.size() - 1);
+	//				s.erase(s.size() - 1);
 					s.erase(s.size() - 1);
 				}
 
@@ -1382,14 +1398,14 @@ void HieuUngNhaps2(Login log, string &s, int &indexX, int &indexY, int &moux, in
 		}
 
 		if (flag) {
-			s.push_back(' ');
+	//		s.push_back(' ');
 			s.push_back('|');
 			Write((char*)s.c_str(),indexX,indexY,maxPerLine,MAUNEN);
 		} else {
 			s.erase(s.size() - 1);
 			s.push_back(' ');
 			Write((char*)s.c_str(),indexX,indexY,maxPerLine,MAUNEN);
-			s.erase(s.size() - 1);
+	//		s.erase(s.size() - 1);
 			s.erase(s.size() - 1);
 
 		}
@@ -1401,7 +1417,7 @@ void HieuUngNhaps2(Login log, string &s, int &indexX, int &indexY, int &moux, in
 		s.erase(s.size() - 1);
 		s.push_back(' ');
 		Write((char*)s.c_str(),indexX,indexY,maxPerLine,MAUNEN);
-		s.erase(s.size() - 1);
+	//	s.erase(s.size() - 1);
 		s.erase(s.size() - 1);
 	}
 	//outtextxy(indexX, indexY, " ");
@@ -1410,19 +1426,14 @@ void HieuUngNhaps2(Login log, string &s, int &indexX, int &indexY, int &moux, in
 	c=getch();
 	if ( ((ll)s.size() > 0 && c == BACKSPACE)) {
 		//mk.pop_back();
-				s.erase(s.size() - 1);
-		s.push_back(' ');
-		s.push_back(' ');
-		s.push_back(' ');
-		s.push_back(' ');
-
+		
+		setfillstyle(12,MAUNEN);
+		bar(log.left,log.top,log.right,log.bottom);
+		rectangle(log.left,log.top,log.right,log.bottom);
+		s.erase(s.size() - 1);
+		
 		//indexX -= disChar;
-		Write((char*)s.c_str(),indexX,indexY,maxPerLine,MAUNEN);
-		s.erase(s.size() - 1);
-		s.erase(s.size() - 1);
-		s.erase(s.size() - 1);
-		s.erase(s.size() - 1);
-
+		
 		Write((char*)s.c_str(),indexX,indexY,maxPerLine,MAUNEN);
 
 	} else {
@@ -2106,7 +2117,7 @@ void WindowSuaSV(string malop,string tenlop, SinhVien *sv, int toadoX) {
 	cleardevice();
 	//putimage(0,0,arrow,COPY_PUT);
 
-	bool Trai = true;
+	bool Trai = sv->Nam;
 	string Sma, Sho, Sten, Spassword,SLop,Smalop,Stenlop;
 	Login ma, ho, ten, password, apply, cancel,maLop,tenLop;
 	CircleClick nam, nu;
@@ -2151,11 +2162,13 @@ void WindowSuaSV(string malop,string tenlop, SinhVien *sv, int toadoX) {
 	outtextxy(ten.left - 130, ten.top + 5, "Ten");
 	outtextxy(password.left - 130, password.top + 5, "PassWord");
 
-	InitRec(cancel, getmaxx() - cancel.dai / 2 - 50, getmaxy() - cancel.rong / 2 - 50);
-	outtextxy(cancel.left + 20, cancel.top + 5, "Cancel");
+	InitRec(cancel, getmaxx() - cancel.dai / 2 - 50, getmaxy() - cancel.rong / 2 - 50,BUTTON);
+	//outtextxy(cancel.left + 20, cancel.top + 5, "Cancel");
+	WriteColorWord(cancel.left + 20, cancel.top + 5, "Cancel",WORDBUTTON,BUTTON);
 
-	InitRec(apply, cancel.left - 50 - apply.rong / 2, getmaxy() - apply.rong / 2 - 50);
+	InitRec(apply, cancel.left - 50 - apply.rong / 2, getmaxy() - apply.rong / 2 - 50,BUTTON);
 	outtextxy(apply.left + 20, apply.top + 5, "Apply");
+	WriteColorWord(apply.left + 20, apply.top + 5, "Apply",WORDBUTTON,BUTTON);
 
 	nam.bk = nu.bk = 10;
 	nam.y = nu.y = password.bottom + 30;
@@ -2165,13 +2178,23 @@ void WindowSuaSV(string malop,string tenlop, SinhVien *sv, int toadoX) {
 	outtextxy(nam.x - nam.bk - 40, nam.y - 15, "Nam");
 	outtextxy(nu.x - nu.bk - 30, nu.y - 15, "Nu");
 
-	InitCircle(nam, BLACK);
+	if(sv->Nam){
+		InitCircle(nam, BLACK);
 	InitCircle(nu, -1);
-
+	}
+	else{
+		InitCircle(nam, -1);
+	InitCircle(nu, BLACK);	
+	}
+	
+	Sma = sv->maSV;
+	Sho = sv->Ho;
+	Sten = sv->Ten;
+	Smalop = malop;
 
 	int moux = -1, mouy = -1;
 	int indexXMa, indexXHo, indexXTen, indexXPass,indexXMalop,indexXTenlop;
-	int indexYMa, indexYHo, indexYTen, indexYPass,indexYMalop,indexYTenlop;
+	int indexYMa, indexYHo	, indexYTen, indexYPass,indexYMalop,indexYTenlop;
 
 	indexXMalop=maLop.left+5;
 	indexXTenlop=tenLop.left+5;
@@ -2186,7 +2209,13 @@ void WindowSuaSV(string malop,string tenlop, SinhVien *sv, int toadoX) {
 	indexYMa = ma.top + 10;
 	indexYTen = ten.top + 10;
 	indexYPass = password.top + 10;
-
+	
+	outtextxy(indexXMalop,indexYMalop,&Smalop[0]);
+	outtextxy(indexXMa,indexYMa,&Sma[0]);
+	outtextxy(indexXHo,indexYHo,&Sho[0]);
+	outtextxy(indexXTen,indexYTen,&Sten[0]);
+	
+	
 	char c;
 	while (1) {
 		delay(0.00001);
@@ -2202,7 +2231,7 @@ void WindowSuaSV(string malop,string tenlop, SinhVien *sv, int toadoX) {
 		} else if (IsClickRec(ma, moux, mouy)) {
 			HieuUngNhap(ma, Sma, indexXMa, indexYMa, moux, mouy, 15, 18);
 		} else if (IsClickRec(ho, moux, mouy)) {
-			HieuUngNhap(ho, Sho, indexXHo, indexYHo, moux, mouy, 15, 6, 0);
+			HieuUngNhap(ho, Sho, indexXHo, indexYHo, moux, mouy, 15, 7, 0);
 		} else if (IsClickRec(ten, moux, mouy)) {
 			HieuUngNhap(ten, Sten, indexXTen, indexYTen, moux, mouy, 15, 18, 3);
 		} else if (IsClickRec(password, moux, mouy)) {
